@@ -10,8 +10,7 @@ const port = process.env.PORT || 5000;
 // app.use(cors());
 app.use(express.json());
 
-const uri = process.env.DB_URI;
-mongoose.connect(uri, {
+mongoose.connect(process.env.DB_URI, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
