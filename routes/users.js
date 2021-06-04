@@ -8,9 +8,9 @@ usersRouter.get('/', (req, res) => {
 });
 
 usersRouter.post('/', (req, res) => {
-  const { username } = req.body;
+  const { username, password } = req.body;
 
-  const newUser = new User({ username });
+  const newUser = new User({ username, password });
 
   newUser
     .save()
