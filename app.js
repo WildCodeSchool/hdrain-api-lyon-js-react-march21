@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors');
+// const cors = require('cors');
 const mongoose = require('mongoose');
 
 const initRoutes = require('./routes');
@@ -9,13 +9,12 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 app.set('x-powered-by', false); // for security
 app.set('trust proxy', 1);
 
-const uri = process.env.DB_URI;
-mongoose.connect(uri, {
+mongoose.connect(process.env.DB_URI, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
