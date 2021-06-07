@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const {
   PORT,
   CORS_ALLOWED_ORIGINS,
@@ -16,7 +17,6 @@ const initRoutes = require('./routes');
 const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
 const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
-const MongoStore = require('connect-mongo');
 
 require('dotenv').config();
 
