@@ -1,7 +1,10 @@
+/* eslint-disable prefer-arrow-callback */
 const usersRouter = require('express').Router();
+
 const User = require('../models/user.model');
 
-usersRouter.get('/', (req, res) => {
+/* ___________________________________________________ */
+usersRouter.get('/', async (req, res) => {
   User.find()
     .then((users) => res.json(users))
     .catch((err) => res.status(400).json(`Error: ${err}`));
