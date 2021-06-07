@@ -1,5 +1,5 @@
 const authRouter = require('express').Router();
-const User = require('../models/user');
+const User = require('../models/data');
 
 authRouter.post('/checkCredentials', async (req, res) => {
   const { email, password } = req.body;

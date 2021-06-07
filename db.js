@@ -1,5 +1,16 @@
-const { PrismaClient } = require('@prisma/client');
+const mongoose = require('mongoose');
+require('dotenv').config()
+/* ----------------------- DB CONNECTION -----------------------------------------*/
 
-const prisma = new PrismaClient();
+mongoose.connect(`${process.env.DB_URL}`, {useNewUrlParser: true, useUnifiedTopology: true});
 
-module.exports = prisma;
+const mongoDB = mongoose.connection;
+mongoDB
+  .on('error', console.error.bind(console, 'connection error:'))
+  .once('open', () => {
+    console.log('connected to mongoDB');
+  });
+
+
+module.exports = mongoDB;
+
