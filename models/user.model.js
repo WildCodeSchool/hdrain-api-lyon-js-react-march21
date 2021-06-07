@@ -9,8 +9,8 @@ const UserSchema = new Schema({
     unique: true,
     trim: true, // If you tipe some space after the username, the space will be removed
   },
-  password: {
-    type: String,
+  hashedPassword: {
+    type: Object,
     required: true,
   },
 });

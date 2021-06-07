@@ -47,7 +47,6 @@ app.use(
     secret: SESSION_COOKIE_SECRET,
     store: MongoStore.create({
       mongoUrl: DATABASE_URL,
-      touchAfter: 24 * 3600, // time period in seconds
     }),
     resave: false,
     saveUninitialized: false,
