@@ -1,5 +1,3 @@
-/* eslint-disable object-shorthand */
-/* eslint-disable prefer-arrow-callback */
 const usersRouter = require('express').Router();
 const argon2 = require('argon2');
 
