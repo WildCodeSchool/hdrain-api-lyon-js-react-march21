@@ -1,28 +1,23 @@
 import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
+const ExperienceSchema = require('./Experience');
+const SensorsSchema = require('./Sensors');
 
-const mongoDB = require('../db');
+// const mongoDB = require('../db');
 
 const LocationSchema = new Schema({
   name: String, 
   coord: { longitude: Number, latitude: Number },
   sensors: [
-    {
-      idNumber: Number,
-      coord: { longitude: Number, latitude: Number },
-      status: Number,
-    },
+    SensorsSchema,
   ],
   experiences: [
-    {
-      timestamp: Date,
-      log: String,
-      diagnosticGraph: { data: Buffer, contentType: String },
-      costGraph: { data: Buffer, contentType: String },
-    },
+    ExperienceSchema,
   ],
 });
 
 const Location = mongoose.model('Location', LocationSchema);
+
+module.exports = Location;
 
