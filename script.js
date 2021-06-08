@@ -4,6 +4,8 @@ const shell = require('shelljs');
 const command =
   'rsync -vrzh wild@51.178.56.162:/home/wild/LOG/2021/05/20/18h50 ~/Downloads';
 
+// Interval in milliseconds
+const interval = 5 * 60 * 1000;
 let intervalId = null;
 
 // Function to execute the shell command to copy the data to our server
@@ -17,7 +19,7 @@ const copyDataPeriodically = () => {
   copyData();
   intervalId = setInterval(() => {
     copyData();
-  }, 5 * 60 * 1000);
+  }, interval);
   console.log(`Data copy interval was started with ID: ${intervalId}`);
 };
 
