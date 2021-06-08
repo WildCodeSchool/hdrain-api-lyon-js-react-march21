@@ -74,6 +74,10 @@ connection.once('open', () => {
   console.log('MongoDB database connection established successfully');
 });
 
+connection.on('error', (err) => {
+  console.error(err);
+});
+
 const server = app.listen(port, () => {
   if (!inTestEnv) console.log(`Server is running on port: ${port}`);
 });

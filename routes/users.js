@@ -1,42 +1,37 @@
 const usersRouter = require('express').Router();
-const argon2 = require('argon2');
+const { User, hashPassword } = require('../models/User');
 
-const User = require('../models/user.model');
-
-// ARGON 2
-const hashingOptions = {
-  memoryCost: 2 ** 16,
-  timeCost: 5,
-  type: argon2.argon2id,
-};
-
-const hashPassword = (plainPassword) =>
-  argon2.hash(plainPassword, hashingOptions);
-
-/* ___________________________________________________ */
+// Get all users
 usersRouter.get('/', async (req, res) => {
-  User.find()
-    .then((users) => res.json(users))
-    .catch((err) => res.status(400).json(`Error: ${err}`));
+  try {
+    res.status(200).send(await User.find({}, 'id username'));
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
+// Create new user
 usersRouter.post('/', async (req, res) => {
-  const { username, password } = req.body;
-  const hashedPassword = await hashPassword(password);
-  console.log(hashedPassword);
-
-  const newUser = new User({ username, hashedPassword });
-
-  newUser
-    .save()
-    .then(() => res.json('User added'))
-    .catch((err) => res.status(400).json(`Error: ${err}`));
+  try {
+    const { username, password } = req.body;
+    const hashedPassword = await hashPassword(password);
+    const newUser = new User({ username, hashedPassword });
+    const saveUser = await newUser.save();
+    res.status(201).send(`User created successfully: ${saveUser.username}`);
+  } catch (error) {
+    res.statut(500).send(error);
+  }
 });
 
-usersRouter.delete('/:id', (req, res) => {
-  User.findByIdAndDelete(req.params.id)
-    .then(() => res.status(200).json('Exercise Deleted'))
-    .catch((err) => res.status(400).json(`Error: ${err}`));
+// Delete selected user by id
+usersRouter.delete('/:id', async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (deletedUser) return res.status(202).send(deletedUser);
+    return res.status(400).send('User not found');
+  } catch (error) {
+    return res.status(500).send(error);
+  }
 });
 
 module.exports = usersRouter;
