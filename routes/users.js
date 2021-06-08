@@ -19,7 +19,7 @@ usersRouter.post('/', async (req, res) => {
     const saveUser = await newUser.save();
     res.status(201).send(`User created successfully: ${saveUser.username}`);
   } catch (error) {
-    res.statut(500).send(error);
+    res.status(500).send(error);
   }
 });
 

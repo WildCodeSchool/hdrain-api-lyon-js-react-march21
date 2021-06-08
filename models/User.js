@@ -34,13 +34,13 @@ const usernameAlreadyExists = async (username) =>
   !!(await User.findOne({ username }));
 
 // Function to return the user with a given username
-const findByUsername = async (username) => User.find({ username });
+const findByUsername = async (username) => User.findOne({ username });
 
 // Check the user's password
 const verifyPassword = (plainPassword, hashedPassword) =>
   argon2.verify(hashedPassword, plainPassword, hashingOptions);
 
-// Validates a usern ameand password
+// Validates a user name and password
 const validate = (data) =>
   Joi.object({
     username: Joi.string().max(255).required(),

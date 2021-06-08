@@ -1,16 +1,19 @@
+/* eslint-disable no-unused-vars */
 const authRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
-const User = require('../models/User');
 const { SESSION_COOKIE_DOMAIN, SESSION_COOKIE_NAME } = require('../env');
-const { verifyPassword } = require('../models/User');
+const { verifyPassword, findByUsername } = require('../models/User');
 
 authRouter.post(
-  '/logIn',
+  '/login',
   asyncHandler(async (req, res) => {
-    const user = await User.findOne({ username: req.body.username });
+    const user = await findByUsername( req.body.username );
+
+    console.log(user);
+
     if (
       user &&
-      (await User.verifyPassword(req.body.password, user.hashedPassword))
+      (await verifyPassword(req.body.password, user.hashedPassword))
     ) {
       if (req.body.stayConnected) {
         // session cookie will be valid for a week
