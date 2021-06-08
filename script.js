@@ -1,7 +1,16 @@
-const cron = require('node-cron');
 const shell = require('shelljs');
 
-cron.schedule('0 * * * * *', () => {
-  console.log('cron job running...');
-  shell.exec('ls');
-});
+const copyData = () => {
+  const date = new Date();
+  console.log(date);
+  shell.exec('colorls');
+};
+
+const copyDataPeriodically = () => {
+  copyData();
+  setInterval(() => {
+    copyData();
+  }, 1 * 60 * 1000);
+};
+
+copyDataPeriodically();
