@@ -12,12 +12,12 @@ const copyData = () => {
   shell.exec(command);
 };
 
-// Function to start the periodic copy of files
+// Function to start the periodic copy of files every 5 minutes
 const copyDataPeriodically = () => {
   copyData();
   intervalId = setInterval(() => {
     copyData();
-  }, 1 * 60 * 1000);
+  }, 5 * 60 * 1000);
   console.log(`Data copy interval was started with ID: ${intervalId}`);
 };
 
