@@ -1,5 +1,6 @@
+/* eslint-disable no-undef */
 const usersRouter = require('express').Router();
-const User = require('../models/data');
+// const User = require('../models/data');
 
 usersRouter.post('/', async (req, res) => {
   const { email, password } = req.body;

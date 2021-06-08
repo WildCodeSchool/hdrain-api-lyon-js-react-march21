@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
-const ExperienceSchema = require('./Experience');
-const SensorsSchema = require('./Sensors');
+const ExperienceSchema = require('./ExperienceSchema');
+const SensorsSchema = require('./SensorsSchema');
 
-// const mongoDB = require('../db');
+const connection = require('../db');
 
 const LocationSchema = new Schema({
   name: String, 
@@ -17,7 +17,7 @@ const LocationSchema = new Schema({
   ],
 });
 
-const Location = mongoose.model('Location', LocationSchema);
+const Location = connection.model('Location', LocationSchema);
 
 module.exports = Location;
 

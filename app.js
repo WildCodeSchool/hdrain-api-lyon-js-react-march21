@@ -1,4 +1,6 @@
 const express = require('express');
+
+
 const { inTestEnv, PORT } = require('./env');
 
 const app = express();
@@ -30,4 +32,4 @@ process.on('beforeExit', () => {
   });
 });
 
-module.exports = server;
+module.exports = {server};
