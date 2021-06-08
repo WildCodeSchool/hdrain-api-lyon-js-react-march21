@@ -8,8 +8,7 @@ let intervalId = null;
 
 // Function to execute the shell command to copy the data to our server
 const copyData = () => {
-  const date = new Date();
-  console.log(date);
+  console.log(new Date());
   shell.exec(command);
 };
 
