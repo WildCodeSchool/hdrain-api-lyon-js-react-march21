@@ -25,7 +25,7 @@ const copyDataPeriodically = () => {
       copyData(command(path, serverAddressList[index]));
     });
   }, interval);
-  console.log(`Data copy interval was started with ID: ${intervalId}`);
+  console.log(`Interval was started with ID: ${intervalId}`);
 };
 
 // Function to stop the periodic copy of files
