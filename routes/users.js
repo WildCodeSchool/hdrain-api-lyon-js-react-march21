@@ -1,21 +1,37 @@
-/* eslint-disable no-undef */
 const usersRouter = require('express').Router();
-// const User = require('../models/data');
+const { User, hashPassword } = require('../models/User');
 
+// Get all users
+usersRouter.get('/', async (req, res) => {
+  try {
+    res.status(200).send(await User.find({}, 'id username'));
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+// Create new user
 usersRouter.post('/', async (req, res) => {
-  const { email, password } = req.body;
-  if (await User.emailAlreadyExists(email))
-    return res.status(422).send({ error: 'this email is already taken' });
+  try {
+    const { username, password } = req.body;
+    const hashedPassword = await hashPassword(password);
+    const newUser = new User({ username, hashedPassword });
+    const saveUser = await newUser.save();
+    res.status(201).send(`User created successfully: ${saveUser.username}`);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
-  const validationErrors = User.validate(req.body);
-  if (validationErrors)
-    return res.status(422).send({ errors: validationErrors.details });
-
-  if (await User.emailAlreadyExists(email))
-    return res.status(422).send({ error: 'this email is already taken' });
-
-  const newUser = await User.create({ email, password });
-  return res.status(201).send({ id: newUser.id, email: newUser.email });
+// Delete selected user by id
+usersRouter.delete('/:id', async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (deletedUser) return res.status(202).send(deletedUser);
+    return res.status(400).send('User not found');
+  } catch (error) {
+    return res.status(500).send(error);
+  }
 });
 
 module.exports = usersRouter;

@@ -1,20 +1,40 @@
-/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 const authRouter = require('express').Router();
-// const User = require('../models/data');
+const asyncHandler = require('express-async-handler');
+const { SESSION_COOKIE_DOMAIN, SESSION_COOKIE_NAME } = require('../env');
+const { verifyPassword, findByUsername } = require('../models/User');
 
-authRouter.post('/checkCredentials', async (req, res) => {
-  const { email, password } = req.body;
+authRouter.post(
+  '/login',
+  asyncHandler(async (req, res) => {
+    const user = await findByUsername( req.body.username );
 
-  const user = await User.findByEmail(email);
-  if (user) {
-    if (await User.verifyPassword(password, user.hashedPassword)) {
-      res.send('Valid credentials');
+    console.log(user);
+
+    if (
+      user &&
+      (await verifyPassword(req.body.password, user.hashedPassword))
+    ) {
+      if (req.body.stayConnected) {
+        // session cookie will be valid for a week
+        req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000;
+      }
+      req.session.userId = user.id;
+      req.session.save(() => {
+        res.sendStatus(200);
+      });
     } else {
-      res.send('invalid credentials');
+      res.status(401).send('Invalid Credentials');
     }
-  } else {
-    res.send('invalid credentials');
-  }
+  })
+);
+
+authRouter.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) return res.status(400).send('Could not destroy session');
+    res.clearCookie(SESSION_COOKIE_NAME, { domain: SESSION_COOKIE_DOMAIN });
+    return res.status(200).send('session deleted');
+  });
 });
 
 module.exports = authRouter;
