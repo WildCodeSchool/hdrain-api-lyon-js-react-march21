@@ -5,7 +5,7 @@ const serverAddress = ['51.178.56.162', '...', '...'];
 
 // Shell command to copy the file server's content to our server (using ssh)
 const command =
-  'rsync -vrzh --rsh=ssh wild@51.178.56.162:/home/wild/LOG/2021/05/20/18h50 ~/Downloads';
+  ' rsync -vrzh --rsh=ssh wild@51.178.56.162:/home/wild/LOG/2021/05/20/18h50 ~/Downloads';
 
 // Interval in milliseconds
 const interval = 5 * 60 * 1000;
