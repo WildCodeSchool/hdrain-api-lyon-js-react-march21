@@ -8,11 +8,11 @@ const LocationSchema = new Schema({
     required: true,
     unique: true,
   },
-  assimilationlog: {
+  assimilationLog: {
     type: String,
     required: true,
   },
-  rainmap: {
+  rainMap: {
     type: String,
     required: true,
   },
@@ -24,11 +24,11 @@ const LocationSchema = new Schema({
     type: String,
     required: true,
   },
-  inferencelog: {
+  inferenceLog: {
     type: String,
     required: true,
   },
-  sensorstatus: {
+  sensorStatus: {
     type: String,
     required: true,
   },
