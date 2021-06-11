@@ -3,10 +3,10 @@ const sensorRouter = require('express').Router();
 const SensorModel = require('../models/SensorModel');
 
 sensorRouter.post('/', async (req, res) => {
-  const { idNumber, coord, status } = req.body;
+  const { sensorNumber, coord, status } = req.body;
 
   const newSensor = await SensorModel.create({
-    idNumber,
+    sensorNumber,
     coord,
     status,
   });

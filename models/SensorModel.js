@@ -7,7 +7,7 @@ const { Schema } = mongoose;
 // const mongoDB = require('../db');
 
 const SensorSchema = new Schema({
-  idNumber: Number,
+  sensorNumber: Number,
   coord: { 
     spotName: String, 
     longitude: Number, 
