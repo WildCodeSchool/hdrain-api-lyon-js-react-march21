@@ -6,26 +6,26 @@ locationsRouter.post('/', async (req, res) => {
   try {
     const {
       name,
-      assimilationlog,
-      rainmap,
+      assimilationLog,
+      rainMap,
       config,
       diags,
-      inferencelog,
-      sensorstatus,
+      inferenceLog,
+      sensorStatus,
     } = req.body;
     const newLocation = new Location({
       name,
-      assimilationlog,
-      rainmap,
+      assimilationLog,
+      rainMap,
       config,
       diags,
-      inferencelog,
-      sensorstatus,
+      inferenceLog,
+      sensorStatus,
     });
     const saveLocation = await newLocation.save();
     res
       .status(201)
-      .send(`Success !! ⭐️ Location data was recorded : ${saveLocation}`);
+      .send(`Success !! ⭐️ Location data was recorded : ${saveLocation.name}`);
   } catch (error) {
     res.status(500).send(error);
   }
