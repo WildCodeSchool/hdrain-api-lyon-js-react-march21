@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const authRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
 const { SESSION_COOKIE_DOMAIN, SESSION_COOKIE_NAME } = require('../env');
@@ -7,9 +6,7 @@ const { verifyPassword, findByUsername } = require('../models/User');
 authRouter.post(
   '/login',
   asyncHandler(async (req, res) => {
-    const user = await findByUsername( req.body.username );
-
-    console.log(user);
+    const user = await findByUsername(req.body.username);
 
     if (
       user &&
@@ -21,7 +18,7 @@ authRouter.post(
       }
       req.session.userId = user.id;
       req.session.save(() => {
-        res.sendStatus(200);
+        res.send('Valid Credentials');
       });
     } else {
       res.status(401).send('Invalid Credentials');
