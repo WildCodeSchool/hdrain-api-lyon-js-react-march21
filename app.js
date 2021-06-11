@@ -63,21 +63,6 @@ app.use(handleServerInternalError);
 
 initRoutes(app);
 
-mongoose.connect(DATABASE_URL, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
-
-const { connection } = mongoose;
-connection
-  .once('open', () => {
-    console.log('MongoDB database connection established successfully');
-  })
-  .on('error', (err) => {
-    console.error(err);
-  });
-
 const server = app.listen(port, () => {
   if (!inTestEnv) console.log(`Server is running on port: ${port}`);
 });
