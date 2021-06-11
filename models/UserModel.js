@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 const argon2 = require('argon2');
 const Joi = require('joi');
+const connection = require('../db');
 
-const { Schema } = mongoose;
-
-const UserSchema = new Schema({
+const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
@@ -17,7 +16,7 @@ const UserSchema = new Schema({
   },
 });
 
-const User = mongoose.model('User', UserSchema);
+const User = connection.model('User', UserSchema);
 
 // ARGON 2
 const hashingOptions = {
