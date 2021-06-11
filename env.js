@@ -24,10 +24,14 @@ const SESSION_COOKIE_SECRET = getEnv(`SESSION_COOKIE_SECRET`);
 module.exports = {
   getEnv,
   inTestEnv,
-<<<<<<< HEAD
-  inProdEnv,
-  inDevEnv,
-  PORT,
+inDevEnv,
+inProdEnv,
+PORT,
+CORS_ALLOWED_ORIGINS,
+SESSION_COOKIE_DOMAIN,
+SESSION_COOKIE_NAME,
+SESSION_COOKIE_SECRET,
+DATABASE_URL,
 };
 
 const test = {
@@ -45,14 +49,3 @@ const test = {
     log: 'No data : Test',
   }],
 }
-=======
-  inDevEnv,
-  inProdEnv,
-  PORT,
-  CORS_ALLOWED_ORIGINS,
-  SESSION_COOKIE_DOMAIN,
-  SESSION_COOKIE_NAME,
-  SESSION_COOKIE_SECRET,
-  DATABASE_URL,
-};
->>>>>>> dev
