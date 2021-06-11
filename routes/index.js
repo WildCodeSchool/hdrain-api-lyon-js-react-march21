@@ -1,13 +1,13 @@
 const authRouter = require('./auth');
 const usersRouter = require('./users');
-const locationRouter = require('./locationRoute');
-const experienceRouter = require('./experienceRoute');
-const sensorRouter = require('./sensorRoute');
+const locationsRouter = require('./locations');
+const experimentsRouter = require('./experiments');
+const sensorsRouter = require('./sensors');
 
 module.exports = (app) => {
   app.use('/users', usersRouter);
   app.use('/auth', authRouter);
-  app.use('/location', locationRouter);
-  app.use('/sensor', sensorRouter);
-  app.use('/experience', experienceRouter);
+  app.use('/locations', locationsRouter);
+  app.use('/sensors', sensorsRouter);
+  app.use('/experiments', experimentsRouter);
 };

@@ -1,14 +1,11 @@
 const mongoose = require('mongoose');
-
-const { Schema } = mongoose;
-
 const connection = require('../db');
 
-const LocationSchema = new Schema({
+const LocationSchema = new mongoose.Schema({
   name: String,
-  coord: { longitude: Number, latitude: Number },
-  sensorsList: { type: Array, required: false },
-  experiencesList: { type: Array, required: false },
+  coord: { lat: Number, lng: Number },
+  sensorList: { type: Array, required: false },
+  experienceList: { type: Array, required: false },
 });
 
 const Location = connection.model('Location', LocationSchema);

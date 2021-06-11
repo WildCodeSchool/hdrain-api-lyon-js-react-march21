@@ -2,12 +2,12 @@
 const authRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
 const { SESSION_COOKIE_DOMAIN, SESSION_COOKIE_NAME } = require('../env');
-const { verifyPassword, findByUsername } = require('../models/User');
+const { verifyPassword, findByUsername } = require('../models/UserModel');
 
 authRouter.post(
   '/login',
   asyncHandler(async (req, res) => {
-    const user = await findByUsername( req.body.username );
+    const user = await findByUsername(req.body.username);
 
     console.log(user);
 

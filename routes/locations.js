@@ -1,8 +1,7 @@
-const locationRouter = require('express').Router();
-
+const locationsRouter = require('express').Router();
 const LocationModel = require('../models/LocationModel');
 
-locationRouter.post('/', async (req, res) => {
+locationsRouter.post('/', async (req, res) => {
   const { name, coord } = req.body;
 
   const newLocation = await LocationModel.create({
@@ -14,4 +13,4 @@ locationRouter.post('/', async (req, res) => {
 });
 
 
-module.exports = locationRouter;
+module.exports = locationsRouter;
