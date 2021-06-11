@@ -1,5 +1,5 @@
 const locationsRouter = require('express').Router();
-const { Location } = require('../models/Locations');
+const { Location } = require('../models/Location');
 
 // creating POST route
 locationsRouter.post('/', async (req, res) => {
