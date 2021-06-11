@@ -34,18 +34,4 @@ SESSION_COOKIE_SECRET,
 DATABASE_URL,
 };
 
-const test = {
-  name: "Lyon", 
-  coord: { longitude: 5.36, latitude: -3.01 },
-  sensors: [
-    {
-      idNumber: 45,
-      coord: { spotName: "Perrache", longitude: 5.01, latitude: -3.80 },
-      status: 2,
-    }
-  ],
-  experiences: [{
-    timestamp: 'June 08, 2021 15:05:00',
-    log: 'No data : Test',
-  }],
-}
+
