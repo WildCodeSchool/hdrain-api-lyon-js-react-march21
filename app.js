@@ -54,7 +54,6 @@ app.use(
     cookie: {
       secure: inProdEnv,
       domain: SESSION_COOKIE_DOMAIN,
-      sameSite: true,
     },
   })
 );
