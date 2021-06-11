@@ -1,6 +1,6 @@
 const locationRouter = require('express').Router();
 
-const LocationModel = require('../models/LocationsModel');
+const LocationModel = require('../models/LocationModel');
 
 locationRouter.post('/', async (req, res) => {
   const { name, coord, sensors, experiences } = req.body;
