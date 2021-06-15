@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model user {
+  id             Int    @id @default(autoincrement())
+  username       String @unique @db.VarChar(15)
+  hashedPassword String @db.VarChar(255)
+}
+
+model sensor {
+  id           Int    @id @default(autoincrement())
+  sensorNumber Int    @unique
+  spotName     String @db.VarChar(255)
+  lat          Int
+  long         Int
+  status       Int
+  location_id  Int    @db.Int
+  location     sensor @relation(fields: [location_id], references: [id])
+
+  @@index([location_id], name: "locationId")
+}
+
+model note {
+  id       Int    @id @default(autoincrement())
+  title    String @db.VarChar(255)
+  content  String @db.VarChar(255)
+  authorId Int?
+  author   user?  @relation(fields: [authorId], references: [id])
+  tags     tag[]
+
+  @@index([authorId], name: "authorId")
+}

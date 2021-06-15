@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const {
   PORT,
   CORS_ALLOWED_ORIGINS,
@@ -46,9 +45,7 @@ app.use(
   session({
     key: SESSION_COOKIE_NAME,
     secret: SESSION_COOKIE_SECRET,
-    store: MongoStore.create({
-      mongoUrl: DATABASE_URL,
-    }),
+    store: new (require('express-pg-session')(express.session))(),
     resave: false,
     saveUninitialized: false,
     cookie: {
