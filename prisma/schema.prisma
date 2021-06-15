@@ -29,6 +29,17 @@ model sensor {
   @@index([location_id], name: "locationId")
 }
 
+// beginning of location model
+model location {
+  id             Int    @id @default(autoincrement())
+  name           String @db.VarChar(255)
+  lat            Int
+  lng            Int
+  sensorList
+  experienceList
+}
+
+// THIS IS AN EWAMPLE / WILL NEED TO BE DELETED
 model note {
   id       Int    @id @default(autoincrement())
   title    String @db.VarChar(255)
