@@ -30,6 +30,25 @@ locationsRouter.get('/:id', async (req, res) => {
   }
 });
 
+// Update one location
+locationsRouter.patch('/:id', async (req, res) => {
+  const locationId = req.params.id;
+  const payload = req.body;
+  try {
+    // Check that the id is correct (long enough)
+    if (locationId.length !== 24) res.status(422).send('Invalid location id');
+    // Retrieve specific location from the DB
+    const location = await LocationModel.findOne({ _id: locationId });
+    if (!location) res.status(404).send('No location found');
+    // Update the location
+    await LocationModel.updateOne({ _id: locationId }, payload);
+    // Send the result
+    res.status(204).send(location);
+  } catch (error) {
+    res.sendStatus(500).send(error);
+  }
+});
+
 // Create a new location
 locationsRouter.post('/', async (req, res) => {
   try {
