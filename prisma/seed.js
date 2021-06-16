@@ -1,11 +1,14 @@
-/*const faker = require('faker');
+const faker = require('faker');
 
-const db = require('../db');
-const User = require('../models/user');
+const { prisma } = require('../db');
+const Experiment = require('../models/ExperimentModel');
+const Location = require('../models/LocationModel');
+const Sensor = require('../models/SensorModel');
+const User = require('../models/UserModel');
 
 module.exports = async function seed() {
   const hashedPassword = await User.hashPassword('klassmate');
-  const admin = await db.user.create({
+  const admin = await prisma.user.create({
     data: {
       email: 'klassmate.contact@gmail.com',
       firstName: 'Root',
@@ -21,7 +24,7 @@ module.exports = async function seed() {
     Array(10)
       .fill()
       .map(() =>
-        db.user.create({
+        prisma.user.create({
           data: {
             email: faker.unique(faker.internet.email),
             firstName: faker.name.firstName(),
@@ -70,4 +73,3 @@ module
   .finally(async () => {
     await db.$disconnect();
   });
-

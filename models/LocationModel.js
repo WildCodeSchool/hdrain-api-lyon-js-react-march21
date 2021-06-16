@@ -1,4 +1,3 @@
-// const connection = require('../db');
 const { prisma } = require('../db');
 
 const findMany = () => prisma.location.findMany();

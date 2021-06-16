@@ -1,22 +1,20 @@
 // const mongoose = require('mongoose');
-const pgp = require('pg-promise');
+const { Pool } = require('pg');
 const { PrismaClient } = require('@prisma/client');
-const { DATABASE_URL } = require('./env');
+const { DB_USERNAME, DB_URL, DB_NAME, DB_PASSWORD, DB_PORT } = require('./env');
 require('dotenv').config();
 
 const prisma = new PrismaClient();
 
 /* ----------------------- DB CONNECTION -----------------------------------------*/
 
-const db = pgp(DATABASE_URL);
-
-/*
-mongoose.connect(DATABASE_URL, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
+const db = new Pool({
+  user: DB_USERNAME,
+  host: DB_URL,
+  database: DB_NAME,
+  password: DB_PASSWORD,
+  port: DB_PORT,
 });
-*/
 
 db.on('error', console.error.bind(console, 'connection error:')).once(
   'open',

@@ -45,7 +45,6 @@ app.use(
   session({
     key: SESSION_COOKIE_NAME,
     secret: SESSION_COOKIE_SECRET,
-    store: new (require('express-pg-session')(express.session))(),
     resave: false,
     saveUninitialized: false,
     cookie: {
