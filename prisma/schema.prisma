@@ -31,15 +31,15 @@ model sensor {
 
 // beginning of location model
 model location {
-  id             Int    @id @default(autoincrement())
-  name           String @db.VarChar(255)
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(255)
   lat            Int
   lng            Int
-  sensorList
-  experienceList
+  sensorList     String[]
+  experienceList String[]
 }
 
-// THIS IS AN EWAMPLE / WILL NEED TO BE DELETED
+// THIS IS AN EXAMPLE / WILL NEED TO BE DELETED
 model note {
   id       Int    @id @default(autoincrement())
   title    String @db.VarChar(255)
