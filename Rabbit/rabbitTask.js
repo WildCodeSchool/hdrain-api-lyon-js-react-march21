@@ -1,3 +1,4 @@
+require('dotenv').config();
 const amqp = require('amqplib/callback_api');
 
 // connect to RabbitMQ server
