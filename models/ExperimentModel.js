@@ -1,14 +1,22 @@
-const connection = require('../db');
+const { prisma } = require('../db');
 
-const ExperimentSchema = new mongoose.Schema({
-  timestamp: Date,
-  log: String,
-  diagnosticGraph: String,
-  costGraph: String,
-  parameter: String,
-  locationId: { type: mongoose.ObjectId, required: false },
-});
+const create = ({
+  timestamp,
+  log,
+  rainGraph,
+  costGraph,
+  parameter,
+  location,
+}) =>
+  prisma.location.create({
+    data: {
+      timestamp,
+      log,
+      rainGraph,
+      costGraph,
+      parameter,
+      location,
+    },
+  });
 
-const Experiment = connection.model('Experiment', ExperimentSchema);
-
-module.exports = Experiment;
+module.exports = create;

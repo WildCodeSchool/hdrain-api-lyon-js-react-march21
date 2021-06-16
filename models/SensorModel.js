@@ -1,16 +1,18 @@
-const connection = require('../db');
+const { prisma } = require('../db');
 
-const SensorSchema = new mongoose.Schema({
-  sensorNumber: Number,
-  coord: {
-    spotName: String,
-    lat: Number,
-    lng: Number,
-  },
-  status: Number,
-  locationId: { type: mongoose.ObjectId, required: false },
-});
+const create = () => prisma.sensor.create
+({ sensorNumber, spotName, lat, lng, status, location}) =>
+  prisma.sensor.create({
+    data: {
+      sensorNumber,
+      spotName,
+      lat,
+      lng,
+      status,
+      location,
+    },
+  });
 
-const Sensor = connection.model('Sensor', SensorSchema);
 
-module.exports = Sensor;
+
+module.exports = create;
