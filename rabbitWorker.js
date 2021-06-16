@@ -22,18 +22,19 @@ amqp.connect(process.env.RABBIT_MQ_CONNECTION_STRING, (error0, connection) => {
       durable: true,
     });
 
-    console.log(' [*] Waiting for messages in %s. To exit press CTRL+C', queue);
+    console.log(
+      ' [*] Rabbit - Waiting for messages in %s. Press CTRL+C to exit',
+      queue
+    );
 
     channel.consume(
       queue,
       (msg) => {
         const content = JSON.parse(msg.content);
         console.log(' [x] Received: ', content);
-        console.log(content.timestamp);
       },
       {
         // automatic acknowledgment mode,
-        // see ../confirms.html for details
         noAck: false,
       }
     );
