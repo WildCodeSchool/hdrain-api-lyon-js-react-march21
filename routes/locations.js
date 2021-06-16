@@ -1,33 +1,51 @@
 const locationsRouter = require('express').Router();
-const { Location } = require('../models/Location');
+const LocationModel = require('../models/LocationModel');
 
-// creating POST route
-locationsRouter.post('/', async (req, res) => {
+// Get all the locations
+locationsRouter.get('/', async (req, res) => {
   try {
-    const {
-      name,
-      assimilationLog,
-      rainMap,
-      config,
-      diags,
-      inferenceLog,
-      sensorStatus,
-    } = req.body;
-    const newLocation = new Location({
-      name,
-      assimilationLog,
-      rainMap,
-      config,
-      diags,
-      inferenceLog,
-      sensorStatus,
-    });
-    const saveLocation = await newLocation.save();
-    res
-      .status(201)
-      .send(`Success !! ⭐️ Location data was recorded : ${saveLocation.name}`);
+    // Retrieve all locations from the DB
+    const locations = await LocationModel.find();
+    if (!locations.length) res.status(404).send('No locations found');
+    // Send the result
+    res.status(200).send(locations);
   } catch (error) {
     res.status(500).send(error);
   }
 });
+
+// Get one location by its id
+locationsRouter.get('/:id', async (req, res) => {
+  try {
+    const locationId = req.params.id;
+    // Check that the id is correct (long enough)
+    if (locationId.length !== 24) res.status(422).send('Invalid location id');
+    // Retrieve specific location from the DB
+    const location = await LocationModel.findOne({ _id: locationId });
+    if (!location) res.status(404).send('No location found');
+    // Send the result
+    res.status(200).send(location);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+// Create a new location
+locationsRouter.post('/', async (req, res) => {
+  try {
+    const { name, coord } = req.body;
+
+    const newLocation = await LocationModel.create({
+      name,
+      coord,
+    });
+
+    res
+      .status(201)
+      .send(`Success !! ⭐️ Location data was recorded : ${newLocation.name}`);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 module.exports = locationsRouter;
