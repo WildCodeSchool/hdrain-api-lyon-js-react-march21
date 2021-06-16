@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-require('./rabbitWorker')();
 const MongoStore = require('connect-mongo');
 const {
   PORT,
@@ -19,6 +18,7 @@ const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
 
 require('dotenv').config();
+require('./rabbitWorker')();
 
 const port = PORT || 5000;
 
