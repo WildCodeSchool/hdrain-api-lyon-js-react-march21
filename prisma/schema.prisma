@@ -16,37 +16,34 @@ model user {
   hashedPassword String @db.VarChar(255)
 }
 
+// beginning of location model
+model location {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(255)
+  lat         Int
+  lng         Int
+  sensors     sensor[]
+  experiments experiment[]
+}
+
 model sensor {
-  id           Int    @id @default(autoincrement())
-  sensorNumber Int    @unique
-  spotName     String @db.VarChar(255)
+  id           Int      @id @default(autoincrement())
+  sensorNumber Int      @unique
+  spotName     String   @db.VarChar(255)
   lat          Int
   long         Int
   status       Int
-  location_id  Int    @db.Int
-  location     sensor @relation(fields: [location_id], references: [id])
-
-  @@index([location_id], name: "locationId")
+  location     location @relation(fields: [locationId], references: [id])
+  locationId   Int      @db.Integer
 }
 
-// beginning of location model
-model location {
-  id             Int      @id @default(autoincrement())
-  name           String   @db.VarChar(255)
-  lat            Int
-  lng            Int
-  sensorList     String[]
-  experienceList String[]
-}
-
-// THIS IS AN EXAMPLE / WILL NEED TO BE DELETED
-model note {
-  id       Int    @id @default(autoincrement())
-  title    String @db.VarChar(255)
-  content  String @db.VarChar(255)
-  authorId Int?
-  author   user?  @relation(fields: [authorId], references: [id])
-  tags     tag[]
-
-  @@index([authorId], name: "authorId")
+model experiment {
+  id         Int      @id @default(autoincrement())
+  timestamp  DateTime @db.Timestamp
+  log        String   @db.Text
+  rainGraph  String   @db.VarChar(255)
+  costGraph  String   @db.VarChar(255)
+  parameter  String   @db.Text
+  location   location @relation(fields: [locationId], references: [id])
+  locationId Int      @db.Integer
 }
