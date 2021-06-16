@@ -26,7 +26,7 @@ amqp.connect(process.env.RABBIT_MQ_CONNECTION_STRING, (error0, connection) => {
     channel.sendToQueue(queue, Buffer.from(msg), {
       persistent: true,
     });
-    console.log(" [x] Sent '%s'", msg);
+    console.log(' [x] Sent: ', JSON.parse(msg));
     // Closing the connection and exit after a timeout
     setTimeout(() => {
       connection.close();
