@@ -1,13 +1,24 @@
-//const mongoose = require('mongoose');
-const connection = require('../db');
+// const connection = require('../db');
+const { prisma } = require('../db');
 
-const LocationSchema = new mongoose.Schema({
-  name: String,
-  coord: { lat: Number, lng: Number },
-  sensorList: { type: Array, required: false },
-  experienceList: { type: Array, required: false },
-});
+const findMany = () => prisma.location.findMany();
 
-const Location = connection.model('Location', LocationSchema);
+const findOne = (id) =>
+  prisma.location.findFirst({ where: { id: parseInt(id, 10) } });
 
-module.exports = Location;
+const create = ({ name, lat, lng, sensors, experiments }) =>
+  prisma.location.create({
+    data: {
+      name,
+      lat,
+      lng,
+      sensors,
+      experiments,
+    },
+  });
+
+module.exports = {
+  findMany,
+  findOne,
+  create,
+};

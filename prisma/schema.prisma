@@ -20,8 +20,8 @@ model user {
 model location {
   id          Int          @id @default(autoincrement())
   name        String       @db.VarChar(255)
-  lat         Int
-  lng         Int
+  lat         Decimal
+  lng         Decimal
   sensors     sensor[]
   experiments experiment[]
 }
@@ -30,8 +30,8 @@ model sensor {
   id           Int      @id @default(autoincrement())
   sensorNumber Int      @unique
   spotName     String   @db.VarChar(255)
-  lat          Int
-  long         Int
+  lat          Decimal
+  lng          Decimal
   status       Int
   location     location @relation(fields: [locationId], references: [id])
   locationId   Int      @db.Integer

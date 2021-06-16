@@ -1,4 +1,3 @@
-//const mongoose = require('mongoose');
 const connection = require('../db');
 
 const SensorSchema = new mongoose.Schema({

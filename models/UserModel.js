@@ -1,4 +1,3 @@
-//const mongoose = require('mongoose');
 const argon2 = require('argon2');
 const Joi = require('joi');
 const connection = require('../db');
@@ -8,7 +7,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    trim: true, // If you tipe some space after the username, the space will be removed
+    trim: true, // If you type some space after the username, the space will be removed
   },
   hashedPassword: {
     type: Object,
