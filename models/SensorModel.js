@@ -1,7 +1,6 @@
 const { prisma } = require('../db');
 
-const create = () => prisma.sensor.create
-({ sensorNumber, spotName, lat, lng, status, location}) =>
+const create = ({ sensorNumber, spotName, lat, lng, status, location }) =>
   prisma.sensor.create({
     data: {
       sensorNumber,
@@ -12,7 +11,5 @@ const create = () => prisma.sensor.create
       location,
     },
   });
-
-
 
 module.exports = create;
