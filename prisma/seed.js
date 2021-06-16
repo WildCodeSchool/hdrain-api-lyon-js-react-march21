@@ -1,4 +1,5 @@
 const faker = require('faker');
+const { fake } = require('faker/locale/zh_TW');
 
 const { prisma } = require('../db');
 const Experiment = require('../models/ExperimentModel');
@@ -7,60 +8,58 @@ const Sensor = require('../models/SensorModel');
 const User = require('../models/UserModel');
 
 module.exports = async function seed() {
-  const hashedPassword = await User.hashPassword('klassmate');
-  const admin = await prisma.user.create({
+  const hashedPassword = await User.hashPassword('hdr');
+
+  await prisma.user.create({
     data: {
-      email: 'klassmate.contact@gmail.com',
-      firstName: 'Root',
-      lastName: 'Admin',
+      username: 'Root',
       hashedPassword,
-      role: 'admin',
-      avatarUrl:
-        'https://img2.pngio.com/roots-vector-png-picture-2038530-roots-vector-png-roots-vector-png-200_200.png',
     },
   });
 
-  const students = await Promise.all(
+  let location;
+  let sensors;
+
+  const experiments = await Promise.all(
     Array(10)
       .fill()
       .map(() =>
-        prisma.user.create({
+        prisma.experiment.create({
           data: {
-            email: faker.unique(faker.internet.email),
-            firstName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
-            hashedPassword,
+            timestamp: new Date(),
+            log: faker.lorem.words(),
+            rainGraph: 'path/to/rainGraph',
+            costGraph: 'path/to/costGraph',
+            parameters: faker.lorem.paragraphs(),
+            locationId: location.id,
           },
         })
       )
   );
 
-  await db.note.create({
-    data: {
-      title: 'test1',
-      content: 'test1content',
-      tags: {
-        connectOrCreate: [
-          { create: { name: 'HTML' }, where: { name: 'HTML' } },
-          { create: { name: 'CSS' }, where: { name: 'CSS' } },
-        ],
-      },
-      author: {
-        connect: {
-          id: admin.id,
-        },
-      },
-    },
+  // eslint-disable-next-line prefer-const
+  sensors = await prisma.sensors.createMany({
+    data: Array(10)
+      .fill(null)
+      .map((_, index) => ({
+        status: parseInt(Math.random() * 4, 10),
+        lng: parseInt(Math.random() * 90, 10),
+        lat: parseInt(Math.random() * 90, 10),
+        spotName: faker.lorem.word(),
+        sensorNumber: index,
+        location,
+        locationId: location.id,
+      })),
   });
 
-  await db.note.createMany({
-    data: Array(49)
-      .fill(null)
-      .map(() => ({
-        title: faker.lorem.words(),
-        content: faker.lorem.paragraphs(),
-        authorId: students[Math.floor(Math.random() * students.length)].id,
-      })),
+  location = await prisma.location.create({
+    data: {
+      name: 'Abidjan',
+      lng: 5.316667,
+      lat: -4.033333,
+      experiments: experiments[0].id,
+      sensors,
+    },
   });
 };
 
@@ -71,5 +70,5 @@ module
     process.exit(1);
   })
   .finally(async () => {
-    await db.$disconnect();
+    await prisma.$disconnect();
   });
