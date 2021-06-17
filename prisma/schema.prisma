@@ -22,7 +22,6 @@ model location {
   name        String       @db.VarChar(255)
   lat         Decimal
   lng         Decimal
-  updatedAt   DateTime     @updatedAt
   sensors     sensor[]
   experiments experiment[]
 }
@@ -33,6 +32,8 @@ model sensor {
   spotName     String   @db.VarChar(255)
   lat          Decimal
   lng          Decimal
+  createdAt    DateTime
+  deletedAt    DateTime
   location     location @relation(fields: [locationId], references: [id])
   locationId   Int      @db.Integer
   status       status[]
@@ -48,12 +49,14 @@ model experiment {
   parameters       String   @db.Text
   location         location @relation(fields: [locationId], references: [id])
   locationId       Int      @db.Integer
+  status           status[]
 }
 
 model status {
-  id              Int      @id @default(autoincrement())
-  timestampStatus DateTime @db.Timestamp
-  statusCode      Int
-  sensor          sensor   @relation(fields: [sensorId], references: [id])
-  sensorId        Int      @db.Integer
+  id           Int        @id @default(autoincrement())
+  code         Int
+  sensor       sensor     @relation(fields: [sensorId], references: [id])
+  sensorId     Int        @db.Integer
+  experiment   experiment @relation(fields: [experimentId], references: [id])
+  experimentId Int        @db.Integer
 }

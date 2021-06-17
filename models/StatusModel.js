@@ -1,11 +1,11 @@
 const { prisma } = require('../db');
 
-const create = ({ timestampStatus, statusCode, sensor }) =>
+const create = ({ code, sensor, experiment }) =>
   prisma.sensor.create({
     data: {
-      timestampStatus,
-      statusCode,
+      code,
       sensor,
+      experiment,
     },
   });
 

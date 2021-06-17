@@ -5,13 +5,12 @@ const findMany = () => prisma.location.findMany();
 const findOne = (id) =>
   prisma.location.findFirst({ where: { id: parseInt(id, 10) } });
 
-const create = ({ name, lat, lng, updatedAt, sensors, experiments }) =>
+const create = ({ name, lat, lng, sensors, experiments }) =>
   prisma.location.create({
     data: {
       name,
       lat,
       lng,
-      updatedAt,
       sensors,
       experiments,
     },
