@@ -2,10 +2,11 @@ const { prisma } = require('../db');
 
 const create = ({
   timestamp,
-  log,
+  neuralNetworkLog,
+  assimilationLog,
   rainGraph,
   costGraph,
-  parameter,
+  parameters,
   location,
 }) =>
   prisma.location.create({
@@ -14,8 +15,10 @@ const create = ({
       log,
       rainGraph,
       costGraph,
-      parameter,
+      parameters,
       location,
+      neuralNetworkLog,
+      assimilationLog,
     },
   });
 
