@@ -1,8 +1,6 @@
 const usersRouter = require('express').Router();
 const User = require('../models/UserModel');
 
-// const { hashPassword } = require('../models/UserModel');
-
 // Get all users
 usersRouter.get('/', async (req, res) => {
   try {
@@ -14,7 +12,6 @@ usersRouter.get('/', async (req, res) => {
 });
 
 // Create new user
-// eslint-disable-next-line consistent-return
 usersRouter.post('/', async (req, res) => {
   try {
     const validationErrors = User.validate(req.body);
@@ -25,24 +22,12 @@ usersRouter.post('/', async (req, res) => {
       return res.status(422).send({ error: 'Invalid Username' });
 
     const newUser = await User.create(req.body);
-    res.status(201).send(`User created successfully: ${newUser.username}`);
+    return res
+      .status(201)
+      .send(`User created successfully: ${newUser.username}`);
   } catch (error) {
-    res.status(500).send(error);
+    return res.status(500).send(error);
   }
 });
-
-// Delete selected user by id
-/*
-usersRouter.delete('/:id', async (req, res) => {
-  try {
-    console.log(req.params.id);
-    res.status(202).send(await User.deleteUser(req.params.id));
-    // if (deletedUser) return res.status(202).send('User deleted seccessfully');
-    return res.status(400).send('User not found');
-  } catch (error) {
-    return res.status(500).send(`Error: ${error}`);
-  }
-});
-*/
 
 module.exports = usersRouter;
