@@ -30,7 +30,10 @@
     "start": "node app.js",
     "start:watch": "nodemon app.js",
     "dev": "npm-run-all start:watch",
-    "pretest": "./node_modules/.bin/eslint --ignore-path .gitignore . --fix"
+    "pretest": "./node_modules/.bin/eslint --ignore-path .gitignore . --fix",
+    "migrate": "npx prisma migrate dev",
+    "reset": "npx prisma migrate reset",
+    "mr": "npx prisma migrate reset && npx prisma migrate dev"
   },
   "husky": {
     "hooks": {
