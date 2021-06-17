@@ -27,15 +27,15 @@ model location {
 }
 
 model sensor {
-  id           Int      @id @default(autoincrement())
-  sensorNumber Int      @unique
-  spotName     String   @db.VarChar(255)
+  id           Int       @id @default(autoincrement())
+  sensorNumber Int       @unique
+  spotName     String    @db.VarChar(255)
   lat          Decimal
   lng          Decimal
-  createdAt    DateTime
-  deletedAt    DateTime
-  location     location @relation(fields: [locationId], references: [id])
-  locationId   Int      @db.Integer
+  createdAt    DateTime  @default(now())
+  deletedAt    DateTime?
+  location     location  @relation(fields: [locationId], references: [id])
+  locationId   Int       @db.Integer
   status       status[]
 }
 

@@ -25,46 +25,50 @@ module.exports = async function seed() {
     },
   });
 
-  await prisma.experiment.createMany({
-    data: Array(10)
+  const experiments = await Promise.all(
+    Array(10)
       .fill(null)
-      .map(() => ({
-        timestamp: new Date(),
-        neuralNetworkLog: faker.lorem.words(),
-        assimilationLog: faker.lorem.words(),
-        rainGraph: 'path/to/rainGraph',
-        costGraph: 'path/to/costGraph',
-        parameters: faker.lorem.paragraphs(),
-        locationId: location.id,
-      })),
-  });
+      .map(() =>
+        prisma.experiment.create({
+          data: {
+            timestamp: new Date(),
+            neuralNetworkLog: faker.lorem.words(),
+            assimilationLog: faker.lorem.words(),
+            rainGraph: 'path/to/rainGraph',
+            costGraph: 'path/to/costGraph',
+            parameters: faker.lorem.paragraphs(),
+            locationId: location.id,
+          },
+        })
+      )
+  );
 
-  await prisma.sensors.createMany({
-    data: Array(10)
+  const sensors = await Promise.all(
+    Array(10)
       .fill(null)
-      .map((_, index) => ({
-        status: parseInt(Math.random() * 2, 10),
-        lng: parseInt(Math.random() * 90, 10),
-        lat: parseInt(Math.random() * 90, 10),
-        createdAt: new Date(),
-        deletedAt: new Date(),
-        spotName: faker.lorem.word(),
-        sensorNumber: index,
-        locationId: location.id,
-      })),
-  });
+      .map((_, index) =>
+        prisma.sensor.create({
+          data: {
+            lng: parseInt(Math.random() * 90, 10),
+            lat: parseInt(Math.random() * 90, 10),
+            createdAt: new Date(),
+            deletedAt: new Date(),
+            spotName: faker.lorem.word(),
+            sensorNumber: index,
+            locationId: location.id,
+          },
+        })
+      )
+  );
 
-  await prisma.status.createMany({
-    data: Array(3)
-      .fill(null)
-      .map((_, index) => ({
-        code: index,
-        experimentId: location.id,
-        sensorId: location.id,
-      })),
+  await prisma.status.create({
+    data: {
+      code: parseInt(Math.random() * 2, 10),
+      experimentId: experiments[4].id,
+      sensorId: sensors[4].id,
+    },
   });
 };
-
 module
   .exports()
   .catch((e) => {
