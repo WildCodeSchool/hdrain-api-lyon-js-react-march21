@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose');
 const { Pool } = require('pg');
 const { PrismaClient } = require('@prisma/client');
 require('dotenv').config();
