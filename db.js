@@ -15,14 +15,6 @@ const db = new Pool({
   port: process.env.DB_PORT,
 });
 
-/*
-mongoose.connect(DATABASE_URL, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
-*/
-
 db.on('error', console.error.bind(console, 'connection error:')).once(
   'open',
   () => {

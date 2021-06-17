@@ -7,7 +7,6 @@ const User = require('../models/UserModel');
 usersRouter.get('/', async (req, res) => {
   try {
     const allUsers = await User.findMany();
-    console.log(allUsers);
     res.status(200).send(allUsers);
   } catch (error) {
     res.status(400).send(error);
@@ -26,8 +25,6 @@ usersRouter.post('/', async (req, res) => {
       return res.status(422).send({ error: 'Invalid Username' });
 
     const newUser = await User.create(req.body);
-    console.log(req.body);
-    console.log(newUser);
     res.status(201).send(`User created successfully: ${newUser.username}`);
   } catch (error) {
     res.status(500).send(error);
