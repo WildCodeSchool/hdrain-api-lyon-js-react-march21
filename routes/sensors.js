@@ -3,13 +3,15 @@ const SensorModel = require('../models/SensorModel');
 
 sensorsRouter.post('/', async (req, res) => {
   try {
-    const { sensorNumber, spotName, lat, lng, status, location } = req.body;
+    const { sensorNumber, spotName, lat, lng, createdAt, deletedAt, location } =
+      req.body;
     const newSensor = await SensorModel.create({
       sensorNumber,
       spotName,
       lat,
       lng,
-      status,
+      createdAt,
+      deletedAt,
       location,
     });
     res.status(201).send({ newSensor });

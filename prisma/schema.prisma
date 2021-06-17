@@ -53,10 +53,12 @@ model experiment {
 }
 
 model status {
-  id           Int        @id @default(autoincrement())
+  id           Int        @default(autoincrement())
   code         Int
   sensor       sensor     @relation(fields: [sensorId], references: [id])
   sensorId     Int        @db.Integer
   experiment   experiment @relation(fields: [experimentId], references: [id])
   experimentId Int        @db.Integer
+
+  @@id([sensorId, experimentId])
 }
