@@ -22,6 +22,7 @@ model location {
   name        String       @db.VarChar(255)
   lat         Decimal
   lng         Decimal
+  updatedAt   DateTime     @updatedAt
   sensors     sensor[]
   experiments experiment[]
 }
@@ -32,18 +33,27 @@ model sensor {
   spotName     String   @db.VarChar(255)
   lat          Decimal
   lng          Decimal
-  status       Int
   location     location @relation(fields: [locationId], references: [id])
   locationId   Int      @db.Integer
+  status       status[]
 }
 
 model experiment {
-  id         Int      @id @default(autoincrement())
-  timestamp  DateTime @db.Timestamp
-  log        String   @db.Text
-  rainGraph  String   @db.VarChar(255)
-  costGraph  String   @db.VarChar(255)
-  parameter  String   @db.Text
-  location   location @relation(fields: [locationId], references: [id])
-  locationId Int      @db.Integer
+  id               Int      @id @default(autoincrement())
+  timestamp        DateTime @db.Timestamp
+  neuralNetworkLog String   @db.Text
+  assimilationLog  String   @db.Text
+  rainGraph        String   @db.VarChar(255)
+  costGraph        String   @db.VarChar(255)
+  parameters       String   @db.Text
+  location         location @relation(fields: [locationId], references: [id])
+  locationId       Int      @db.Integer
+}
+
+model status {
+  id              Int      @id @default(autoincrement())
+  timestampStatus DateTime @db.Timestamp
+  statusCode      Int
+  sensor          sensor   @relation(fields: [sensorId], references: [id])
+  sensorId        Int      @db.Integer
 }
