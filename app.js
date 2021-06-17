@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const session = require('express-session');
+const expressSession = require('express-session');
+const PgSession = require('connect-pg-simple')(expressSession);
 
 const {
   PORT,
@@ -18,6 +19,8 @@ const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
 
 require('dotenv').config();
+
+const { db } = require('./db');
 
 const port = PORT || 5000;
 
@@ -44,9 +47,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(
-  session({
+  expressSession({
     key: SESSION_COOKIE_NAME,
     secret: SESSION_COOKIE_SECRET,
+    store: new PgSession({
+      pool: db,
+      tableName: 'session',
+    }),
     resave: false,
     saveUninitialized: false,
     cookie: {

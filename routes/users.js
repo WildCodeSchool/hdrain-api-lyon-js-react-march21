@@ -14,6 +14,7 @@ usersRouter.get('/', async (req, res) => {
 });
 
 // Create new user
+// eslint-disable-next-line consistent-return
 usersRouter.post('/', async (req, res) => {
   try {
     const validationErrors = User.validate(req.body);
