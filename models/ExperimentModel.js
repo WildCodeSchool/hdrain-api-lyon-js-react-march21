@@ -12,13 +12,12 @@ const create = ({
   prisma.location.create({
     data: {
       timestamp,
-      log,
+      neuralNetworkLog,
+      assimilationLog,
       rainGraph,
       costGraph,
       parameters,
       location,
-      neuralNetworkLog,
-      assimilationLog,
     },
   });
 

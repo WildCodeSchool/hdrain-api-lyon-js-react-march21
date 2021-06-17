@@ -1,6 +1,6 @@
 const sensorsRouter = require('express').Router();
 const SensorModel = require('../models/SensorModel');
-
+//deletedAt to be handled (not null) ?
 sensorsRouter.post('/', async (req, res) => {
   try {
     const { sensorNumber, spotName, lat, lng, createdAt, deletedAt, location } =

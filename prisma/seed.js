@@ -1,10 +1,10 @@
 const faker = require('faker');
-const { fake } = require('faker/locale/zh_TW');
 
 const { prisma } = require('../db');
-const Experiment = require('../models/ExperimentModel');
-const Location = require('../models/LocationModel');
-const Sensor = require('../models/SensorModel');
+// const Experiment = require('../models/ExperimentModel');
+// const Location = require('../models/LocationModel');
+// const Sensor = require('../models/SensorModel');
+// const Status = require('../models/StatusModel');
 const User = require('../models/UserModel');
 
 module.exports = async function seed() {
@@ -12,54 +12,56 @@ module.exports = async function seed() {
 
   await prisma.user.create({
     data: {
-      username: 'Root',
+      username: 'So',
       hashedPassword,
     },
   });
 
-  let location;
-  let sensors;
-
-  const experiments = await Promise.all(
-    Array(10)
-      .fill()
-      .map(() =>
-        prisma.experiment.create({
-          data: {
-            timestamp: new Date(),
-            log: faker.lorem.words(),
-            rainGraph: 'path/to/rainGraph',
-            costGraph: 'path/to/costGraph',
-            parameters: faker.lorem.paragraphs(),
-            locationId: location.id,
-          },
-        })
-      )
-  );
-
-  // eslint-disable-next-line prefer-const
-  sensors = await prisma.sensors.createMany({
-    data: Array(10)
-      .fill(null)
-      .map((_, index) => ({
-        status: parseInt(Math.random() * 4, 10),
-        lng: parseInt(Math.random() * 90, 10),
-        lat: parseInt(Math.random() * 90, 10),
-        spotName: faker.lorem.word(),
-        sensorNumber: index,
-        location,
-        locationId: location.id,
-      })),
-  });
-
-  location = await prisma.location.create({
+  const location = await prisma.location.create({
     data: {
       name: 'Abidjan',
       lng: 5.316667,
       lat: -4.033333,
-      experiments: experiments[0].id,
-      sensors,
     },
+  });
+
+  await prisma.experiment.createMany({
+    data: Array(10)
+      .fill(null)
+      .map(() => ({
+        timestamp: new Date(),
+        neuralNetworkLog: faker.lorem.words(),
+        assimilationLog: faker.lorem.words(),
+        rainGraph: 'path/to/rainGraph',
+        costGraph: 'path/to/costGraph',
+        parameters: faker.lorem.paragraphs(),
+        locationId: location.id,
+      })),
+  });
+
+  await prisma.sensors.createMany({
+    data: Array(10)
+      .fill(null)
+      .map((_, index) => ({
+        status: parseInt(Math.random() * 2, 10),
+        lng: parseInt(Math.random() * 90, 10),
+        lat: parseInt(Math.random() * 90, 10),
+        createdAt: new Date(),
+        deletedAt: new Date(),
+        spotName: faker.lorem.word(),
+        sensorNumber: index,
+        locationId: location.id,
+      })),
+  });
+
+  await prisma.status.createMany({
+    data: Array(3)
+      .fill(null)
+      .map((_, index) => ({
+        code: index,
+        experimentId: location.id,
+        sensorId: location.id,
+      })),
   });
 };
 
