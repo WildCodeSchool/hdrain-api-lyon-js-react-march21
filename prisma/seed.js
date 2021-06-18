@@ -1,10 +1,7 @@
 const faker = require('faker');
 
 const { prisma } = require('../db');
-// const Experiment = require('../models/ExperimentModel');
-// const Location = require('../models/LocationModel');
-// const Sensor = require('../models/SensorModel');
-// const Status = require('../models/StatusModel');
+
 const User = require('../models/UserModel');
 
 module.exports = async function seed() {

@@ -2,7 +2,7 @@ const { prisma } = require('../db');
 
 const findMany = () => prisma.location.findMany();
 
-const findOne = (id) =>
+const findUnique = (id) =>
   prisma.location.findUnique({ where: { id: parseInt(id, 10) } });
 
 const create = ({ name, lat, lng, sensors, experiments }) =>
@@ -18,6 +18,6 @@ const create = ({ name, lat, lng, sensors, experiments }) =>
 
 module.exports = {
   findMany,
-  findOne,
+  findUnique,
   create,
 };
