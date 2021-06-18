@@ -16,10 +16,10 @@ usersRouter.post('/', async (req, res) => {
   try {
     const validationErrors = User.validate(req.body);
     if (validationErrors)
-      return res.status(422).send({ errors: validationErrors.details });
+      res.status(422).send({ errors: validationErrors.details });
 
     if (await User.usernameAlreadyExists(req.body.username))
-      return res.status(422).send({ error: 'Invalid Username' });
+      res.status(422).send({ error: 'Invalid Username' });
 
     const newUser = await User.create(req.body);
     res.status(201).send(`User created successfully: ${newUser.username}`);
