@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose');
 const argon2 = require('argon2');
 const Joi = require('joi');
 const { prisma } = require('../db');
@@ -19,7 +18,7 @@ const usernameAlreadyExists = async (username) =>
 
 // Function to return the user with a given username
 const findByUsername = async (username) =>
-  prisma.user.findOne({ where: { username } });
+  prisma.user.findFirst({ where: { username } });
 
 // Check the user's password
 const verifyPassword = (plainPassword, hashedPassword) =>
@@ -41,7 +40,9 @@ const create = async ({ username, password }) => {
   });
 };
 
-const deleteUser = async ({ userId }) =>
+const findOne = (id) => prisma.user.findUnique({ where: { id } });
+
+const deleteUser = async (userId) =>
   prisma.user.delete({ where: { id: userId } });
 
 module.exports = {
@@ -53,4 +54,5 @@ module.exports = {
   findMany,
   create,
   deleteUser,
+  findOne,
 };

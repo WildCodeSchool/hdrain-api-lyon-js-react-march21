@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const expressSession = require('express-session');
-const PgSession = require('connect-pg-simple')(expressSession);
+const session = require('express-session');
+const PgSession = require('connect-pg-simple')(session);
 
 const {
   PORT,
@@ -47,7 +47,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(
-  expressSession({
+  session({
     key: SESSION_COOKIE_NAME,
     secret: SESSION_COOKIE_SECRET,
     store: new PgSession({

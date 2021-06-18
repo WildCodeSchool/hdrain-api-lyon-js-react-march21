@@ -6,9 +6,10 @@ currentUserRouter.get(
   '/',
   requireCurrentUser,
   asyncHandler(async (req, res) => {
+    const { id, username } = req.currentUser;
     console.log(req.currentUser);
 
-    res.json(req.currentUser);
+    res.json({ id, username });
   })
 );
 
