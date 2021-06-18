@@ -1,22 +1,6 @@
-const mongoose = require('mongoose');
 const argon2 = require('argon2');
 const Joi = require('joi');
-const connection = require('../db');
-
-const UserSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true, // If you tipe some space after the username, the space will be removed
-  },
-  hashedPassword: {
-    type: Object,
-    required: true,
-  },
-});
-
-const User = connection.model('User', UserSchema);
+const { prisma } = require('../db');
 
 // ARGON 2
 const hashingOptions = {
@@ -30,10 +14,11 @@ const hashPassword = (plainPassword) =>
 
 // Function to validate the unicity of a user username
 const usernameAlreadyExists = async (username) =>
-  !!(await User.findOne({ username }));
+  !!(await prisma.user.findFirst({ where: { username } }));
 
 // Function to return the user with a given username
-const findByUsername = async (username) => User.findOne({ username });
+const findByUsername = (username) =>
+  prisma.user.findFirst({ where: { username } });
 
 // Check the user's password
 const verifyPassword = (plainPassword, hashedPassword) =>
@@ -43,14 +28,30 @@ const verifyPassword = (plainPassword, hashedPassword) =>
 const validate = (data) =>
   Joi.object({
     username: Joi.string().max(255).required(),
-    password: Joi.string().min(8).max(100).required(),
+    password: Joi.string().min(1).max(100).required(),
   }).validate(data, { abortEarly: false }).error;
 
+const findMany = () => prisma.user.findMany();
+
+const create = async ({ username, password }) => {
+  const hashedPassword = await hashPassword(password);
+  return prisma.user.create({
+    data: { username, hashedPassword },
+  });
+};
+
+const findUnique = (id) => prisma.user.findUnique({ where: { id } });
+
+const deleteUser = (userId) => prisma.user.delete({ where: { id: userId } });
+
 module.exports = {
-  User,
   hashPassword,
   usernameAlreadyExists,
   findByUsername,
   verifyPassword,
   validate,
+  findMany,
+  create,
+  deleteUser,
+  findUnique,
 };

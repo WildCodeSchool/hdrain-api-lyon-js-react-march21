@@ -1,17 +1,28 @@
-const mongoose = require('mongoose');
-const connection = require('../db');
+const { prisma } = require('../db');
 
-const SensorSchema = new mongoose.Schema({
-  sensorNumber: Number,
-  coord: {
-    spotName: String,
-    lat: Number,
-    lng: Number,
-  },
-  status: Number,
-  locationId: { type: mongoose.ObjectId, required: false },
-});
+const create = ({
+  sensorNumber,
+  spotName,
+  lat,
+  lng,
+  createdAt,
+  deletedAt,
+  locationId,
+}) =>
+  prisma.sensor.create({
+    data: {
+      sensorNumber,
+      spotName,
+      lat,
+      lng,
+      createdAt,
+      deletedAt,
+      locationId,
+    },
+  });
 
-const Sensor = connection.model('Sensor', SensorSchema);
+const findMany = () => prisma.sensor.findMany();
+const findUnique = (id) =>
+  prisma.sensor.findUnique({ where: { id: parseInt(id, 10) } });
 
-module.exports = Sensor;
+module.exports = { create, findMany, findUnique };

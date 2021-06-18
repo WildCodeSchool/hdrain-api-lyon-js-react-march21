@@ -1,9 +1,9 @@
 require('dotenv').config();
 
-function getEnv(varibale) {
-  const value = process.env[varibale];
+function getEnv(variable) {
+  const value = process.env[variable];
   if (typeof value === 'undefined') {
-    console.warn(`Seems like the variable "${varibale}" is not set in the environment. 
+    console.warn(`Seems like the variable "${variable}" is not set in the environment. 
     Did you forget to execute "cp .env.sample .env" and adjust variables in the .env file to match your own environment ?`);
   }
   return value;
@@ -24,14 +24,12 @@ const SESSION_COOKIE_SECRET = getEnv(`SESSION_COOKIE_SECRET`);
 module.exports = {
   getEnv,
   inTestEnv,
-inDevEnv,
-inProdEnv,
-PORT,
-CORS_ALLOWED_ORIGINS,
-SESSION_COOKIE_DOMAIN,
-SESSION_COOKIE_NAME,
-SESSION_COOKIE_SECRET,
-DATABASE_URL,
+  inDevEnv,
+  inProdEnv,
+  PORT,
+  CORS_ALLOWED_ORIGINS,
+  SESSION_COOKIE_DOMAIN,
+  SESSION_COOKIE_NAME,
+  SESSION_COOKIE_SECRET,
+  DATABASE_URL,
 };
-
-

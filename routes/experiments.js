@@ -3,12 +3,23 @@ const ExperimentModel = require('../models/ExperimentModel');
 
 experimentsRouter.post('/', async (req, res) => {
   try {
-    const { timestamp, log, diagnosticGraph, costGraph } = req.body;
+    const {
+      timestamp,
+      neuralNetworkLog,
+      assimilationLog,
+      rainGraph,
+      costGraph,
+      parameters,
+      location,
+    } = req.body;
     const newExperiment = await ExperimentModel.create({
       timestamp,
-      log,
-      diagnosticGraph,
+      neuralNetworkLog,
+      assimilationLog,
+      rainGraph,
       costGraph,
+      parameters,
+      location,
     });
     res.status(201).send({ newExperiment });
   } catch (error) {
