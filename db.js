@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose');
 const { Pool } = require('pg');
 const { PrismaClient } = require('@prisma/client');
 const { DB_USERNAME, DB_URL, DB_NAME, DB_PASSWORD, DB_PORT } = require('./env');

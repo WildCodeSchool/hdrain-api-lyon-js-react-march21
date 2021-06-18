@@ -14,11 +14,11 @@ const hashPassword = (plainPassword) =>
 
 // Function to validate the unicity of a user username
 const usernameAlreadyExists = async (username) =>
-  !!(await prisma.user.findOne({ where: { username } }));
+  !!(await prisma.user.findFirst({ where: { username } }));
 
 // Function to return the user with a given username
 const findByUsername = async (username) =>
-  prisma.user.findOne({ where: { username } });
+  prisma.user.findFirst({ where: { username } });
 
 // Check the user's password
 const verifyPassword = (plainPassword, hashedPassword) =>
@@ -28,10 +28,10 @@ const verifyPassword = (plainPassword, hashedPassword) =>
 const validate = (data) =>
   Joi.object({
     username: Joi.string().max(255).required(),
-    password: Joi.string().min(8).max(100).required(),
+    password: Joi.string().min(1).max(100).required(),
   }).validate(data, { abortEarly: false }).error;
 
-const { findMany } = prisma.user;
+const findMany = () => prisma.user.findMany();
 
 const create = async ({ username, password }) => {
   const hashedPassword = await hashPassword(password);
@@ -40,7 +40,9 @@ const create = async ({ username, password }) => {
   });
 };
 
-const deleteUser = async ({ userId }) =>
+const findOne = (id) => prisma.user.findUnique({ where: { id } });
+
+const deleteUser = async (userId) =>
   prisma.user.delete({ where: { id: userId } });
 
 module.exports = {
@@ -52,4 +54,5 @@ module.exports = {
   findMany,
   create,
   deleteUser,
+  findOne,
 };

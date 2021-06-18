@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const PgSession = require('connect-pg-simple')(session);
+
 const {
   PORT,
   CORS_ALLOWED_ORIGINS,
@@ -18,6 +20,8 @@ const handleServerInternalError = require('./middlewares/handleServerInternalErr
 
 require('dotenv').config();
 require('./rabbitWorker')();
+
+const { db } = require('./db');
 
 const port = PORT || 5000;
 
@@ -42,10 +46,15 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
 app.use(
   session({
     key: SESSION_COOKIE_NAME,
     secret: SESSION_COOKIE_SECRET,
+    store: new PgSession({
+      pool: db,
+      tableName: 'session',
+    }),
     resave: false,
     saveUninitialized: false,
     cookie: {
