@@ -1,5 +1,5 @@
 const authRouter = require('./auth');
-// const currentUserRouter = require('./currentUser');
+const currentUserRouter = require('./currentUser');
 const usersRouter = require('./users');
 // const locationsRouter = require('./locations');
 // const experimentsRouter = require('./experiments');
@@ -8,7 +8,7 @@ const usersRouter = require('./users');
 module.exports = (app) => {
   app.use('/users', usersRouter);
   app.use('/auth', authRouter);
-  // app.use('/currentUser', currentUserRouter);
+  app.use('/currentUser', currentUserRouter);
   // app.use('/locations', locationsRouter);
   // app.use('/sensors', sensorsRouter);
   // app.use('/experiments', experimentsRouter);
