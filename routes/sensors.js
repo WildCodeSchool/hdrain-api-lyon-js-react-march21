@@ -31,8 +31,15 @@ sensorsRouter.get('/:id', async (req, res) => {
 
 sensorsRouter.post('/', async (req, res) => {
   try {
-    const { sensorNumber, spotName, lat, lng, createdAt, deletedAt, location } =
-      req.body;
+    const {
+      sensorNumber,
+      spotName,
+      lat,
+      lng,
+      createdAt,
+      deletedAt,
+      locationId,
+    } = req.body;
     const newSensor = await SensorModel.create({
       sensorNumber,
       spotName,
@@ -40,9 +47,9 @@ sensorsRouter.post('/', async (req, res) => {
       lng,
       createdAt,
       deletedAt,
-      location,
+      locationId,
     });
-    res.status(201).send({ newSensor });
+    res.status(201).send(newSensor);
   } catch (error) {
     res.status(500).send(error);
   }

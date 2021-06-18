@@ -7,8 +7,7 @@ const create = ({
   lng,
   createdAt,
   deletedAt,
-  status,
-  location,
+  locationId,
 }) =>
   prisma.sensor.create({
     data: {
@@ -18,8 +17,7 @@ const create = ({
       lng,
       createdAt,
       deletedAt,
-      status,
-      location,
+      locationId,
     },
   });
 
