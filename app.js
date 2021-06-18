@@ -19,6 +19,7 @@ const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
 
 require('dotenv').config();
+require('./rabbitWorker')();
 
 const { db } = require('./db');
 
