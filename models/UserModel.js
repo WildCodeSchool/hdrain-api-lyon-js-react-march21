@@ -17,7 +17,7 @@ const usernameAlreadyExists = async (username) =>
   !!(await prisma.user.findFirst({ where: { username } }));
 
 // Function to return the user with a given username
-const findByUsername = async (username) =>
+const findByUsername = (username) =>
   prisma.user.findFirst({ where: { username } });
 
 // Check the user's password
@@ -42,8 +42,7 @@ const create = async ({ username, password }) => {
 
 const findOne = (id) => prisma.user.findUnique({ where: { id } });
 
-const deleteUser = async (userId) =>
-  prisma.user.delete({ where: { id: userId } });
+const deleteUser = (userId) => prisma.user.delete({ where: { id: userId } });
 
 module.exports = {
   hashPassword,
