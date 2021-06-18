@@ -22,7 +22,7 @@ const create = ({
   });
 
 const findMany = () => prisma.sensor.findMany();
-const findOne = (id) =>
+const findUnique = (id) =>
   prisma.sensor.findUnique({ where: { id: parseInt(id, 10) } });
 
-module.exports = { create, findMany, findOne };
+module.exports = { create, findMany, findUnique };

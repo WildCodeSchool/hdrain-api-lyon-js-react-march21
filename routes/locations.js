@@ -19,7 +19,7 @@ locationsRouter.get('/:id', async (req, res) => {
   try {
     const locationId = req.params.id;
     // Retrieve specific location from the DB
-    const location = await LocationModel.findOne(locationId);
+    const location = await LocationModel.findUnique(locationId);
     if (!location) return res.status(404).send('No location found');
     // Send the result
     return res.status(200).send(location);
