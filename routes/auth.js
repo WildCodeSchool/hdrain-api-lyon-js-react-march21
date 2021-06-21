@@ -1,16 +1,12 @@
-/* eslint-disable no-unused-vars */
 const authRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
 const { SESSION_COOKIE_DOMAIN, SESSION_COOKIE_NAME } = require('../env');
-const { verifyPassword, findByUsername } = require('../models/User');
+const { verifyPassword, findByUsername } = require('../models/UserModel');
 
 authRouter.post(
   '/login',
   asyncHandler(async (req, res) => {
-    const user = await findByUsername( req.body.username );
-
-    console.log(user);
-
+    const user = await findByUsername(req.body.username);
     if (
       user &&
       (await verifyPassword(req.body.password, user.hashedPassword))
@@ -21,7 +17,7 @@ authRouter.post(
       }
       req.session.userId = user.id;
       req.session.save(() => {
-        res.sendStatus(200);
+        res.send('Valid Credentials');
       });
     } else {
       res.status(401).send('Invalid Credentials');
@@ -31,9 +27,9 @@ authRouter.post(
 
 authRouter.get('/logout', (req, res) => {
   req.session.destroy((err) => {
-    if (err) return res.status(400).send('Could not destroy session');
+    if (err) res.status(400).send('Could not destroy session');
     res.clearCookie(SESSION_COOKIE_NAME, { domain: SESSION_COOKIE_DOMAIN });
-    return res.status(200).send('session deleted');
+    res.status(200).send('session deleted');
   });
 });
 

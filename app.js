@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const PgSession = require('connect-pg-simple')(session);
+
 const {
   PORT,
   CORS_ALLOWED_ORIGINS,
@@ -19,6 +19,9 @@ const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
 
 require('dotenv').config();
+require('./rabbitWorker')();
+
+const { db } = require('./db');
 
 const port = PORT || 5000;
 
@@ -43,19 +46,20 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
 app.use(
   session({
     key: SESSION_COOKIE_NAME,
     secret: SESSION_COOKIE_SECRET,
-    store: MongoStore.create({
-      mongoUrl: DATABASE_URL,
+    store: new PgSession({
+      pool: db,
+      tableName: 'session',
     }),
     resave: false,
     saveUninitialized: false,
     cookie: {
       secure: inProdEnv,
       domain: SESSION_COOKIE_DOMAIN,
-      sameSite: true,
     },
   })
 );
@@ -64,21 +68,6 @@ app.use(handleValidationError);
 app.use(handleServerInternalError);
 
 initRoutes(app);
-
-mongoose.connect(DATABASE_URL, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
-
-const { connection } = mongoose;
-connection.once('open', () => {
-  console.log('MongoDB database connection established successfully');
-});
-
-connection.on('error', (err) => {
-  console.error(err);
-});
 
 const server = app.listen(port, () => {
   if (!inTestEnv) console.log(`Server is running on port: ${port}`);
