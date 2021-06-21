@@ -1,7 +1,12 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable import/no-extraneous-dependencies */
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const PgSession = require('connect-pg-simple')(session);
+const multer  = require('multer');
+
+const upload = multer({ dest: './files/images' });
 
 const {
   PORT,
