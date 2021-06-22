@@ -30,13 +30,19 @@
     "shelljs": "^0.8.4"
   },
   "scripts": {
-    "start": "node app.js",
     "start:watch": "nodemon app.js",
-    "dev": "npm-run-all start:watch",
     "pretest": "./node_modules/.bin/eslint --ignore-path .gitignore . --fix",
     "migrate": "npx prisma migrate dev",
     "reset": "npx prisma migrate reset",
-    "mr": "npx prisma migrate reset && npx prisma migrate dev"
+    "mr": "npx prisma migrate reset && npx prisma migrate dev",
+    "start:server:watch": "nodemon app.js",
+    "lint": "eslint --fix .",
+    "start": "npm-run-all generate-db-client migrate:deploy start:server",
+    "generate-db-client": "npx prisma generate",
+    "migrate:deploy": "npx prisma migrate deploy",
+    "start:server": "node app.js",
+    "dev": "npm-run-all migrate start:watch",
+    "wait-for-db": "node ./scripts/wait-for-db.js"
   },
   "husky": {
     "hooks": {

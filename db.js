@@ -4,6 +4,8 @@ require('dotenv').config();
 
 const prisma = new PrismaClient();
 
+console.log(process.env.DB_PORT);
+
 /* ----------------------- DB CONNECTION -----------------------------------------*/
 
 const db = new Pool({
