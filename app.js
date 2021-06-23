@@ -21,7 +21,7 @@ const handleServerInternalError = require('./middlewares/handleServerInternalErr
 require('dotenv').config();
 require('./rabbitWorker')();
 
-const { db } = require('./db');
+// const { db } = require('./db');
 
 const port = PORT || 5000;
 
@@ -51,15 +51,14 @@ app.use(
   session({
     key: SESSION_COOKIE_NAME,
     secret: SESSION_COOKIE_SECRET,
-    store: new PgSession({
-      pool: db,
-      tableName: 'session',
-    }),
-    resave: false,
+    store: new PgSession(),
+    resave: true,
     saveUninitialized: false,
     cookie: {
       secure: inProdEnv,
       domain: SESSION_COOKIE_DOMAIN,
+      sameSite: true,
+      httpOnly: true,
     },
   })
 );
