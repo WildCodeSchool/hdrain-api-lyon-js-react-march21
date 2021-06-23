@@ -10,6 +10,6 @@ module.exports = (app) => {
   app.use('/auth', authRouter);
   // app.use('/currentUser', currentUserRouter);
   app.use('/locations', locationsRouter);
-  app.use('/sensors', sensorsRouter);
-  app.use('/experiments', experimentsRouter);
+  app.use('/locations/:id/sensors', sensorsRouter);
+  app.use('/locations/:id/experiments', experimentsRouter);
 };
