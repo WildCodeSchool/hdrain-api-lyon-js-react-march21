@@ -5,14 +5,13 @@ const path = require('path');
 const multer = require('multer');
 const ExperimentModel = require('../models/ExperimentModel');
 
-
 const storage = multer.diskStorage({
   // Destination to store image
   destination: 'upload/images',
   filename: (req, file, cb) => {
     cb(
       null,
-      `${file.fieldname  }_${  Date.now()  }${path.extname(file.originalname)}`
+      `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`
     );
     // file.fieldname is name of the field (image)
     // path.extname get the uploaded file extension
@@ -32,17 +31,14 @@ uploadRouter.get('/', async (req, res) => {
   }
 });
 
-uploadRouter.post(
-  '/images',
-  upload.single('image'),
-  async (req, res) => {
+uploadRouter.post('/images', upload.single('image'), async (req, res) => {
+  try {
     const id = 2;
     await ExperimentModel.update(id, req.file.path);
-    res.status(200).send(req.file);
-  },
-  (error, req, res, next) => {
-    res.status(400).send({ error: error.message });
+    res.status(201).send(req.file);
+  } catch (error) {
+    return res.status(500).send(error);
   }
-);
+});
 
 module.exports = uploadRouter;
