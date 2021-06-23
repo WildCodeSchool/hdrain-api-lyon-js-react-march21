@@ -2,7 +2,7 @@ const locationsRouter = require('express').Router();
 const LocationModel = require('../models/LocationModel');
 
 // Get all the locations
-locationsRouter.get('/', async (req, res) => {
+locationsRouter.get('/all', async (req, res) => {
   try {
     // Retrieve all locations from the DB
     const locations = await LocationModel.findMany();
@@ -15,9 +15,9 @@ locationsRouter.get('/', async (req, res) => {
 });
 
 // Get one location by its id
-locationsRouter.get('/:id', async (req, res) => {
+locationsRouter.get('/:locationId', async (req, res) => {
   try {
-    const locationId = req.params.id;
+    const {locationId} = req.params;
     // Retrieve specific location from the DB
     const location = await LocationModel.findUnique(locationId);
     if (!location) return res.status(404).send('No location found');

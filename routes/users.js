@@ -2,7 +2,7 @@ const usersRouter = require('express').Router();
 const User = require('../models/UserModel');
 
 // Get all users
-usersRouter.get('/', async (req, res) => {
+usersRouter.get('/all', async (req, res) => {
   try {
     const allUsers = await User.findMany();
     res.status(200).send(allUsers);
@@ -12,7 +12,7 @@ usersRouter.get('/', async (req, res) => {
 });
 
 // Create new user
-usersRouter.post('/', async (req, res) => {
+usersRouter.post('/create', async (req, res) => {
   try {
     const validationErrors = User.validate(req.body);
     if (validationErrors)

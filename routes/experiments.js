@@ -1,7 +1,7 @@
 const experimentsRouter = require('express').Router();
 const ExperimentModel = require('../models/ExperimentModel');
 
-experimentsRouter.get('/', async (req, res) => {
+experimentsRouter.get('/all', async (req, res) => {
   try {
     // Retrieve all experiments from the DB
     const experiments = await ExperimentModel.findMany();
@@ -13,9 +13,9 @@ experimentsRouter.get('/', async (req, res) => {
   }
 });
 
-experimentsRouter.get('/:id', async (req, res) => {
+experimentsRouter.get('/:experimentsId', async (req, res) => {
   try {
-    const experimentsId = req.params.id;
+    const {experimentsId} = req.params;
     // Retrieve specific sensor from the DB
     const experiment = await ExperimentModel.findOne(experimentsId);
     if (!experiment) return res.status(404).send('No experiment found');
@@ -26,7 +26,7 @@ experimentsRouter.get('/:id', async (req, res) => {
   }
 });
 
-experimentsRouter.post('/', async (req, res) => {
+experimentsRouter.post('/create', async (req, res) => {
   try {
     const {
       timestamp,

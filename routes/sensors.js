@@ -3,7 +3,7 @@ const SensorModel = require('../models/SensorModel');
 // deletedAt to be handled (not null) ?
 
 // Get all the locations
-sensorsRouter.get('/', async (req, res) => {
+sensorsRouter.get('/all', async (req, res) => {
   try {
     // Retrieve all sensors from the DB
     const sensors = await SensorModel.findMany();
@@ -16,9 +16,9 @@ sensorsRouter.get('/', async (req, res) => {
 });
 
 // Get one sensor by its id
-sensorsRouter.get('/:id', async (req, res) => {
+sensorsRouter.get('/:sensorId', async (req, res) => {
   try {
-    const sensorId = req.params.id;
+    const {sensorId} = req.params;
     // Retrieve specific sensor from the DB
     const sensor = await SensorModel.findUnique(sensorId);
     if (!sensor) res.status(404).send('No sensor found');
@@ -29,7 +29,7 @@ sensorsRouter.get('/:id', async (req, res) => {
   }
 });
 
-sensorsRouter.post('/', async (req, res) => {
+sensorsRouter.post('/create', async (req, res) => {
   try {
     const {
       sensorNumber,
