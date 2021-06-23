@@ -23,12 +23,12 @@ module.exports = async function seed() {
   });
 
   const experiments = await Promise.all(
-    Array(10)
+    Array(5)
       .fill(null)
       .map(() =>
         prisma.experiment.create({
           data: {
-            timestamp: new Date(),
+            timestamp: new Date(Date.UTC(2021, 6, 22, 15, 0)),
             neuralNetworkLog: faker.lorem.words(),
             assimilationLog: faker.lorem.words(),
             rainGraph: 'path/to/rainGraph',
