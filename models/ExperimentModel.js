@@ -31,7 +31,7 @@ const update = (id, path) =>
     },
   });
 
-  const selectImg = (id) => prisma.experiment.findUnique({
+  const selectFile = (id) => prisma.experiment.findUnique({
     where: {
       id
     },
@@ -40,4 +40,4 @@ const update = (id, path) =>
     },
   })
 
-module.exports = { create, update, selectImg };
+module.exports = { create, update, selectFile };

@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable import/no-extraneous-dependencies */
-const uploadRouter = require('express').Router();
+
+const storageRouter = require('express').Router();
 const path = require('path');
 const multer = require('multer');
 const ExperimentModel = require('../models/ExperimentModel');
@@ -11,7 +10,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     cb(
       null,
-      `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`
+      `${file.fieldname}_${Date.now()}.${path.extname(file.originalname)}`
     );
     // file.fieldname is name of the field (image)
     // path.extname get the uploaded file extension
@@ -20,18 +19,18 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-uploadRouter.get('/', async (req, res) => {
+storageRouter.get('/:id', async (req, res) => {
   try {
-    const id = 2;
-    const imagePath = await ExperimentModel.selectImg(id);
+    const experimentId = req.params.id ;
+    const filePath = await ExperimentModel.selectFile(experimentId);
 
-    return res.status(200).send(imagePath);
+    return res.status(200).send(filePath);
   } catch (error) {
     return res.status(500).send(error);
   }
 });
 
-uploadRouter.post('/images', upload.single('image'), async (req, res) => {
+storageRouter.post('/images', upload.single('image'), async (req, res) => {
   try {
     const id = 2;
     await ExperimentModel.update(id, req.file.path);
@@ -41,4 +40,4 @@ uploadRouter.post('/images', upload.single('image'), async (req, res) => {
   }
 });
 
-module.exports = uploadRouter;
+module.exports = storageRouter;

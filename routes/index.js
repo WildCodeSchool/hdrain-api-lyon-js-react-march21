@@ -4,7 +4,7 @@ const usersRouter = require('./users');
 const locationsRouter = require('./locations');
 const experimentsRouter = require('./experiments');
 const sensorsRouter = require('./sensors');
-const uploadRouter = require('./uploads');
+const storageRouter = require('./storage');
 
 module.exports = (app) => {
   app.use('/users', usersRouter);
@@ -13,5 +13,5 @@ module.exports = (app) => {
   app.use('/locations', locationsRouter);
   app.use('/sensors', sensorsRouter);
   app.use('/experiments', experimentsRouter);
-  app.use('/upload', uploadRouter);
+  app.use('/storage', storageRouter);
 };
