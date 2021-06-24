@@ -34,7 +34,7 @@ storageRouter.post('/images', upload.single('image'), async (req, res) => {
   try {
     const id = 2;
     await ExperimentModel.update(id, req.file.path);
-    res.status(201).send(req.file);
+    return res.status(201).send(req.file);
   } catch (error) {
     return res.status(500).send(error);
   }
