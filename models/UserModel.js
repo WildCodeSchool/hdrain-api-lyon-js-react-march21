@@ -40,7 +40,7 @@ const create = async ({ username, password }) => {
   });
 };
 
-const findOne = (id) => prisma.user.findUnique({ where: { id } });
+const findOne = (id) => prisma.user.findFirst({ where: { id } });
 
 const deleteUser = async (userId) =>
   prisma.user.delete({ where: { id: userId } });

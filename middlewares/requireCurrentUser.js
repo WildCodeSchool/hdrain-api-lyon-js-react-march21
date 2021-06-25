@@ -2,7 +2,7 @@ const User = require('../models/UserModel');
 
 module.exports = async (req, res, next) => {
   try {
-    req.currentUser = await User.findOne(req.session.userId);
+    req.currentSessionId = await User.findOne(req.sessionID);
     next();
   } catch (err) {
     res.status(401).send(err);

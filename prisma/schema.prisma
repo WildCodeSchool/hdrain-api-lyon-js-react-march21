@@ -11,7 +11,7 @@ generator client {
 }
 
 model user {
-  id             Int    @id @default(autoincrement())
+  id             Int    @default(autoincrement())
   username       String @unique @db.VarChar(160)
   hashedPassword String @db.VarChar(255)
 }
