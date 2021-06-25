@@ -16,9 +16,9 @@ sensorsRouter.get('/', async (req, res) => {
 });
 
 // Get one sensor by its id
-sensorsRouter.get('/:id', async (req, res) => {
+sensorsRouter.get('/:sensorId', async (req, res) => {
   try {
-    const sensorId = req.params.id;
+    const {sensorId} = req.params;
     // Retrieve specific sensor from the DB
     const sensor = await SensorModel.findUnique(sensorId);
     if (!sensor) res.status(404).send('No sensor found');

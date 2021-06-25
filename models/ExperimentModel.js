@@ -1,5 +1,10 @@
 const { prisma } = require('../db');
 
+const findMany = () => prisma.experiment.findMany();
+
+const findOne = (id) =>
+  prisma.experiment.findUnique({ where: { id: parseInt(id, 10) } });
+
 const create = ({
   timestamp,
   neuralNetworkLog,
@@ -9,7 +14,7 @@ const create = ({
   parameters,
   location,
 }) =>
-  prisma.location.create({
+  prisma.experiment.create({
     data: {
       timestamp,
       neuralNetworkLog,
@@ -21,4 +26,28 @@ const create = ({
     },
   });
 
-module.exports = create;
+const update = (id, path) =>
+  prisma.experiment.update({
+    where: {
+      id,
+    },
+    data: {
+      rainGraph: `${path}`,
+    },
+  });
+
+  const selectFile = (id) => prisma.experiment.findUnique({
+    where: {
+      id
+    },
+    select: {
+      rainGraph: true,
+    },
+  })
+
+module.exports = {
+  findMany,
+  findOne,
+  create,
+  update, selectFile
+};
