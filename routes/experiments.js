@@ -15,7 +15,7 @@ experimentsRouter.get('/', async (req, res) => {
 
 experimentsRouter.get('/:experimentId', async (req, res) => {
   try {
-    const {experimentsId} = req.params;
+    const {experimentId} = req.params;
     // Retrieve specific sensor from the DB
     const experiment = await ExperimentModel.findOne(experimentsId);
     if (!experiment) return res.status(404).send('No experiment found');
