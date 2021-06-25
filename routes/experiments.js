@@ -13,7 +13,7 @@ experimentsRouter.get('/', async (req, res) => {
   }
 });
 
-experimentsRouter.get('/:experimentsId', async (req, res) => {
+experimentsRouter.get('/:experimentId', async (req, res) => {
   try {
     const {experimentsId} = req.params;
     // Retrieve specific sensor from the DB
