@@ -2,27 +2,19 @@ const experimentsRouter = require('express').Router();
 const ExperimentModel = require('../models/ExperimentModel');
 
 experimentsRouter.get('/', async (req, res) => {
+  const { locationId, timestamp } = req.query;
+  const testDate = new Date(timestamp);
+
+  // + new Date().getTimezoneOffset();
+
+  console.log(locationId, testDate);
   try {
     // Retrieve all experiments from the DB
-    const experiments = await ExperimentModel.findMany();
-    if (!experiments.length) res.status(404).send('No experiment found');
-    // Send the result
+    const experiments = await ExperimentModel.findMany(locationId, testDate);
     res.status(200).send(experiments);
   } catch (error) {
+    console.error(error);
     res.status(500).send(error);
-  }
-});
-
-experimentsRouter.get('/:id', async (req, res) => {
-  try {
-    const experimentsId = req.params.id;
-    // Retrieve specific sensor from the DB
-    const experiment = await ExperimentModel.findOne(experimentsId);
-    if (!experiment) return res.status(404).send('No experiment found');
-    // Send the result
-    return res.status(200).send(experiment);
-  } catch (error) {
-    return res.status(500).send(error);
   }
 });
 
