@@ -3,14 +3,13 @@ const ExperimentModel = require('../models/ExperimentModel');
 
 experimentsRouter.get('/', async (req, res) => {
   const { locationId, timestamp } = req.query;
-  const testDate = new Date(timestamp);
+  // const testDate = new Date(timestamp.toString());
+  // console.log(locationId, testDate);
+  console.log(locationId, timestamp);
 
-  // + new Date().getTimezoneOffset();
-
-  console.log(locationId, testDate);
   try {
     // Retrieve all experiments from the DB
-    const experiments = await ExperimentModel.findMany(locationId, testDate);
+    const experiments = await ExperimentModel.findMany(locationId, timestamp);
     res.status(200).send(experiments);
   } catch (error) {
     console.error(error);

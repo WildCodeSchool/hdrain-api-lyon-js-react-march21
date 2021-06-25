@@ -28,7 +28,7 @@ module.exports = async function seed() {
       .map(() =>
         prisma.experiment.create({
           data: {
-            timestamp: new Date(Date.UTC(2021, 6, 22, 15, 0)),
+            timestamp: new Date(2021, 6, 22, 15, 0),
             neuralNetworkLog: faker.lorem.words(),
             assimilationLog: faker.lorem.words(),
             rainGraph: 'path/to/rainGraph',
