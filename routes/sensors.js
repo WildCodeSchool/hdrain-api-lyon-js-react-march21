@@ -3,7 +3,7 @@ const SensorModel = require('../models/SensorModel');
 // deletedAt to be handled (not null) ?
 
 // Get all the locations
-sensorsRouter.get('/all', async (req, res) => {
+sensorsRouter.get('/', async (req, res) => {
   try {
     // Retrieve all sensors from the DB
     const sensors = await SensorModel.findMany();
@@ -29,7 +29,7 @@ sensorsRouter.get('/:sensorId', async (req, res) => {
   }
 });
 
-sensorsRouter.post('/create', async (req, res) => {
+sensorsRouter.post('/', async (req, res) => {
   try {
     const {
       sensorNumber,

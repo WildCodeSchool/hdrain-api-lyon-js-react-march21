@@ -1,7 +1,7 @@
 const experimentsRouter = require('express').Router();
 const ExperimentModel = require('../models/ExperimentModel');
 
-experimentsRouter.get('/all', async (req, res) => {
+experimentsRouter.get('/', async (req, res) => {
   try {
     // Retrieve all experiments from the DB
     const experiments = await ExperimentModel.findMany();
@@ -26,7 +26,7 @@ experimentsRouter.get('/:experimentsId', async (req, res) => {
   }
 });
 
-experimentsRouter.post('/create', async (req, res) => {
+experimentsRouter.post('/', async (req, res) => {
   try {
     const {
       timestamp,

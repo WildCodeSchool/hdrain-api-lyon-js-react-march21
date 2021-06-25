@@ -2,7 +2,7 @@ const locationsRouter = require('express').Router();
 const LocationModel = require('../models/LocationModel');
 
 // Get all the locations
-locationsRouter.get('/all', async (req, res) => {
+locationsRouter.get('/', async (req, res) => {
   try {
     // Retrieve all locations from the DB
     const locations = await LocationModel.findMany();
