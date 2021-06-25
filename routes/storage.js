@@ -19,9 +19,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-storageRouter.get('/:id', async (req, res) => {
+storageRouter.get('/', async (req, res) => {
   try {
-    const experimentId = req.params.id ;
+    const experimentId = 1 ;
     const filePath = await ExperimentModel.selectFile(experimentId);
 
     return res.status(200).send(filePath);
@@ -30,7 +30,7 @@ storageRouter.get('/:id', async (req, res) => {
   }
 });
 
-storageRouter.post('/images', upload.single('image'), async (req, res) => {
+storageRouter.post('/', upload.single('image'), async (req, res) => {
   try {
     const id = 2;
     await ExperimentModel.update(id, req.file.path);
