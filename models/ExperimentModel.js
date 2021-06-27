@@ -29,8 +29,28 @@ const create = ({
     },
   });
 
+const update = (id, path) =>
+  prisma.experiment.update({
+    where: {
+      id,
+    },
+    data: {
+      rainGraph: `${path}`,
+    },
+  });
+
+  const selectFile = (id) => prisma.experiment.findUnique({
+    where: {
+      id
+    },
+    select: {
+      rainGraph: true,
+    },
+  })
+
 module.exports = {
   findMany,
   findOne,
   create,
+  update, selectFile
 };
