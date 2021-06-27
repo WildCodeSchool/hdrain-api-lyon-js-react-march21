@@ -13,5 +13,8 @@ module.exports = (app) => {
   app.use('/locations', locationsRouter);
   app.use('/locations/:locationId/sensors', sensorsRouter);
   app.use('/locations/:locationId/experiments', experimentsRouter);
-  app.use('/locations/:locationId/experiments/:experimentId/storage', storageRouter);
+  app.use(
+    '/locations/:locationId/experiments/:experimentId/storage',
+    storageRouter
+  );
 };

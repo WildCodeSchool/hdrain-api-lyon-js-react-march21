@@ -2,10 +2,12 @@ const experimentsRouter = require('express').Router();
 const ExperimentModel = require('../models/ExperimentModel');
 
 experimentsRouter.get('/', async (req, res) => {
-  const { locationId, timestamp } = req.query;
+  const { locationId } = req.params;
+  const { timestamp } = req.query;
 
   try {
     // Retrieve all experiments from the DB
+
     const experiments = await ExperimentModel.findMany(
       locationId,
       new Date(timestamp)
