@@ -2,11 +2,16 @@ const { prisma } = require('../db');
 
 const findMany = (locationId, timestamp) =>
   prisma.experiment.findMany({
-    where: { locationId, timestamp },
+    where: { locationId: parseInt(locationId, 10), timestamp },
   });
 
-const findOne = (id) =>
-  prisma.experiment.findUnique({ where: { id: parseInt(id, 10) } });
+const findExperimentByTimestamp = (locationId, timestamp) =>
+  prisma.experiment.findUnique({
+    where: {
+      locationId: parseInt(locationId, 10),
+      timestamp,
+    },
+  });
 
 const create = ({
   timestamp,
@@ -51,7 +56,7 @@ const selectFile = (id) =>
 
 module.exports = {
   findMany,
-  findOne,
+  findExperimentByTimestamp,
   create,
   update,
   selectFile,
