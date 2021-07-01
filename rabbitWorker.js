@@ -33,8 +33,8 @@ function rabbit() {
         channel.consume(
           queue,
           (msg) => {
-            const content = JSON.parse(msg.content);
-            console.log(' [x] Received: ', content);
+            const message = msg.content.toString();
+            console.log(' [x] Received: ', message);
           },
           {
             // automatic acknowledgment mode,
