@@ -85,30 +85,29 @@ locationsRouter.post('/:locationId/sensors', async (req, res) => {
 // EXPERIMENTS
 
 // Get all experiments from a location
-locationsRouter.get('/:locationId/experiments', async (req, res) => {
-  const { locationId } = req.params;
-  try {
-    // Retrieve all experiments of a given location from the DB
-    const experiments = await ExperimentModel.findMany(locationId);
-    res.status(200).send(experiments);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error);
-  }
-});
+// locationsRouter.get('/:locationId/experiments', async (req, res) => {
+//   const { locationId } = req.params;
+//   try {
+//     // Retrieve all experiments of a given location from the DB
+//     const experiments = await ExperimentModel.findMany(locationId);
+//     res.status(200).send(experiments);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send(error);
+//   }
+// });
 
 // Get experiment at a single timestamp from a location
 locationsRouter.get('/:locationId/experiments', async (req, res) => {
   const { locationId } = req.params;
   const timestamp = new Date(req.query.timestamp);
-  console.log(timestamp);
   try {
-    // Retrieve all experiments of a given location from the DB
-    const experiments = await ExperimentModel.findExperimentByTimestamp(
+    // Retrieve all experiment of a given location from the DB
+    const experiment = await ExperimentModel.findExperimentByTimestamp(
       locationId,
       timestamp
-    );
-    res.status(200).send(experiments);
+    )[0];
+    res.status(200).send(experiment);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
