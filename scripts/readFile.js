@@ -9,11 +9,7 @@ const readFile = util.promisify(fs.readFile);
   try {
     // You can now use `readFile()` with `await`!
     const buffer = await readFile('./scripts/Jb');
-    const table = buffer
-      .toString('utf8')
-      .trim()
-      .split('\n')
-      .map((string) => Number(string));
+    const table = buffer.toString('utf8').trim().split('\n').map(Number);
     console.log(table);
   } catch (error) {
     console.error(error);
