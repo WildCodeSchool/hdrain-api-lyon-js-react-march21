@@ -6,7 +6,7 @@ const PgSession = require('connect-pg-simple')(session);
 const {
   PORT,
   CORS_ALLOWED_ORIGINS,
-  DATABASE_URL,
+  // DATABASE_URL,
   inTestEnv,
   inProdEnv,
   SESSION_COOKIE_SECRET,
@@ -30,8 +30,6 @@ const app = express();
 app.use(express.json());
 app.set('x-powered-by', false); // for security
 app.set('trust proxy', 1); // trust first proxy
-
-console.log('db url', DATABASE_URL);
 
 const allowedOrigins = CORS_ALLOWED_ORIGINS.split(',');
 const corsOptions = {

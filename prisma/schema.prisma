@@ -47,7 +47,7 @@ model sensor {
 
 model experiment {
   id               Int      @id @default(autoincrement())
-  timestamp        DateTime @db.Timestamp
+  timestamp        DateTime @db.Timestamptz
   neuralNetworkLog String   @db.Text
   assimilationLog  String   @db.Text
   rainGraph        String   @db.VarChar(255)
