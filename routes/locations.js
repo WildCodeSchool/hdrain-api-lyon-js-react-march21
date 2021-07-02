@@ -82,20 +82,6 @@ locationsRouter.post('/:locationId/sensors', async (req, res) => {
   }
 });
 
-// EXPERIMENTS
-
-// Get all experiments from a location
-// locationsRouter.get('/:locationId/experiments', async (req, res) => {
-//   const { locationId } = req.params;
-//   try {
-//     // Retrieve all experiments of a given location from the DB
-//     const experiments = await ExperimentModel.findMany(locationId);
-//     res.status(200).send(experiments);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send(error);
-//   }
-// });
 
 // Get experiment at a single timestamp from a location
 locationsRouter.get('/:locationId/experiments', async (req, res) => {
@@ -107,41 +93,28 @@ locationsRouter.get('/:locationId/experiments', async (req, res) => {
     const experiment = await ExperimentModel.findExperimentByTimestamp(
       locationId,
       timestamp
-    );
-    res.status(200).send(experiment);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error);
-  }
-});
-
-// Create a new experiment for a given location
-// locationsRouter.post('/:locationId/experiments', async (req, res) => {
-//   // TODO : use the location id somehow => pass it to the find fct
-//   const { locationId } = req.params;
-//   try {
-//     const {
-//       timestamp,
-//       neuralNetworkLog,
-//       assimilationLog,
-//       rainGraph,
-//       costGraph,
-//       parameters,
-//       location,
-//     } = req.body;
-//     const newExperiment = await ExperimentModel.create({
-//       timestamp,
-//       neuralNetworkLog,
-//       assimilationLog,
-//       rainGraph,
-//       costGraph,
-//       parameters,
-//       location,
-//     });
-//     res.status(201).send({ newExperiment });
-//   } catch (error) {
-//     res.status(500).send(error);
-//   }
-// });
-
-module.exports = locationsRouter;
+      );
+      res.status(200).send(experiment);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(error);
+    }
+  });
+  
+  // EXPERIMENTS
+  
+  // Get all experiments from a location
+  // locationsRouter.get('/:locationId/experiments', async (req, res) => {
+  //   const { locationId } = req.params;
+  //   try {
+  //     // Retrieve all experiments of a given location from the DB
+  //     const experiments = await ExperimentModel.findMany(locationId);
+  //     res.status(200).send(experiments);
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).send(error);
+  //   }
+  // });
+  
+  module.exports = locationsRouter;
+  
