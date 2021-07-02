@@ -1,6 +1,7 @@
 const argon2 = require('argon2');
 const Joi = require('joi');
 const { prisma } = require('../db');
+const { API_BASE_URL } = require('../env');
 
 // ARGON 2
 const hashingOptions = {
@@ -40,7 +41,7 @@ const create = async ({ username, password }) => {
   });
 };
 
-const findOne = (id) => prisma.user.findFirst({ where: { id } });
+const findOne = (userId) => prisma.user.findFirst({ where: { id: userId } });
 
 const deleteUser = async (userId) =>
   prisma.user.delete({ where: { id: userId } });

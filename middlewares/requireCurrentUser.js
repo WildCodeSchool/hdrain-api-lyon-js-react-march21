@@ -2,9 +2,10 @@ const User = require('../models/UserModel');
 
 module.exports = async (req, res, next) => {
   try {
-    req.currentSessionId = await User.findOne(req.sessionID);
+    console.log(req.session.userId);
+    req.currentUser = await User.findOne(req.session.userId);
     next();
   } catch (err) {
-    res.status(401).send(err);
+    return res.status(401).send(err);
   }
 };
