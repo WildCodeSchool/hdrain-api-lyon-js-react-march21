@@ -21,8 +21,20 @@ const create = ({
     },
   });
 
-const findMany = () => prisma.sensor.findMany();
-const findUnique = (id) =>
-  prisma.sensor.findUnique({ where: { id: parseInt(id, 10) } });
+const findAll = () => prisma.sensor.findMany();
 
-module.exports = { create, findMany, findUnique };
+const findAllFromLocation = (locationId) =>
+  prisma.sensor.findMany({
+    where: {
+      locationId: parseInt(locationId, 10),
+    },
+  });
+
+const findUnique = (sensorId) =>
+  prisma.sensor.findUnique({
+    where: {
+      id: parseInt(sensorId, 10),
+    },
+  });
+
+module.exports = { create, findAll, findUnique, findAllFromLocation };
