@@ -6,7 +6,7 @@ const ExperimentModel = require('../models/ExperimentModel');
 
 const storage = multer.diskStorage({
   // Destination to store image
-  destination: 'upload/images',
+  destination: 'storage/others',
   filename: (req, file, cb) => {
     cb(
       null,
