@@ -8,6 +8,8 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
+RUN apt update
+RUN apt install sshpass
 RUN npm install
 
 COPY . .
