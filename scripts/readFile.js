@@ -59,25 +59,25 @@ const saveFilesToDB = async (pathToFiles) => {
         }
         if (fileName === 'JNL') {
           // Check if the DB already has an entry for this experiment
-          // Parse the file and save the content to the DB in the experiment rain graph data
+          // Parse the file and save the content to the DB (upsert ? locally update / create the value of x, y1, y2 || appending function ?) in the experiment rain graph data
           const JNL = await readArrayFromFile(file);
           console.log(JNL);
         }
         if (fileName === 'Jb') {
           // Check if the DB already has an entry for this experiment
-          // Parse the file and save the content to the DB in the experiment rain graph data
+          // Parse the file and save the content to the DB (upsert ? locally update / create the value of x, y1, y2 || appending function ?) in the experiment rain graph data
           const Jb = await readArrayFromFile(file);
           console.log(Jb);
         }
         if (fileName === 'J') {
           // Check if the DB already has an entry for this experiment
-          // Parse the file and save the content to the DB in the experiment rain graph data
+          // Parse the file and save the content to the DB (upsert ? locally update / create the value of x, y1, y2 || appending function ?) in the experiment rain graph data
           const J = await readArrayFromFile(file);
           console.log(J);
         }
         if (fileName === 'r') {
           // Check if the DB already has an entry for this experiment
-          // Parse the file and save the content to the DB in the experiment rain graph data
+          // Parse the file and save the content to the DB (upsert ? locally update / create the value of x, y1, y2 || appending function ?) in the experiment rain graph data
           const r = await readArrayFromFile(file);
           console.log(r);
         }
