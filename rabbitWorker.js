@@ -34,7 +34,11 @@ function rabbit() {
         channel.consume(
           queue,
           async (msg) => {
-            const message = msg.content.toString().toLowerCase().replace(/ = /g, ':').replace(/\\n/g, ' ');
+            const message = msg.content
+              .toString()
+              .toLowerCase()
+              .replace(/ = /g, ':')
+              .replace(/\\n/g, ' ');
             // .replace(/(\\n)/g, ' ');
             try {
               const data = JSON.parse(message);
@@ -55,24 +59,27 @@ function rabbit() {
 
               data.status = JSON.parse(data.statuts);
               delete data.statuts;
-    
+
               // show result
               console.log(' [x] Received: ', data);
 
               // store in DB
               try {
-                
+                data.locationId = 1;
+                data.rainGraph = '/path';
+                data.costGraph = '/path';
+                data.timestamp = new Date();
+
                 const {
+                  timestamp,
                   neuralNetworkLog,
                   assimilationLog,
+                  rainGraph,
+                  costGraph,
                   parameters,
+                  locationId,
                 } = data;
-  
-                const locationId = 1;
-                const rainGraph = '/path';
-                const costGraph = '/path';
-                const timestamp = new Date;
-  
+
                 const newExperiment = await ExperimentModel.create({
                   timestamp,
                   neuralNetworkLog,
@@ -80,18 +87,13 @@ function rabbit() {
                   rainGraph,
                   costGraph,
                   parameters,
-                  location,
+                  locationId,
                 });
 
                 console.log('experiment stored in DB: ', newExperiment);
               } catch (error) {
-               
-                console.error(error)
+                console.error(error);
               }
-
-              
-
-            
             } catch (error) {
               // console.error(error);
             }

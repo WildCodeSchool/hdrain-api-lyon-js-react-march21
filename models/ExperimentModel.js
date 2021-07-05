@@ -20,7 +20,7 @@ const create = ({
   rainGraph,
   costGraph,
   parameters,
-  location,
+  locationId,
 }) =>
   prisma.experiment.create({
     data: {
@@ -30,7 +30,7 @@ const create = ({
       rainGraph,
       costGraph,
       parameters,
-      location,
+      locationId,
     },
   });
 
