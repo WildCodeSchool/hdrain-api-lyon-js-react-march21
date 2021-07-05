@@ -21,6 +21,16 @@ const readArrayFromFile = async (pathToFile) => {
   }
 };
 
+const readStationStatusFromFile = async (pathToFile) => {
+  try {
+    const buffer = await readFile(pathToFile);
+    return JSON.parse(buffer);
+  } catch (error) {
+    console.error(error);
+    return { error };
+  }
+};
+
 function getDateFromFileDirectory(file) {
   const directory = path.dirname(file);
   const [directoryDate] = directory.match(/(\d{4})+.{12}/g);
@@ -44,22 +54,32 @@ const saveFilesToDB = async (pathToFiles) => {
           console.log(date);
           // Check if the DB already has an entry for this experiment
           // Parse the file and save the content to the DB in the sensors status for the given experiment
+          const stationsStatus = await readStationStatusFromFile(file);
+          console.log(stationsStatus);
         }
         if (fileName === 'JNL') {
           // Check if the DB already has an entry for this experiment
           // Parse the file and save the content to the DB in the experiment rain graph data
+          const JNL = await readArrayFromFile(file);
+          console.log(JNL);
         }
         if (fileName === 'Jb') {
           // Check if the DB already has an entry for this experiment
           // Parse the file and save the content to the DB in the experiment rain graph data
+          const Jb = await readArrayFromFile(file);
+          console.log(Jb);
         }
         if (fileName === 'J') {
           // Check if the DB already has an entry for this experiment
           // Parse the file and save the content to the DB in the experiment rain graph data
+          const J = await readArrayFromFile(file);
+          console.log(J);
         }
         if (fileName === 'r') {
           // Check if the DB already has an entry for this experiment
           // Parse the file and save the content to the DB in the experiment rain graph data
+          const r = await readArrayFromFile(file);
+          console.log(r);
         }
         if (fileName.startsWith('champs_assim')) {
           // Check if the DB already has an entry for this experiment
