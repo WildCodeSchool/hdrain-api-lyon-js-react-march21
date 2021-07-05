@@ -33,14 +33,30 @@ function rabbit() {
         channel.consume(
           queue,
           (msg) => {
-            const message = msg.content.toString().replace(/\\n/g, '');
+            const message = msg.content.toString().toLowerCase();
+            // .replace(/(\\n)/g, ' ');
             try {
-              console.log(' [x] Received: ', JSON.parse(message));
-              
+              const data = JSON.parse(message);
+
+              // change key names
+
+              data.timestamp = data.date;
+              delete data.date;
+
+              data.assimilationLog = data['log assim'];
+              delete data['log assim'];
+
+              data.neuralNetworkLog = data['log rn'];
+              delete data['log rn'];
+
+              data.parameters = data.config;
+              delete data.config;
+    
+              // show result
+              console.log(' [x] Received: ', data);
             } catch (error) {
-              console.error(error);
+              // console.error(error);
             }
-            
           },
           {
             // automatic acknowledgment mode,
