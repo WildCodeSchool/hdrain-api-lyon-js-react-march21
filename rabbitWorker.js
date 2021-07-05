@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // require('dotenv').config();
 const amqp = require('amqplib/callback_api');
+const ExperimentModel = require('./models/ExperimentModel');
 
 function rabbit() {
   // connect to RabbitMQ server
@@ -32,8 +33,8 @@ function rabbit() {
 
         channel.consume(
           queue,
-          (msg) => {
-            const message = msg.content.toString().toLowerCase();
+          async (msg) => {
+            const message = msg.content.toString().toLowerCase().replace(/ = /g, ':').replace(/\\n/g, ' ');
             // .replace(/(\\n)/g, ' ');
             try {
               const data = JSON.parse(message);
@@ -51,9 +52,46 @@ function rabbit() {
 
               data.parameters = data.config;
               delete data.config;
+
+              data.status = JSON.parse(data.statuts);
+              delete data.statuts;
     
               // show result
               console.log(' [x] Received: ', data);
+
+              // store in DB
+              try {
+                
+                const {
+                  neuralNetworkLog,
+                  assimilationLog,
+                  parameters,
+                } = data;
+  
+                const locationId = 1;
+                const rainGraph = '/path';
+                const costGraph = '/path';
+                const timestamp = new Date;
+  
+                const newExperiment = await ExperimentModel.create({
+                  timestamp,
+                  neuralNetworkLog,
+                  assimilationLog,
+                  rainGraph,
+                  costGraph,
+                  parameters,
+                  location,
+                });
+
+                console.log('experiment stored in DB: ', newExperiment);
+              } catch (error) {
+               
+                console.error(error)
+              }
+
+              
+
+            
             } catch (error) {
               // console.error(error);
             }
