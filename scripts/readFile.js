@@ -27,11 +27,10 @@ function getDateFromFileDirectory(file) {
   const splitDirectoryDate = directoryDate.split('/');
   const [hour, minutes] = splitDirectoryDate[3].split('h');
   const [year, month, day] = splitDirectoryDate;
-  const date = new Date(year, month, day, hour, minutes);
-  return date;
+  return new Date(year, month, day, hour, minutes);
 }
 
-const saveFilesContentToDB = async (pathToFiles) => {
+const saveFilesToDB = async (pathToFiles) => {
   try {
     const files = await glob(pathToFiles);
     files.forEach(async (file) => {
@@ -42,9 +41,9 @@ const saveFilesContentToDB = async (pathToFiles) => {
         // TODO: get the locationId from the server's name sending the data, how ?
         // TODO: extract the following steps to a global scope function with arguments : date, location...
         if (fileName === 'statut_stations.log') {
+          console.log(date);
           // Check if the DB already has an entry for this experiment
           // Parse the file and save the content to the DB in the sensors status for the given experiment
-          console.log(date, file);
         }
         if (fileName === 'JNL') {
           // Check if the DB already has an entry for this experiment
@@ -89,6 +88,6 @@ const saveFilesContentToDB = async (pathToFiles) => {
   }
 };
 
-saveFilesContentToDB(mainPath);
+saveFilesToDB(mainPath);
 
 module.exports = readArrayFromFile;
