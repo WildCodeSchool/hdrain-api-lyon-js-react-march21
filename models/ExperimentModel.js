@@ -1,4 +1,5 @@
 const { prisma } = require('../db');
+const { API_BASE_URL } = require('../env');
 
 // const findMany = (locationId, timestamp) =>
 //   prisma.experiment.findMany({
@@ -44,6 +45,11 @@ const update = (id, path) =>
     },
   });
 
+const getRainGraph = (experiment) => ({
+  ...experiment,
+  rainGraph: `${API_BASE_URL}/${experiment.rainGraph}`,
+});
+
 const selectFile = (id) =>
   prisma.experiment.findUnique({
     where: {
@@ -60,4 +66,5 @@ module.exports = {
   create,
   update,
   selectFile,
+  getRainGraph,
 };
