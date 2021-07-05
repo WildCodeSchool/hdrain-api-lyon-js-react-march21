@@ -28,6 +28,7 @@ const port = PORT || 5000;
 const app = express();
 
 app.use(express.json());
+app.use('/upload', express.static('upload'));
 app.set('x-powered-by', false); // for security
 app.set('trust proxy', 1); // trust first proxy
 
