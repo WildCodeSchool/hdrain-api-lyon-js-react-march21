@@ -31,13 +31,33 @@ const update = (id, path) =>
     },
   });
 
-  const selectFile = (id) => prisma.experiment.findUnique({
+const selectFile = (id) =>
+  prisma.experiment.findUnique({
     where: {
-      id
+      id,
     },
     select: {
       rainGraph: true,
     },
-  })
+  });
 
-module.exports = { create, update, selectFile };
+const createMany = (array) =>
+  prisma.experiments.createMany({
+    data: array,
+  });
+
+// Get all timestamps returns an object with keys = every timestamp and values = true
+const getAllTimestamps = async () => {
+  const experiments = await prisma.experiment.findMany();
+  return Object.fromEntries(
+    experiments.map(({ timestamp }) => [timestamp, true])
+  );
+};
+
+module.exports = {
+  create,
+  update,
+  selectFile,
+  getAllTimestamps,
+  createMany,
+};
