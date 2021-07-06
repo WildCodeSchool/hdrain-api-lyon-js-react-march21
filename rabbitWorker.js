@@ -92,6 +92,10 @@ function rabbit() {
                 });
 
                 console.log('experiment stored in DB: ', newExperiment);
+
+                // update/create status
+                
+
               };
             } catch (error) {
               // console.error(error);
