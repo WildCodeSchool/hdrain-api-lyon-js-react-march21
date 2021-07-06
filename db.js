@@ -4,8 +4,6 @@ require('dotenv').config();
 
 const prisma = new PrismaClient();
 
-console.log(process.env.DB_PORT);
-
 /* ----------------------- DB CONNECTION -----------------------------------------*/
 
 const db = new Pool({
@@ -19,7 +17,9 @@ const db = new Pool({
 db.on('error', console.error.bind(console, 'connection error:')).once(
   'open',
   () => {
-    console.log('database connection established successfully');
+    console.log(
+      `Database connection established successfully on port: ${db.port}`
+    );
   }
 );
 
