@@ -86,7 +86,6 @@ locationsRouter.post('/:locationId/sensors', async (req, res) => {
 locationsRouter.get('/:locationId/experiments', async (req, res) => {
   const { locationId } = req.params;
   const timestamp = new Date(req.query.timestamp);
-  console.log(timestamp);
   try {
     // Retrieve all experiment of a given location from the DB
     const experiment = await ExperimentModel.findExperimentByTimestamp(
