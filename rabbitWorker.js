@@ -37,38 +37,34 @@ function rabbit() {
             const message = msg.content
               .toString()
               .toLowerCase()
-              .replace(/ = /g, ':')
               .replace(/\\n/g, ' ');
-            // .replace(/(\\n)/g, ' ');
             try {
               const data = JSON.parse(message);
 
-              // change key names
-
-              data.timestamp = data.date;
-              delete data.date;
-
-              data.assimilationLog = data['log assim'];
-              delete data['log assim'];
-
-              data.neuralNetworkLog = data['log rn'];
-              delete data['log rn'];
-
-              data.parameters = data.config;
-              delete data.config;
-
-              data.status = JSON.parse(data.statuts);
-              delete data.statuts;
+              // need the key names to match the db 
+              const newData = {
+                timestamp: data.date,
+                assimilationLog: data['log assim'],
+                neuralNetworkLog: data['log rn'],
+                parameters: data.config,
+                status: JSON.parse(data.statuts),
+              };
 
               // show result
-              console.log(' [x] Received: ', data);
+              console.log(' [x] Received: ', newData);
 
               // store in DB
-              try {
-                data.locationId = 1;
-                data.rainGraph = '/path';
-                data.costGraph = '/path';
-                data.timestamp = new Date();
+              if (!newData) {
+                console.log('Error: wrong data sent');
+              } else if (
+                await ExperimentModel.experimentAlreadyExists(newData)
+              ) {
+                console.log('Error: experiment already saved in the database');
+              } else {
+                newData.locationId = 1;
+                newData.rainGraph = '/path';
+                newData.costGraph = '/path';
+                newData.timestamp = new Date();
 
                 const {
                   timestamp,
@@ -78,7 +74,7 @@ function rabbit() {
                   costGraph,
                   parameters,
                   locationId,
-                } = data;
+                } = newData;
 
                 const newExperiment = await ExperimentModel.create({
                   timestamp,
@@ -91,9 +87,7 @@ function rabbit() {
                 });
 
                 console.log('experiment stored in DB: ', newExperiment);
-              } catch (error) {
-                console.error(error);
-              }
+              };
             } catch (error) {
               // console.error(error);
             }

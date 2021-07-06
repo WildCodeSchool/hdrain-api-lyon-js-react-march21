@@ -13,6 +13,10 @@ const findExperimentByTimestamp = (locationId, timestamp) =>
     },
   });
 
+const experimentAlreadyExists = (experiment) => prisma.experiment.findFirst({ where: { neuralNetworkLog: experiment.neuralNetworkLog,
+  assimilationLog: experiment.assimilationLog,
+  parameters: experiment.parameters } });
+
 const create = ({
   timestamp,
   neuralNetworkLog,
@@ -60,4 +64,5 @@ module.exports = {
   create,
   update,
   selectFile,
+  experimentAlreadyExists
 };
