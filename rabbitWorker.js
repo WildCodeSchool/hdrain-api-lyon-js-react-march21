@@ -49,7 +49,7 @@ function rabbit() {
                 parameters: data.config,
                 status: JSON.parse(data.statuts),
               };
-              
+
               // change date fortmat
               newData.timestamp = new Date(newData.timestamp[0], newData.timestamp[1], newData.timestamp[2], newData.timestamp[3], newData.timestamp[4]);
               
@@ -64,11 +64,13 @@ function rabbit() {
               ) {
                 console.log('Error: experiment already saved in the database');
               } else {
+
+                // add missing element
                 newData.locationId = 1;
                 newData.rainGraph = '/path';
                 newData.costGraph = '/path';
-        
 
+                // send all elements to the database
                 const {
                   timestamp,
                   neuralNetworkLog,
