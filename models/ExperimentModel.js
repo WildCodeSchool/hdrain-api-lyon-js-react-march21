@@ -45,10 +45,27 @@ const update = (id, path) =>
     },
   });
 
-const getRainGraph = (experiment) => ({
-  ...experiment,
-  rainGraph: `${API_BASE_URL}/${experiment.rainGraph}`,
-});
+// const getRainGraph = (experiment) => ({
+//   ...experiment,
+//   rainGraph: `${API_BASE_URL}/${experiment.rainGraph}`,
+// });
+
+// function to get all the info related to one experiment but also to extract the expected url
+// if an url exist, make it precede of the localhost:5000 to get absolute url
+const getImagesURL = (experiment) => {
+  let { rainGraphUrl } = experiment;
+  if (
+    rainGraphUrl &&
+    !rainGraphUrl.startsWith('http://') &&
+    !rainGraphUrl.startsWith('https://')
+  ) {
+    rainGraphUrl = `${API_BASE_URL}/${rainGraphUrl}`;
+  }
+  return {
+    ...experiment,
+    rainGraphUrl,
+  };
+};
 
 const selectFile = (id) =>
   prisma.experiment.findUnique({
@@ -66,5 +83,5 @@ module.exports = {
   create,
   update,
   selectFile,
-  getRainGraph,
+  getImagesURL,
 };

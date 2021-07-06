@@ -93,7 +93,7 @@ locationsRouter.get('/:locationId/experiments', async (req, res) => {
       locationId,
       timestamp
     );
-    res.status(200).send(ExperimentModel.getRainGraph(experiment));
+    res.status(200).send(ExperimentModel.getImagesURL(experiment));
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
