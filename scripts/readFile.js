@@ -32,39 +32,38 @@ const readStationStatusFromFile = async (pathToFile) => {
   }
 };
 
-function getDateFromFileDirectory(pathToFolder) {
+const getDateFromFileDirectory = (pathToFolder) => {
   const [directoryDate] = pathToFolder.match(/(\d{4})+.{12}/g);
   const splitDirectoryDate = directoryDate.split('/');
   const [hours, minutes] = splitDirectoryDate[3].split('h');
   const [years, months, days] = splitDirectoryDate;
   return new Date(years, months, days, hours, minutes);
-}
+};
+
+const createExperiment = (folder) => {
+  const [y1, y2, x] = Promise.all([
+    readArrayFromFile(`${folder}/J`),
+    readArrayFromFile(`${folder}/Jb`),
+    readArrayFromFile(`${folder}/JNL`),
+  ]);
+  return {
+    timestamp: getDateFromFileDirectory(folder),
+    neuralNetworkLog: `${folder}/diagnostics.png`,
+    assimilationLog: `${folder}/bash_assim.log`,
+    rainGraph: JSON.stringify({ y1, y2, x }),
+    costGraph: `${folder}/diagnostics.png`,
+    parameters: `${folder}/config.cfg`,
+    location: 'Abidjan',
+  };
+};
 
 const saveFilesToDB = async (pathToFiles) => {
   try {
     const folders = await glob(pathToFiles);
-    const timestamps = await ExperimentModel.getAllTimestamps();
-    const newExperiementsArray = folders.map((folder) => {
-      const date = getDateFromFileDirectory(folder);
-      if (!timestamps[date]) {
-        // Si il n'existe pas un fichier : done.txt alors
-        const [y1, y2, x] = Promise.all([
-          readArrayFromFile(`${folder}/J`),
-          readArrayFromFile(`${folder}/Jb`),
-          readArrayFromFile(`${folder}/JNL`),
-        ]);
-        return {
-          timestamp: getDateFromFileDirectory(folder),
-          neuralNetworkLog: `${folder}/diagnostics.png`,
-          assimilationLog: `${folder}/bash_assim.log`,
-          rainGraph: JSON.stringify({ y1, y2, x }),
-          costGraph: `${folder}/diagnostics.png`,
-          parameters: `${folder}/config.cfg`,
-          location: 'Abidjan',
-        };
-      }
-      return null;
-    });
+    const timestampsInDB = await ExperimentModel.getAllTimestamps();
+    const newExperiementsArray = folders
+      .filter((folder) => !timestampsInDB[getDateFromFileDirectory(folder)])
+      .map(createExperiment);
     await ExperimentModel.createMany(newExperiementsArray);
   } catch (error) {
     console.error(error);
@@ -73,4 +72,10 @@ const saveFilesToDB = async (pathToFiles) => {
 
 saveFilesToDB(mainPath);
 
-module.exports = readArrayFromFile;
+module.exports = {
+  readArrayFromFile,
+  saveFilesToDB,
+  getDateFromFileDirectory,
+  readStationStatusFromFile,
+  createExperiment,
+};
