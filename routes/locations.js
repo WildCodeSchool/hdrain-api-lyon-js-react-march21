@@ -2,6 +2,7 @@ const locationsRouter = require('express').Router();
 const LocationModel = require('../models/LocationModel');
 const SensorModel = require('../models/SensorModel');
 const ExperimentModel = require('../models/ExperimentModel');
+const StatusModel = require('../models/StatusModel');
 
 // LOCATIONS
 
@@ -82,7 +83,6 @@ locationsRouter.post('/:locationId/sensors', async (req, res) => {
   }
 });
 
-
 // Get experiment at a single timestamp from a location
 locationsRouter.get('/:locationId/experiments', async (req, res) => {
   const { locationId } = req.params;
@@ -93,28 +93,45 @@ locationsRouter.get('/:locationId/experiments', async (req, res) => {
     const experiment = await ExperimentModel.findExperimentByTimestamp(
       locationId,
       timestamp
-      );
-      res.status(200).send(experiment);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send(error);
-    }
-  });
-  
-  // EXPERIMENTS
-  
-  // Get all experiments from a location
-  // locationsRouter.get('/:locationId/experiments', async (req, res) => {
-  //   const { locationId } = req.params;
-  //   try {
-  //     // Retrieve all experiments of a given location from the DB
-  //     const experiments = await ExperimentModel.findMany(locationId);
-  //     res.status(200).send(experiments);
-  //   } catch (error) {
-  //     console.error(error);
-  //     res.status(500).send(error);
-  //   }
-  // });
-  
-  module.exports = locationsRouter;
-  
+    );
+    res.status(200).send(experiment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+// EXPERIMENTS
+
+// Get all experiments from a location
+// locationsRouter.get('/:locationId/experiments', async (req, res) => {
+//   const { locationId } = req.params;
+//   try {
+//     // Retrieve all experiments of a given location from the DB
+//     const experiments = await ExperimentModel.findMany(locationId);
+//     res.status(200).send(experiments);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send(error);
+//   }
+// });
+
+// STATUS
+locationsRouter.get('/:locationId/sensors/status', async (req, res) => {
+  const { experimentId } = req.query;
+  const { locationId } = req.params;
+  console.log(experimentId, locationId);
+  try {
+    const sensors = await SensorModel.findAllFromLocation(locationId);
+    const sensorsId = sensors.map((sensor) => sensor.id);
+    const statusList = await Promise.all(
+      sensorsId.map((id) => StatusModel.findUnique(id, experimentId))
+    );
+    res.status(200).send(statusList);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+module.exports = locationsRouter;

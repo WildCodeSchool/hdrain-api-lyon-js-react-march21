@@ -9,4 +9,14 @@ const create = ({ code, sensor, experiment }) =>
     },
   });
 
-module.exports = create;
+// Make a route to get all statuses
+
+const findUnique = (sensorId, experimentId) =>
+  prisma.status.findUnique({
+    where: {
+      sensorId: parseInt(sensorId, 10),
+      experimentId: parseInt(experimentId, 10),
+    },
+  });
+
+module.exports = { create, findUnique };
