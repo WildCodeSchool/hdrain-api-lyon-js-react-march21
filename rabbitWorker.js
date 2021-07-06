@@ -43,13 +43,16 @@ function rabbit() {
 
               // need the key names to match the db 
               const newData = {
-                timestamp: data.date,
+                timestamp: data.date.replace(/h/, '_').split('_'),
                 assimilationLog: data['log assim'],
                 neuralNetworkLog: data['log rn'],
                 parameters: data.config,
                 status: JSON.parse(data.statuts),
               };
-
+              
+              // change date fortmat
+              newData.timestamp = new Date(newData.timestamp[0], newData.timestamp[1], newData.timestamp[2], newData.timestamp[3], newData.timestamp[4]);
+              
               // show result
               console.log(' [x] Received: ', newData);
 
@@ -64,7 +67,7 @@ function rabbit() {
                 newData.locationId = 1;
                 newData.rainGraph = '/path';
                 newData.costGraph = '/path';
-                newData.timestamp = new Date();
+        
 
                 const {
                   timestamp,
