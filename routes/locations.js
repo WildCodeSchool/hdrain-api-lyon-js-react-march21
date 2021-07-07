@@ -65,7 +65,7 @@ locationsRouter.get('/:locationId/sensors', async (req, res) => {
     const augmentedSensors = await Promise.all(
       sensors.map(async (sensor) => {
         const status = await StatusModel.findUnique(sensor.id, experimentId);
-        const statusCode = status?.code;
+        const statusCode = status ? status.code : undefined;
         const augmentedSensor = {
           ...sensor,
           status: statusCode,
