@@ -50,7 +50,7 @@ model experiment {
   timestamp        DateTime @db.Timestamp
   neuralNetworkLog String   @db.Text
   assimilationLog  String   @db.Text
-  rainGraph        String   @db.VarChar(255)
+  rainGraph        String   @db.Text
   costGraph        String   @db.VarChar(255)
   parameters       String   @db.Text
   location         location @relation(fields: [locationId], references: [id])
