@@ -41,8 +41,8 @@ const selectFile = (id) =>
     },
   });
 
-const createMany = (array) =>
-  prisma.experiments.createMany({
+const createManyExperiments = (array) =>
+  prisma.experiment.createMany({
     data: array,
   });
 
@@ -50,7 +50,7 @@ const createMany = (array) =>
 const getAllTimestamps = async () => {
   const experiments = await prisma.experiment.findMany();
   return Object.fromEntries(
-    experiments.map(({ timestamp }) => [timestamp, true])
+    experiments.map(({ timestamp }) => [timestamp.toISOString(), true])
   );
 };
 
@@ -59,5 +59,5 @@ module.exports = {
   update,
   selectFile,
   getAllTimestamps,
-  createMany,
+  createManyExperiments,
 };
