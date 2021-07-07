@@ -1,6 +1,5 @@
 const fs = require('fs');
 const util = require('util');
-// const path = require('path');
 const globCB = require('glob');
 const ExperimentModel = require('../models/ExperimentModel');
 
@@ -13,6 +12,7 @@ const glob = util.promisify(globCB);
 // Path to scan
 const mainPath = `${process.env.LOCAL_TARGET}/**/[0-9][0-9]h[0-9][0-9]`;
 
+// Function to read the files where the rain graph values are stored and returns an array
 const readArrayFromFile = async (pathToFile) => {
   try {
     const buffer = await readFile(pathToFile);
@@ -23,6 +23,7 @@ const readArrayFromFile = async (pathToFile) => {
   }
 };
 
+// Function returning an object of station's status
 const readStationStatusFromFile = async (pathToFile) => {
   try {
     const buffer = await readFile(pathToFile);
@@ -33,6 +34,7 @@ const readStationStatusFromFile = async (pathToFile) => {
   }
 };
 
+// Function returning a date to ISO standard from the path of a file/folder
 const getDateFromFileDirectory = (pathToFolder) => {
   const [directoryDate] = pathToFolder.match(/(\d{4})+.{12}/g);
   const splitDirectoryDate = directoryDate.split('/');
@@ -42,6 +44,7 @@ const getDateFromFileDirectory = (pathToFolder) => {
   return date.toISOString();
 };
 
+// Function to create an object representing an experiment using the folder's content
 const createExperiment = async (folder) => {
   const [y1, y2, x] = await Promise.all([
     readArrayFromFile(`${folder}/J`),
@@ -59,20 +62,23 @@ const createExperiment = async (folder) => {
   };
 };
 
+// Function returning wether a folder is empty or not
 const isDirNotEmpty = async (folder) => {
   const dir = await readDir(folder);
-  // console.log('inside : ', dir.length === 0);
   return dir.length !== 0;
 };
 
+// checks if a givent folder already exists in the database
 const unprocessedFolders = async (folder, timestampsInDB) =>
   !(await timestampsInDB[getDateFromFileDirectory(folder)]);
 
+// Function to filter an array asynchronously
 const asyncFilter = async (folders, predicate) => {
   const boolTable = await Promise.all(folders.map(predicate));
   return folders.filter((_, index) => boolTable[index]);
 };
 
+// Main function to save of the files info to the DB
 const saveFilesToDB = async (pathToFiles) => {
   try {
     const folders = await glob(pathToFiles);
