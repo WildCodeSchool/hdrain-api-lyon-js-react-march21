@@ -1,5 +1,18 @@
 const { prisma } = require('../db');
 
+// const findMany = (locationId, timestamp) =>
+//   prisma.experiment.findMany({
+//     where: { locationId: parseInt(locationId, 10), timestamp },
+//   });
+
+const findExperimentByTimestamp = (locationId, timestamp) =>
+  prisma.experiment.findMany({
+    where: {
+      locationId: parseInt(locationId, 10),
+      timestamp,
+    },
+  });
+
 const create = ({
   timestamp,
   neuralNetworkLog,
@@ -9,7 +22,7 @@ const create = ({
   parameters,
   location,
 }) =>
-  prisma.location.create({
+  prisma.experiment.create({
     data: {
       timestamp,
       neuralNetworkLog,
@@ -60,4 +73,5 @@ module.exports = {
   selectFile,
   getAllTimestamps,
   createManyExperiments,
+  findExperimentByTimestamp,
 };

@@ -23,7 +23,7 @@ module.exports = async function seed() {
   });
 
   const experiments = await Promise.all(
-    Array(10)
+    Array(5)
       .fill(null)
       .map((_, index) =>
         prisma.experiment.create({
@@ -33,7 +33,7 @@ module.exports = async function seed() {
             assimilationLog: faker.lorem.words(),
             rainGraph: 'path/to/rainGraph',
             costGraph: 'path/to/costGraph',
-            parameters: faker.lorem.paragraphs(),
+            parameters: i + faker.lorem.paragraphs(),
             locationId: location.id,
           },
         })
