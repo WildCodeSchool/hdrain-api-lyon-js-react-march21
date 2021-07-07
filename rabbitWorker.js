@@ -2,6 +2,8 @@
 // require('dotenv').config();
 const amqp = require('amqplib/callback_api');
 const ExperimentModel = require('./models/ExperimentModel');
+const StatusModel = require('./models/StatusModel');
+const SensorModel = require('./models/SensorModel');
 
 function rabbit() {
   // connect to RabbitMQ server
@@ -34,15 +36,15 @@ function rabbit() {
         channel.consume(
           queue,
           async (msg) => {
-            const message = msg.content
-              .toString()
-              .toLowerCase()
-              .replace(/\\n/g, ' ');
+            const message = msg.content.toString().toLowerCase();
+            // .replace(/\\n/g, ' ');
+
+            console.log(message);
             try {
               const data = JSON.parse(message);
 
-              // need the key names to match the db 
-              const newData = {
+              // data to send in the database
+              const experimentData = {
                 timestamp: data.date.replace(/h/, '_').split('_'),
                 assimilationLog: data['log assim'],
                 neuralNetworkLog: data['log rn'],
@@ -51,24 +53,29 @@ function rabbit() {
               };
 
               // change date fortmat
-              newData.timestamp = new Date(newData.timestamp[0], newData.timestamp[1], newData.timestamp[2], newData.timestamp[3], newData.timestamp[4]);
-              
-              // show result
-              console.log(' [x] Received: ', newData);
+              experimentData.timestamp = new Date(
+                experimentData.timestamp[0],
+                experimentData.timestamp[1],
+                experimentData.timestamp[2],
+                experimentData.timestamp[3],
+                experimentData.timestamp[4]
+              );
+
+              // show results
+              console.log(' [x] Received: ', experimentData);
 
               // store in DB
-              if (!newData) {
+              if (!experimentData) {
                 console.log('Error: wrong data sent');
               } else if (
-                await ExperimentModel.experimentAlreadyExists(newData)
+                await ExperimentModel.experimentAlreadyExists(experimentData)
               ) {
                 console.log('Error: experiment already saved in the database');
               } else {
-
                 // add missing element
-                newData.locationId = 1;
-                newData.rainGraph = '/path';
-                newData.costGraph = '/path';
+                experimentData.locationId = 1;
+                experimentData.rainGraph = '/path';
+                experimentData.costGraph = '/path';
 
                 // send all elements to the database
                 const {
@@ -79,9 +86,9 @@ function rabbit() {
                   costGraph,
                   parameters,
                   locationId,
-                } = newData;
+                } = experimentData;
 
-                const newExperiment = await ExperimentModel.create({
+                const StoredExperiment = await ExperimentModel.create({
                   timestamp,
                   neuralNetworkLog,
                   assimilationLog,
@@ -91,12 +98,41 @@ function rabbit() {
                   locationId,
                 });
 
-                console.log('experiment stored in DB: ', newExperiment);
+                console.log('experiment stored in DB: ', StoredExperiment);
+                // create sensors
+                const assimilationArr = StoredExperiment.assimilationLog
+                  .split('\n')
+                  .filter(
+                    (element) =>
+                      element.includes('ets36') || element.includes('ses5')
+                  );
+                 
 
-                // update/create status
-                
+                console.log(assimilationArr);
 
-              };
+                // create status for sensors
+                const { status } = experimentData;
+
+                // get all the sensors from a location
+                const sensorsList = await SensorModel.findAllFromLocation(
+                  locationId
+                );
+
+                // create a status for each sensor in this location
+                sensorsList.forEach(async (sensor) => {
+                  if (status[`${sensor.sensorNumber}`]) {
+                    const newStatus = {
+                      code: status[sensor.sensorNumber],
+                      sensorId: sensor.id,
+                      experimentId: StoredExperiment.id,
+                    };
+
+                    const storedStatus = await StatusModel.create(newStatus);
+
+                    console.log('status added', storedStatus);
+                  }
+                });
+              }
             } catch (error) {
               // console.error(error);
             }
