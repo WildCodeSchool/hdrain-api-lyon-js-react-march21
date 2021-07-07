@@ -37,12 +37,10 @@ const stopCopyingData = () => {
   console.log(`Interval ${intervalId} was stopped`);
 };
 
-copyDataPeriodically();
-
 module.exports = {
   copyDataPeriodically,
   copyData,
   stopCopyingData,
 };
 
-// apt-get install sshpass
+// To install sshpass on Linux: apt-get install sshpass
