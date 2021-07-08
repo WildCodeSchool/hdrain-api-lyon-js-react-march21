@@ -25,10 +25,10 @@ module.exports = async function seed() {
   const experiments = await Promise.all(
     Array(5)
       .fill(null)
-      .map((i) =>
+      .map((_, index) =>
         prisma.experiment.create({
           data: {
-            timestamp: new Date(2021, 6, 22, 15 + i, 0),
+            timestamp: new Date(2021, 6, 12 + index, 18, 45),
             neuralNetworkLog: faker.lorem.words(),
             assimilationLog: faker.lorem.words(),
             rainGraph: 'path/to/rainGraph',

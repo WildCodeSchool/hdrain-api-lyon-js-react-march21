@@ -51,7 +51,7 @@ const update = (id, path) =>
 // if an url exist, make it precede of the localhost:5000 to get absolute url
 const getImagesURL = (experiment) => {
   let rainGraph = experiment ? experiment.rainGraph : undefined;
-  let costGraph = experiment ? experiment.costGraph: undefined;
+  let costGraph = experiment ? experiment.costGraph : undefined;
   if (
     rainGraph &&
     !rainGraph.startsWith('http://') &&
@@ -83,11 +83,25 @@ const selectFile = (id) =>
     },
   });
 
+const createManyExperiments = (array) =>
+  prisma.experiment.createMany({
+    data: array,
+  });
+
+// Get all timestamps returns an object with keys = every timestamp and values = true
+const getAllTimestamps = async () => {
+  const experiments = await prisma.experiment.findMany();
+  return Object.fromEntries(
+    experiments.map(({ timestamp }) => [timestamp.toISOString(), true])
+  );
+};
+
 module.exports = {
-  // findMany,
-  findExperimentByTimestamp,
   create,
   update,
   selectFile,
+  getAllTimestamps,
+  createManyExperiments,
+  findExperimentByTimestamp,
   getImagesURL,
 };
