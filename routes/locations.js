@@ -55,7 +55,7 @@ locationsRouter.get('/:locationId/sensors', async (req, res) => {
     timestamp = new Date(req.query.timestamp);
   }
   try {
-    const [experiment] = await ExperimentModel.findExperimentByTimestamp(
+    const experiment = await ExperimentModel.findExperimentByTimestamp(
       locationId,
       timestamp
     );
@@ -119,14 +119,13 @@ locationsRouter.post('/:locationId/sensors', async (req, res) => {
 locationsRouter.get('/:locationId/experiments', async (req, res) => {
   const { locationId } = req.params;
   const timestamp = new Date(req.query.timestamp);
-  console.log(timestamp);
   try {
     // Retrieve all experiment of a given location from the DB
     const experiment = await ExperimentModel.findExperimentByTimestamp(
       locationId,
       timestamp
     );
-    res.status(200).send(experiment);
+    res.status(200).send(ExperimentModel.getImagesURL(experiment));
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
@@ -142,30 +141,6 @@ locationsRouter.get('/:locationId/experiments', async (req, res) => {
 //     // Retrieve all experiments of a given location from the DB
 //     const experiments = await ExperimentModel.findMany(locationId);
 //     res.status(200).send(experiments);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send(error);
-//   }
-// });
-
-// STATUS
-// locationsRouter.get('/:locationId/sensors-status', async (req, res) => {
-//   const { locationId } = req.params;
-//   const timestamp = new Date(req.query.timestamp);
-//   // const { experimentId } = req.query;
-//   try {
-//     const [experiment] = await ExperimentModel.findExperimentByTimestamp(
-//       locationId,
-//       timestamp
-//     );
-//     const experimentId = experiment.id;
-//     const sensors = await SensorModel.findAllFromLocation(locationId);
-//     console.log(locationId, experimentId);
-//     const sensorsId = sensors.map((sensor) => sensor.id);
-//     const statusList = await Promise.all(
-//       sensorsId.map((id) => StatusModel.findUnique(id, experimentId))
-//     );
-//     res.status(200).send(statusList);
 //   } catch (error) {
 //     console.error(error);
 //     res.status(500).send(error);

@@ -1,4 +1,3 @@
-
 const storageRouter = require('express').Router();
 const path = require('path');
 const multer = require('multer');
@@ -6,7 +5,7 @@ const ExperimentModel = require('../models/ExperimentModel');
 
 const storage = multer.diskStorage({
   // Destination to store image
-  destination: 'upload/images',
+  destination: 'storage/images',
   filename: (req, file, cb) => {
     cb(
       null,
@@ -21,7 +20,7 @@ const upload = multer({ storage });
 
 storageRouter.get('/', async (req, res) => {
   try {
-    const experimentId = 1 ;
+    const experimentId = 1;
     const filePath = await ExperimentModel.selectFile(experimentId);
 
     return res.status(200).send(filePath);
