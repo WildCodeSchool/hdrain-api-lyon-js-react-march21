@@ -50,8 +50,8 @@ const update = (id, path) =>
 // function to get all the info related to one experiment but also to extract the expected url
 // if an url exist, make it precede of the localhost:5000 to get absolute url
 const getImagesURL = (experiment) => {
-  let rainGraph = experiment?.rainGraph;
-  let costGraph = experiment?.costGraph;
+  let rainGraph = experiment ? experiment.rainGraph : undefined;
+  let costGraph = experiment ? experiment.costGraph: undefined;
   if (
     rainGraph &&
     !rainGraph.startsWith('http://') &&
