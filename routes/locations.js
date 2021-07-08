@@ -55,7 +55,7 @@ locationsRouter.get('/:locationId/sensors', async (req, res) => {
     timestamp = new Date(req.query.timestamp);
   }
   try {
-    const [experiment] = await ExperimentModel.findExperimentByTimestamp(
+    const experiment = await ExperimentModel.findExperimentByTimestamp(
       locationId,
       timestamp
     );
