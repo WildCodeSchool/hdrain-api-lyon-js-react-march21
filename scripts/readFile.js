@@ -40,7 +40,9 @@ const getDateFromFileDirectory = (pathToFolder) => {
   const splitDirectoryDate = directoryDate.split('/');
   const [hours, minutes] = splitDirectoryDate[3].split('h');
   const [years, months, days] = splitDirectoryDate;
-  const date = new Date(years, months, days, hours, minutes);
+  
+  // months start from 0(january) in JS
+  const date = new Date(years, months-1, days, hours, minutes);
   return date.toISOString();
 };
 
@@ -55,8 +57,10 @@ const createExperiment = async (folder) => {
     timestamp: getDateFromFileDirectory(folder),
     neuralNetworkLog: `${folder}/diagnostics.png`,
     assimilationLog: `${folder}/bash_assim.log`,
-    rainGraph: JSON.stringify({ y1, y2, x }),
-    costGraph: `${folder}/diagnostics.png`,
+    costGraph: JSON.stringify({ y1, y2, x }),
+
+    // need to check for the rain graph source file
+    rainGraph: `${folder}/diagnostics.png`,
     parameters: `${folder}/config.cfg`,
     locationId: 1,
   };
