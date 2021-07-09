@@ -38,11 +38,20 @@ locationsRouter.get('/:locationId', async (req, res) => {
 // Get all sensors from a location
 locationsRouter.get('/:locationId/sensors', async (req, res) => {
   const { locationId } = req.params;
+
+  let timestamp;
+  if (req.query.timestamp) {
+    timestamp = new Date(req.query.timestamp);
+  }
   try {
+    const historyExperiment = await ExperimentModel.findExperimentByTimestamp(
+      locationId,
+      timestamp
+    );
     const lastExperiment = await ExperimentModel.findLatestExperiment(
       locationId
     );
-    const experimentId = lastExperiment.id;
+    const experimentId = historyExperiment?.id || lastExperiment?.id;
     const sensors = await SensorModel.findAllFromLocation(locationId);
     const augmentedSensors = await Promise.all(
       sensors.map(async (sensor) => {
