@@ -37,7 +37,7 @@
     "pretest": "./node_modules/.bin/eslint --ignore-path .gitignore . --fix",
     "migrate": "npx prisma migrate dev",
     "reset": "npx prisma migrate reset",
-    "mr": "npx prisma migrate reset && npx prisma migrate dev",
+    "mr": "npx prisma migrate dev && npx prisma migrate reset",
     "start:server:watch": "nodemon app.js",
     "lint": "eslint --fix .",
     "start": "npm-run-all generate-db-client migrate:deploy start:server",
