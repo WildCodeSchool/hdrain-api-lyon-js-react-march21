@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-// require('dotenv').config();
 const amqp = require('amqplib/callback_api');
-const ExperimentModel = require('./models/ExperimentModel');
-const StatusModel = require('./models/StatusModel');
-const SensorModel = require('./models/SensorModel');
+const storeData = require('./storeRabbitData');
+// require('dotenv').config();
+
 
 function rabbit() {
   // connect to RabbitMQ server
@@ -38,104 +37,14 @@ function rabbit() {
           async (msg) => {
             const message = msg.content.toString().toLowerCase();
             // .replace(/\\n/g, ' ');
-
-            console.log(message);
             try {
-              const data = JSON.parse(message);
+              const rabbitMqData = JSON.parse(message);
+              storeData(rabbitMqData);
 
-              // data to send in the database
-              const experimentData = {
-                timestamp: data.date.replace(/h/, '_').split('_'),
-                assimilationLog: data['log assim'],
-                neuralNetworkLog: data['log rn'],
-                parameters: data.config,
-                status: JSON.parse(data.statuts),
-              };
-
-              // change date fortmat
-              experimentData.timestamp = new Date(
-                experimentData.timestamp[0],
-                experimentData.timestamp[1],
-                experimentData.timestamp[2],
-                experimentData.timestamp[3],
-                experimentData.timestamp[4]
-              );
-
-              // show results
-              console.log(' [x] Received: ', experimentData);
-
-              // store in DB
-              if (!experimentData) {
-                console.log('Error: wrong data sent');
-              } else if (
-                await ExperimentModel.experimentAlreadyExists(experimentData)
-              ) {
-                console.log('Error: experiment already saved in the database');
-              } else {
-                // add missing element
-                experimentData.locationId = 1;
-                experimentData.rainGraph = '/path';
-                experimentData.costGraph = '/path';
-
-                // send all elements to the database
-                const {
-                  timestamp,
-                  neuralNetworkLog,
-                  assimilationLog,
-                  rainGraph,
-                  costGraph,
-                  parameters,
-                  locationId,
-                } = experimentData;
-
-                const StoredExperiment = await ExperimentModel.create({
-                  timestamp,
-                  neuralNetworkLog,
-                  assimilationLog,
-                  rainGraph,
-                  costGraph,
-                  parameters,
-                  locationId,
-                });
-
-                console.log('experiment stored in DB: ', StoredExperiment);
-                // create sensors
-                const assimilationArr = StoredExperiment.assimilationLog
-                  .split('\n')
-                  .filter(
-                    (element) =>
-                      element.includes('ets36') || element.includes('ses5')
-                  );
-                 
-
-                console.log(assimilationArr);
-
-                // create status for sensors
-                const { status } = experimentData;
-
-                // get all the sensors from a location
-                const sensorsList = await SensorModel.findAllFromLocation(
-                  locationId
-                );
-
-                // create a status for each sensor in this location
-                sensorsList.forEach(async (sensor) => {
-                  if (status[`${sensor.sensorNumber}`]) {
-                    const newStatus = {
-                      code: status[sensor.sensorNumber],
-                      sensorId: sensor.id,
-                      experimentId: StoredExperiment.id,
-                    };
-
-                    const storedStatus = await StatusModel.create(newStatus);
-
-                    console.log('status added', storedStatus);
-                  }
-                });
-              }
             } catch (error) {
-              // console.error(error);
+              console.error(error);
             }
+            return console.log('work finished');
           },
           {
             // automatic acknowledgment mode,
