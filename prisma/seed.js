@@ -33,7 +33,7 @@ module.exports = async function seed() {
             assimilationLog: faker.lorem.words(),
             rainGraph: 'path/to/rainGraph',
             costGraph: 'path/to/costGraph',
-            parameters: i + faker.lorem.paragraphs(),
+            parameters: faker.lorem.paragraphs(),
             locationId: location.id,
           },
         })

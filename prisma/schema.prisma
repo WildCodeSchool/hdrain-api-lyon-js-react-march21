@@ -51,7 +51,7 @@ model experiment {
   neuralNetworkLog String   @db.Text
   assimilationLog  String   @db.Text
   rainGraph        String   @db.Text
-  costGraph        String   @db.VarChar(255)
+  costGraph        String   @db.Text
   parameters       String   @db.Text
   location         location @relation(fields: [locationId], references: [id])
   locationId       Int      @db.Integer
