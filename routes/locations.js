@@ -38,33 +38,43 @@ locationsRouter.get('/:locationId', async (req, res) => {
 // Get all sensors from a location
 locationsRouter.get('/:locationId/sensors', async (req, res) => {
   const { locationId } = req.params;
-
-  let timestamp;
-  if (req.query.timestamp) {
-    timestamp = new Date(req.query.timestamp);
-  }
   try {
-    const historyExperiment = await ExperimentModel.findExperimentByTimestamp(
-      locationId,
-      timestamp
-    );
-    const lastExperiment = await ExperimentModel.findLatestExperiment(
-      locationId
-    );
-    const experimentId = historyExperiment?.id || lastExperiment?.id;
-    const sensors = await SensorModel.findAllFromLocation(locationId);
-    const augmentedSensors = await Promise.all(
-      sensors.map(async (sensor) => {
-        const status = await StatusModel.findUnique(sensor.id, experimentId);
-        const statusCode = status ? status.code : undefined;
-        const augmentedSensor = {
-          ...sensor,
-          status: statusCode,
-        };
-        return augmentedSensor;
-      })
-    );
-    res.status(200).send(augmentedSensors);
+    let historyExperiment;
+    let lastExperiment;
+    let experimentId;
+    let augmentedSensors;
+    if (
+      req.query.timestamp &&
+      new Date(req.query.timestamp).getTime() < new Date().getTime()
+    ) {
+      const timestamp = new Date(req.query.timestamp);
+      historyExperiment = await ExperimentModel.findExperimentByTimestamp(
+        locationId,
+        timestamp
+      );
+      experimentId = historyExperiment?.id;
+    } else {
+      lastExperiment = await ExperimentModel.findLatestExperiment(locationId);
+      experimentId = lastExperiment?.id;
+    }
+
+    if (experimentId) {
+      const sensors = await SensorModel.findAllFromLocation(locationId);
+      augmentedSensors = await Promise.all(
+        sensors.map(async (sensor) => {
+          const status = await StatusModel.findUnique(sensor.id, experimentId);
+          const statusCode = status ? status.code : undefined;
+          const augmentedSensor = {
+            ...sensor,
+            status: statusCode,
+          };
+          return augmentedSensor;
+        })
+      );
+      res.status(200).send(augmentedSensors);
+    } else {
+      res.send([]);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
