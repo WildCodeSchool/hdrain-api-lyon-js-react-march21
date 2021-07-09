@@ -1,7 +1,6 @@
 const argon2 = require('argon2');
 const Joi = require('joi');
 const { prisma } = require('../db');
-const { API_BASE_URL } = require('../env');
 
 // ARGON 2
 const hashingOptions = {
@@ -18,7 +17,7 @@ const usernameAlreadyExists = async (username) =>
   !!(await prisma.user.findFirst({ where: { username } }));
 
 // Function to return the user with a given username
-const findByUsername = async (username) =>
+const findByUsername = (username) =>
   prisma.user.findFirst({ where: { username } });
 
 // Check the user's password
@@ -41,10 +40,10 @@ const create = async ({ username, password }) => {
   });
 };
 
-const findOne = (userId) => prisma.user.findFirst({ where: { id: userId } });
+const findOne = (userId) =>
+  prisma.user.findUnique({ where: { id: parseInt(userId, 10) } });
 
-const deleteUser = async (userId) =>
-  prisma.user.delete({ where: { id: userId } });
+const deleteUser = (userId) => prisma.user.delete({ where: { id: userId } });
 
 module.exports = {
   hashPassword,

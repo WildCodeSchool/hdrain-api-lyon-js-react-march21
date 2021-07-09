@@ -11,7 +11,7 @@ generator client {
 }
 
 model user {
-  id             Int    @default(autoincrement())
+  id             Int    @id @default(autoincrement())
   username       String @unique @db.VarChar(160)
   hashedPassword String @db.VarChar(255)
 }
@@ -20,4 +20,51 @@ model session {
   sid    String   @id @db.VarChar(255)
   sess   Json
   expire DateTime @db.Timestamp(6)
+}
+
+// beginning of location model
+model location {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(255)
+  lat         Decimal
+  lng         Decimal
+  sensors     sensor[]
+  experiments experiment[]
+}
+
+model sensor {
+  id           Int       @id @default(autoincrement())
+  sensorNumber Int       @unique
+  spotName     String    @db.VarChar(255)
+  lat          Decimal
+  lng          Decimal
+  createdAt    DateTime  @default(now())
+  deletedAt    DateTime?
+  location     location  @relation(fields: [locationId], references: [id])
+  locationId   Int       @db.Integer
+  status       status[]
+}
+
+model experiment {
+  id               Int      @id @default(autoincrement())
+  timestamp        DateTime @db.Timestamptz
+  neuralNetworkLog String   @db.Text
+  assimilationLog  String   @db.Text
+  rainGraph        String   @db.VarChar(255)
+  costGraph        String   @db.VarChar(255)
+  parameters       String   @db.Text
+  location         location @relation(fields: [locationId], references: [id])
+  locationId       Int      @db.Integer
+  status           status[]
+}
+
+model status {
+  id           Int        @default(autoincrement())
+  code         Int
+  sensor       sensor     @relation(fields: [sensorId], references: [id])
+  sensorId     Int        @db.Integer
+  experiment   experiment @relation(fields: [experimentId], references: [id])
+  experimentId Int        @db.Integer
+
+  @@id([sensorId, experimentId])
 }

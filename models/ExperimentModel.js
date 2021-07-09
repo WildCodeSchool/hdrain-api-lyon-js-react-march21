@@ -1,15 +1,93 @@
-// const mongoose = require('mongoose');
-const connection = require('../db');
+const { prisma } = require('../db');
+const { API_BASE_URL } = require('../env');
 
-const ExperimentSchema = new mongoose.Schema({
-  timestamp: Date,
-  log: String,
-  diagnosticGraph: String,
-  costGraph: String,
-  parameter: String,
-  locationId: { type: mongoose.ObjectId, required: false },
-});
+// const findMany = (locationId, timestamp) =>
+//   prisma.experiment.findMany({
+//     where: { locationId: parseInt(locationId, 10), timestamp },
+//   });
 
-const Experiment = connection.model('Experiment', ExperimentSchema);
+const findExperimentByTimestamp = async (locationId, timestamp) => {
+  const [response] = await prisma.experiment.findMany({
+    where: {
+      locationId: parseInt(locationId, 10),
+      timestamp,
+    },
+  });
+  return response;
+};
 
-module.exports = Experiment;
+const create = ({
+  timestamp,
+  neuralNetworkLog,
+  assimilationLog,
+  rainGraph,
+  costGraph,
+  parameters,
+  location,
+}) =>
+  prisma.experiment.create({
+    data: {
+      timestamp,
+      neuralNetworkLog,
+      assimilationLog,
+      rainGraph,
+      costGraph,
+      parameters,
+      location,
+    },
+  });
+
+const update = (id, path) =>
+  prisma.experiment.update({
+    where: {
+      id,
+    },
+    data: {
+      rainGraph: `${path}`,
+    },
+  });
+
+// function to get all the info related to one experiment but also to extract the expected url
+// if an url exist, make it precede of the localhost:5000 to get absolute url
+const getImagesURL = (experiment) => {
+  let rainGraph = experiment?.rainGraph;
+  let costGraph = experiment?.costGraph;
+  if (
+    rainGraph &&
+    !rainGraph.startsWith('http://') &&
+    !rainGraph.startsWith('https://')
+  ) {
+    rainGraph = `${API_BASE_URL}/${rainGraph}`;
+  }
+  if (
+    costGraph &&
+    !costGraph.startsWith('http://') &&
+    !costGraph.startsWith('https://')
+  ) {
+    costGraph = `${API_BASE_URL}/${costGraph}`;
+  }
+  return {
+    ...experiment,
+    rainGraph,
+    costGraph,
+  };
+};
+
+const selectFile = (id) =>
+  prisma.experiment.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      rainGraph: true,
+    },
+  });
+
+module.exports = {
+  // findMany,
+  findExperimentByTimestamp,
+  create,
+  update,
+  selectFile,
+  getImagesURL,
+};
