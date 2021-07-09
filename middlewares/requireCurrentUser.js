@@ -5,6 +5,6 @@ module.exports = async (req, res, next) => {
     req.currentUser = await User.findOne(req.session.userId);
     next();
   } catch (err) {
-    return res.status(401).send(err);
+    return res.sendStatus(401);
   }
 };
