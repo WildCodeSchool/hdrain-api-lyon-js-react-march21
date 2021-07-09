@@ -1,18 +1,16 @@
 const { prisma } = require('../db');
 const { API_BASE_URL } = require('../env');
 
-const findExperimentByTimestamp = async (locationId, timestamp) => {
-  const [response] = await prisma.experiment.findMany({
+const findExperimentByTimestamp = async (locationId, timestamp) =>
+  prisma.experiment.findFirst({
     where: {
       locationId: parseInt(locationId, 10),
       timestamp,
     },
   });
-  return response;
-};
 
-const findLatestExperiment = async (locationId) => {
-  const [response] = await prisma.experiment.findMany({
+const findLatestExperiment = async (locationId) =>
+  prisma.experiment.findFirst({
     where: {
       locationId: parseInt(locationId, 10),
     },
@@ -21,8 +19,6 @@ const findLatestExperiment = async (locationId) => {
     },
     take: 1,
   });
-  return response;
-};
 
 const create = ({
   timestamp,
