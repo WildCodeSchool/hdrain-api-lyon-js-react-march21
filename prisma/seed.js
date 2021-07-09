@@ -5,13 +5,9 @@ const { prisma } = require('../db');
 const User = require('../models/UserModel');
 
 module.exports = async function seed() {
-  const hashedPassword = await User.hashPassword('hdr');
-
-  await prisma.user.create({
-    data: {
-      username: 'So',
-      hashedPassword,
-    },
+  await User.create({
+    username: 'test',
+    password: 'test',
   });
 
   const location = await prisma.location.create({
