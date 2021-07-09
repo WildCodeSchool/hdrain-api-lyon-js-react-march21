@@ -16,6 +16,19 @@ const findExperimentByTimestamp = async (locationId, timestamp) => {
   return response;
 };
 
+const findLatestExperiment = async (locationId) => {
+  const [response] = await prisma.experiment.findMany({
+    where: {
+      locationId: parseInt(locationId, 10),
+    },
+    orderBy: {
+      id: 'desc',
+    },
+    take: 1,
+  });
+  return response;
+};
+
 const create = ({
   timestamp,
   neuralNetworkLog,
@@ -104,4 +117,5 @@ module.exports = {
   createManyExperiments,
   findExperimentByTimestamp,
   getImagesURL,
+  findLatestExperiment,
 };
