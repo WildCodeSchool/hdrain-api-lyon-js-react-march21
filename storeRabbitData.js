@@ -1,7 +1,6 @@
 const ExperimentModel = require('./models/ExperimentModel');
-// const StatusModel = require('./models/StatusModel');
+const StatusModel = require('./models/StatusModel');
 const SensorModel = require('./models/SensorModel');
-// const LocationModel = require('./models/LocationModel');
 
 // helper 1 : resutruring the data to made it suitable for the db
 const cleanData = (data) => {
@@ -41,142 +40,138 @@ const checkDbForExperiment = async (experiment) => {
   return checkExperimentOnDb;
 };
 
-// helper 3 store expriment 
+// helper 3 store expriment
 const exprimentStoring = async (dataToStore) => {
-// add missing element
-const store = dataToStore;
+  // check if the experiment already
+  const checkingExperiment = await checkDbForExperiment(dataToStore);
 
-store.rainGraph = '/path';
-store.costGraph = '/path';
+  if (checkingExperiment) {
+    return undefined;
+  }
 
-// set all elements to that need to be stored in the database
-const {
-  timestamp,
-  neuralNetworkLog,
-  assimilationLog,
-  rainGraph,
-  costGraph,
-  parameters,
-  locationId,
-} = store;
+  // add missing element
+  const store = dataToStore;
 
-// new experiment storing
-const storedExperiment = await ExperimentModel.create({
-  timestamp,
-  neuralNetworkLog,
-  assimilationLog,
-  rainGraph,
-  costGraph,
-  parameters,
-  locationId,
-});
+  store.rainGraph = '/path';
+  store.costGraph = '/path';
 
-console.log('experiment stored in DB: ', storedExperiment.id);
+  // set all elements to that need to be stored in the database
+  const {
+    timestamp,
+    neuralNetworkLog,
+    assimilationLog,
+    rainGraph,
+    costGraph,
+    parameters,
+    locationId,
+  } = store;
 
-return store;
+  // new experiment storing
+  const storedExperiment = await ExperimentModel.create({
+    timestamp,
+    neuralNetworkLog,
+    assimilationLog,
+    rainGraph,
+    costGraph,
+    parameters,
+    locationId,
+  });
+
+  console.log('experiment stored in DB: ', storedExperiment.id);
+
+  return store;
 };
 
-// helper 4 : check if sensors exist in the db 
-const checkDbForSensors = async (experimentData) => {
-    const sensorsList = [];
+// helper 4 : check if sensors exist in the db
+const checkDbForSensors = async (experimentStoredData) => {
+  const sensorsList = [];
 
-// get all the sensors from a location
-const idLoc = experimentData.locationId.toString();
-const sensorsFromLocation = await SensorModel.findAllFromLocation(idLoc);
+  // get all the sensors from a location
+  const idLoc = experimentStoredData.locationId.toString();
 
+  const sensorsFromLocation = await SensorModel.findAllFromLocation(idLoc);
 
-// check if the sensors already exist in the db
+  // check if the sensors already exist in the db
   // make sure the sensor list is not empty
   if (sensorsFromLocation.length === 0) {
-    console.log('Sensors list is empty in the db ', sensorsFromLocation);
-    return sensorsFromLocation;
+    return sensorsList;
   }
 
   // create an array of sensors
-  const hdRainSensor = Object.entries(experimentData.sensorsPosition);
+  const hdRainSensorNumber = Object.keys(experimentStoredData.sensorsPosition);
 
-hdRainSensor.forEach(entry => {
-    const [key] = entry;
+  hdRainSensorNumber.map((key) => {
     const sensorKey = parseInt(key, 10);
 
     const hdrSensorsInTheDb = sensorsFromLocation.find(
-      sensor => sensor.sensorNumber === sensorKey
+      (sensor) => sensor.sensorNumber === sensorKey
     );
-
     return sensorsList.push(hdrSensorsInTheDb);
   });
 
-//   console.log('we have sensors in the db: ', result.length);
+  const result = sensorsList.filter((element) => element !== undefined);
 
-  return sensorsList;
+  return result;
 };
 
 // helper 5 : sensors storing
-const sensorStoring = async (experiment) => {
+const sensorStoring = async (experimentAlreadyStored) => {
+  const expStored = experimentAlreadyStored;
 
-const sensorsinDb = await checkDbForSensors(experiment);
+  const sensorsinDbCheck = await checkDbForSensors(expStored);
 
-// store the sensors if they are not already present
-if (sensorsinDb.includes(undefined)) {
-    
- 
-
+  // store the sensors if they are not already present
+  if (sensorsinDbCheck.length !== 0) {
+    return sensorsinDbCheck;
+  }
   const storedSensors = await SensorModel.createSensor(
-    experiment.sensorsPosition,
-    experiment.locationId,
-    experiment.timestamp
+    expStored.sensorsPosition,
+    expStored.locationId,
+    expStored.timestamp
   );
 
-  console.log('sensors stored in DB: ', storedSensors.length);
-  return storedSensors
-  }
-  return console.log('sensors already store in the db: ');
+  console.log(storedSensors.length);
+
+  return storedSensors;
 };
 
+// helper 6 : store status
+const statusStoring = (listOfSensors, newExperimentData) => {
+const {status, id: newExpId} = newExperimentData; 
 
+  listOfSensors.map(async (sensor) => {
+    if (status[`${sensor.sensorNumber}`]) {
+      const newStatus = {
+        code: status[sensor.sensorNumber],
+        sensorId: sensor.id,
+        experimentId: newExpId,
+      };
 
+      const storedStatus = await StatusModel.create(newStatus);
 
-
-
-
-
+      console.log('status added', storedStatus);
+    }
+  });
+};
 
 // function to store all datas
 const storeData = async (rabbitData) => {
   const hdRainDataToStore = await cleanData(rabbitData);
 
-  // check if the experiment already
-  const checkExperimentOnDb = await checkDbForExperiment(hdRainDataToStore);
-
-  if (checkExperimentOnDb) {
-    return console.log(
-      'The experiment already exists, check experiment id : ',
-      checkExperimentOnDb.id
-    );
-  } 
-
   const newExperimentInDb = await exprimentStoring(hdRainDataToStore);
 
-const newSensorsList = await sensorStoring(newExperimentInDb);
+  // no new experiment stored
+  if (newExperimentInDb === undefined)
+    return console.log('The experiment already exists');
 
-return console.log(`New experiments stored in db :${  newExperimentInDb.id }, sensors stored: ${  newSensorsList.length }`)
+  const newSensorsList = await sensorStoring(newExperimentInDb);
 
-   
-    // // store a status for each sensor in this location
-    // sensorsFromLocation.map(async (sensor) => {
-    //   if (status[`${sensor.sensorNumber}`]) {
-    //     const newStatus = {
-    //       code: status[sensor.sensorNumber],
-    //       sensorId: sensor.id,
-    //       experimentId: StoredExperiment.id,
-    //     };
+   await statusStoring(newSensorsList, newExperimentInDb);
 
-    //     const storedStatus = await StatusModel.create(newStatus);
-
-    //     console.log('status added', storedStatus);
-    //   }
-    // });
-    // }
+  return console.log(
+    `New experiments stored in db :${newExperimentInDb.id} | New sensors stored in db :${newSensorsList.id}`
+  );
+  // // store a status for each sensor in this location
 };
 
 // filter the data we need to store

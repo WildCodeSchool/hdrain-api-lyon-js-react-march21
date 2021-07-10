@@ -42,9 +42,9 @@ function rabbit() {
               storeData(rabbitMqData);
 
             } catch (error) {
-              console.error(error);
+              // console.error(error);
             }
-            return console.log('work finished');
+            
           },
           {
             // automatic acknowledgment mode,
