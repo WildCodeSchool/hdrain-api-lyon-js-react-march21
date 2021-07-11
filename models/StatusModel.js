@@ -1,15 +1,8 @@
 const { prisma } = require('../db');
 
-const create = (newStatus) => {
-  const { code, sensorId, experimentId } = newStatus;
-
-  prisma.status.create({
-    data: {
-      code,
-      sensorId,
-      experimentId,
-    },
+const createManyStatus = (newStatusList) => 
+prisma.status.createMany({
+    data: newStatusList,
   });
-};
 
-module.exports = create;
+module.exports = {createManyStatus};

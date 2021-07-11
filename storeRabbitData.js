@@ -50,10 +50,10 @@ const exprimentStoring = async (dataToStore) => {
   }
 
   // add missing element
-  const store = dataToStore;
+  const data = dataToStore;
 
-  store.rainGraph = '/path';
-  store.costGraph = '/path';
+  data.rainGraph = '/path';
+  data.costGraph = '/path';
 
   // set all elements to that need to be stored in the database
   const {
@@ -64,7 +64,7 @@ const exprimentStoring = async (dataToStore) => {
     costGraph,
     parameters,
     locationId,
-  } = store;
+  } = data;
 
   // new experiment storing
   const storedExperiment = await ExperimentModel.create({
@@ -79,7 +79,9 @@ const exprimentStoring = async (dataToStore) => {
 
   console.log('experiment stored in DB: ', storedExperiment.id);
 
-  return store;
+  data.experimentId = storedExperiment.id;
+
+  return data;
 };
 
 // helper 4 : check if sensors exist in the db
@@ -136,22 +138,22 @@ const sensorStoring = async (experimentAlreadyStored) => {
 };
 
 // helper 6 : store status
-const statusStoring = (listOfSensors, newExperimentData) => {
-const {status, id: newExpId} = newExperimentData; 
+const statusStoring = async (listOfSensors, newExperimentData) => {
+  const { status, experimentId } = newExperimentData;
 
-  listOfSensors.map(async (sensor) => {
-    if (status[`${sensor.sensorNumber}`]) {
-      const newStatus = {
-        code: status[sensor.sensorNumber],
-        sensorId: sensor.id,
-        experimentId: newExpId,
-      };
+  const statusToStore = listOfSensors.map((sensor) => {
+    const newStatus = {
+      code: status[sensor.sensorNumber],
+      sensorId: sensor.id,
+      experimentId,
+    };
 
-      const storedStatus = await StatusModel.create(newStatus);
-
-      console.log('status added', storedStatus);
-    }
+    return newStatus;
   });
+
+  const storedStatus = await StatusModel.createManyStatus(statusToStore);
+
+  return storedStatus;
 };
 
 // function to store all datas
@@ -166,11 +168,15 @@ const storeData = async (rabbitData) => {
 
   const newSensorsList = await sensorStoring(newExperimentInDb);
 
-   await statusStoring(newSensorsList, newExperimentInDb);
-
-  return console.log(
-    `New experiments stored in db :${newExperimentInDb.id} | New sensors stored in db :${newSensorsList.id}`
+  const newStatusStored = await statusStoring(
+    newSensorsList,
+    newExperimentInDb
   );
+
+  console.log('New experiments stored in db :', newExperimentInDb.experimentId);
+  console.log('New status stored in db :', newStatusStored);
+
+  return  console.log('Done !');
   // // store a status for each sensor in this location
 };
 
