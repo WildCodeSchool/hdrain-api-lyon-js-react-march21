@@ -156,7 +156,6 @@ const storeData = async (rabbitData) => {
   console.log('New experiments stored in db :', newExperimentInDb.experimentId);
   console.log('New status stored in db :', newStatusStored);
 
-  return  console.log('Done !');
   // // store a status for each sensor in this location
 };
 
