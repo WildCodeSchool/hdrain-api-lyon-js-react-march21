@@ -94,7 +94,7 @@ const checkDbForSensors = async (experimentStoredData) => {
     return sensorsList.push(hdrSensorsInTheDb);
   });
 
-  const result = sensorsList.filter((element) => element !== undefined);
+  const result = sensorsList.filter((sensor) => sensor !== undefined);
 
   return result;
 };
