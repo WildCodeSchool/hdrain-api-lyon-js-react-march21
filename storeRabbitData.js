@@ -115,7 +115,6 @@ const sensorStoring = async (experimentAlreadyStored) => {
     expStored.timestamp
   );
 
-  console.log(storedSensors.length);
 
   return storedSensors;
 };
