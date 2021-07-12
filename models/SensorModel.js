@@ -21,7 +21,7 @@ const createSensors = async (sensorsPosition, locationId, timestamp) => {
         locationId,
       },
     });
-    return storedSensorsList.push(storingInTheDb);
+    return storedSensorsList.push(storedInTheDb);
   }));
 
   return storedSensorsList;
