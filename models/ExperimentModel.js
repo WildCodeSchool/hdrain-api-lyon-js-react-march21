@@ -105,7 +105,7 @@ module.exports = {
   create,
   update,
   selectFile,
-  experimentAlreadyExists,
+  getExperiment,
   getAllTimestamps,
   createManyExperiments,
   findExperimentByTimestamp,

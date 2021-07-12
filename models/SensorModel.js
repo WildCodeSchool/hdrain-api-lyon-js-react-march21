@@ -7,11 +7,12 @@ const createSensors = async (sensorsPosition, locationId, timestamp) => {
   const sensorsToStore = Object.entries(sensorsPosition);
 
   await Promise.all(sensorsToStore.map(async (sensor) => {
-    const sensorKey = parseInt(sensor.key, 10);
-    const { latitude: lat, longitude: lng, place: spotName } = sensor.value;
+    const [key, value] = sensor;
+    const sensorKey = parseInt(key, 10);
+    const { latitude: lat, longitude: lng, lieux: spotName } = value;
 
     // function to store sensors in the db
-    const storingInTheDb = await prisma.sensor.create({
+    const storedInTheDb = await prisma.sensor.create({
       data: {
         sensorNumber: sensorKey,
         spotName,
