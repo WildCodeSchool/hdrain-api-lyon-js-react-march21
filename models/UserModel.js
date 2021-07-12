@@ -40,7 +40,8 @@ const create = async ({ username, password }) => {
   });
 };
 
-const findUnique = (id) => prisma.user.findUnique({ where: { id } });
+const findOne = (userId) =>
+  prisma.user.findUnique({ where: { id: parseInt(userId, 10) } });
 
 const deleteUser = (userId) => prisma.user.delete({ where: { id: userId } });
 
@@ -53,5 +54,5 @@ module.exports = {
   findMany,
   create,
   deleteUser,
-  findUnique,
+  findOne,
 };
