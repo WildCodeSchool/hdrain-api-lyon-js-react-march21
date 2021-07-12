@@ -8,8 +8,8 @@ const SensorModel = require('./models/SensorModel');
 const cleanData = (data) => {
   // data to send in the database
   if (!data.config) {
-    throw new Error('Error: wrong data');
-  }
+    return null
+  };
 
   const experimentData = {
     timestamp: data.date.replace(/h/, '_').split('_'),
@@ -44,24 +44,26 @@ const saveExperiment = async (experiment) => {
   // check if the experiment already
   const experimentExists = await checkDbForExperiment(experiment);
 
-  if (!experimentExists);
+  if (!experimentExists) {
 
-  // add missing element
-  const data = experiment;
+    // add missing element
+    const data = experiment;
+  
+    data.rainGraph = '/path';
+    data.costGraph = '/path';
+  
+    // set all elements that need to be stored in the database
+  
+    // new experiment storing
+    const storedExperiment = await ExperimentModel.create(data);
+  
+    console.log('experiment stored in DB: ', storedExperiment.id);
+  
+    data.experimentId = storedExperiment.id;
+  
+    return data;
+  } return undefined
 
-  data.rainGraph = '/path';
-  data.costGraph = '/path';
-
-  // set all elements that need to be stored in the database
-
-  // new experiment storing
-  const storedExperiment = await ExperimentModel.create(data);
-
-  console.log('experiment stored in DB: ', storedExperiment.id);
-
-  data.experimentId = storedExperiment.id;
-
-  return data;
 };
 
 // helper 4 : check if sensors exist in the db
@@ -133,17 +135,20 @@ const storeStatus = async (listOfSensors, newExperimentData) => {
 const storeData = async (rabbitData) => {
   const hdRainDataToStore = await cleanData(rabbitData);
 
+  if(!hdRainDataToStore) return console.log('wrong data');
+
   const newExperimentInDb = await saveExperiment(hdRainDataToStore);
 
   // no new experiment stored
-  if (!newExperimentInDb) console.log('The experiment already exists');
+  if (!newExperimentInDb) return console.log('The experiment already exists');
 
   const newSensorsList = await sensorStoring(newExperimentInDb);
 
   const newStatusStored = await storeStatus(newSensorsList, newExperimentInDb);
 
   console.log('New experiments stored in db :', newExperimentInDb.experimentId);
-  console.log('New status stored in db :', newStatusStored);
+  return console.log('New status stored in db :', newStatusStored);
+  
 
   // // store a status for each sensor in this location
 };
