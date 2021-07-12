@@ -6,7 +6,7 @@ const SensorModel = require('./models/SensorModel');
 // -------------------HELPERS--------------------- //
 
 
-// helper 1 : resutruring the data to made it suitable for the db
+// helper 1 : restructuring the data to made it suitable for the db
 const cleanData = (data) => {
   // data to send in the database
   if (!data.config) {
