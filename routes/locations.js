@@ -52,10 +52,10 @@ locationsRouter.get('/:locationId/sensors', async (req, res) => {
         locationId,
         timestamp
       );
-      experimentId = historyExperiment?.id;
+      experimentId = historyExperiment ? historyExperiment.id : undefined;
     } else {
       lastExperiment = await ExperimentModel.findLatestExperiment(locationId);
-      experimentId = lastExperiment?.id;
+      experimentId = lastExperiment ? lastExperiment.id : undefined;
     }
 
     if (experimentId) {
