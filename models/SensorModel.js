@@ -1,7 +1,7 @@
 const { prisma } = require('../db');
 
 // store/not sensors from HD Rain
-const createSensor = async (sensorsPosition, locationId, timestamp) => {
+const createSensors = async (sensorsPosition, locationId, timestamp) => {
   // array that will receive the final results
   const storedSensorsList = [];
   const sensorsToStore = Object.entries(sensorsPosition);
