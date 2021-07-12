@@ -2,6 +2,10 @@ const ExperimentModel = require('./models/ExperimentModel');
 const StatusModel = require('./models/StatusModel');
 const SensorModel = require('./models/SensorModel');
 
+
+// -------------------HELPERS--------------------- //
+
+
 // helper 1 : resutruring the data to made it suitable for the db
 const cleanData = (data) => {
   // data to send in the database
@@ -156,7 +160,11 @@ const statusStoring = async (listOfSensors, newExperimentData) => {
   return storedStatus;
 };
 
-// function to store all datas
+
+
+
+// -------------------FUNCTION TO STORE ALL-------------------- //
+
 const storeData = async (rabbitData) => {
   const hdRainDataToStore = await cleanData(rabbitData);
 
