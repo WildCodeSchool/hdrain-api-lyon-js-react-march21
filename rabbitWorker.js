@@ -35,7 +35,6 @@ function rabbit() {
           queue,
           async (msg) => {
             const message = msg.content.toString().toLowerCase();
-            // .replace(/\\n/g, ' ');
             try {
               const rabbitMqData = JSON.parse(message);
               storeData(rabbitMqData);
