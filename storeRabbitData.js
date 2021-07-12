@@ -60,15 +60,7 @@ const saveExperiment = async (experiment) => {
   // set all elements that need to be stored in the database
 
   // new experiment storing
-  const storedExperiment = await ExperimentModel.create({
-    timestamp,
-    neuralNetworkLog,
-    assimilationLog,
-    rainGraph,
-    costGraph,
-    parameters,
-    locationId,
-  });
+  const storedExperiment = await ExperimentModel.create(data);
 
   console.log('experiment stored in DB: ', storedExperiment.id);
 
