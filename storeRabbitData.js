@@ -144,7 +144,7 @@ const storeData = async (rabbitData) => {
 
   // no new experiment stored
   if (!newExperimentInDb)
-    return console.log('The experiment already exists');
+   console.log('The experiment already exists');
 
   const newSensorsList = await sensorStoring(newExperimentInDb);
 
