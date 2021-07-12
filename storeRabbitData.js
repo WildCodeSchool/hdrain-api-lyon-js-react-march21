@@ -140,7 +140,7 @@ const storeStatus = async (listOfSensors, newExperimentData) => {
 const storeData = async (rabbitData) => {
   const hdRainDataToStore = await cleanData(rabbitData);
 
-  const newExperimentInDb = await exprimentStoring(hdRainDataToStore);
+  const newExperimentInDb = await storeExperiment(hdRainDataToStore);
 
   // no new experiment stored
   if (newExperimentInDb === undefined)
