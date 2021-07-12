@@ -3,7 +3,7 @@ const amqp = require('amqplib/callback_api');
 const storeData = require('./storeRabbitData');
 
 
-function rabbit() {
+function connexion() {
   // connect to RabbitMQ server
   amqp.connect(
     process.env.RABBIT_MQ_CONNECTION_STRING,
@@ -54,4 +54,4 @@ function rabbit() {
   );
 }
 
-module.exports = rabbit;
+module.exports = connexion;
