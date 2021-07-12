@@ -129,9 +129,7 @@ const storeStatus = async (listOfSensors, newExperimentData) => {
       experimentId,
     }));
 
-  const storedStatus = await StatusModel.createManyStatus(statusToStore);
-
-  return storedStatus;
+  return await StatusModel.createManyStatus(statusToStore)
 };
 
 
