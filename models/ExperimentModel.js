@@ -16,7 +16,7 @@ const findExperimentByTimestamp = async (locationId, timestamp) => {
   return response;
 };
 
-const experimentAlreadyExists = (experiment) =>
+const getExperiment = (experiment) =>
   prisma.experiment.findFirst({
     where: { timestamp: experiment.timestamp },
   });
