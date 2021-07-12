@@ -5,13 +5,10 @@ prisma.status.createMany({
     data: newStatusList,
   });
 
-  const findUnique = async (sensorId, experimentId) => {
-    const [status] = await prisma.status.findMany({
+  const findUnique = async (sensorId, experimentId) => await prisma.status.findFirst({
       where: {
         sensorId: parseInt(sensorId, 10),
         experimentId: parseInt(experimentId, 10),
       },
     });
-    return status;
-  };
 module.exports = {createManyStatus, findUnique};
