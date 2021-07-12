@@ -120,7 +120,7 @@ const sensorStoring = async (experimentAlreadyStored) => {
 };
 
 // helper 6 : store status
-const statusStoring = async (listOfSensors, newExperimentData) => {
+const storeStatus = async (listOfSensors, newExperimentData) => {
   const { status, experimentId } = newExperimentData;
 
   const statusToStore = listOfSensors.map((sensor) => {
