@@ -48,7 +48,7 @@ const saveExperiment = async (experiment) => {
   // check if the experiment already
   const experimentExists = await checkDbForExperiment(experiment);
 
-  if (checkingExperiment) {
+  if (!experimentExists) {
     return undefined;
   }
 
