@@ -40,9 +40,8 @@ const getDateFromFileDirectory = (pathToFolder) => {
   const splitDirectoryDate = directoryDate.split('/');
   const [hours, minutes] = splitDirectoryDate[3].split('h');
   const [years, months, days] = splitDirectoryDate;
-  
-  // months start from 0(january) in JS
-  const date = new Date(years, months-1, days, hours, minutes);
+  // months start from 0 (january) in JS
+  const date = new Date(years, months - 1, days, hours, minutes);
   return date.toISOString();
 };
 

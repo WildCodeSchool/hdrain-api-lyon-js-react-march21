@@ -13,8 +13,8 @@ module.exports = async function seed() {
   const location = await prisma.location.create({
     data: {
       name: 'Abidjan',
-      lng: 5.316667,
-      lat: -4.033333,
+      lng: -4.033333,
+      lat: 5.316667,
     },
   });
 

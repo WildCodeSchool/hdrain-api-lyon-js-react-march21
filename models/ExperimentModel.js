@@ -20,6 +20,11 @@ const findLatestExperiment = async (locationId) =>
     take: 1,
   });
 
+const getExperiment = (experiment) =>
+  prisma.experiment.findFirst({
+    where: { timestamp: experiment.timestamp },
+  });
+
 const create = ({
   timestamp,
   neuralNetworkLog,
@@ -27,7 +32,7 @@ const create = ({
   rainGraph,
   costGraph,
   parameters,
-  location,
+  locationId,
 }) =>
   prisma.experiment.create({
     data: {
@@ -37,7 +42,7 @@ const create = ({
       rainGraph,
       costGraph,
       parameters,
-      location,
+      locationId,
     },
   });
 
@@ -104,6 +109,7 @@ module.exports = {
   create,
   update,
   selectFile,
+  getExperiment,
   getAllTimestamps,
   createManyExperiments,
   findExperimentByTimestamp,
