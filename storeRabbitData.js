@@ -123,15 +123,11 @@ const sensorStoring = async (experimentAlreadyStored) => {
 const storeStatus = async (listOfSensors, newExperimentData) => {
   const { status, experimentId } = newExperimentData;
 
-  const statusToStore = listOfSensors.map((sensor) => {
-    const newStatus = {
+  const statusToStore = listOfSensors.map((sensor) => ({
       code: status[sensor.sensorNumber],
       sensorId: sensor.id,
       experimentId,
-    };
-
-    return newStatus;
-  });
+    }));
 
   const storedStatus = await StatusModel.createManyStatus(statusToStore);
 
