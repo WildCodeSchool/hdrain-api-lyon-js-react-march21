@@ -29,7 +29,7 @@ const cleanData = (data) => {
     experimentData.timestamp[1],
     experimentData.timestamp[2],
     experimentData.timestamp[3],
-    experimentData.timestamp[4]
+   ...experimentData.timestamp
   );
 
   // show results
