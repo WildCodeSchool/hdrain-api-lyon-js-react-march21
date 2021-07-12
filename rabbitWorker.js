@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const amqp = require('amqplib/callback_api');
 const storeData = require('./storeRabbitData');
-// require('dotenv').config();
 
 
 function rabbit() {
