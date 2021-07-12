@@ -44,7 +44,7 @@ const findUnique = (sensorId) =>
   });
 
 module.exports = {
-  createSensor,
+  createSensors,
   findAll,
   findUnique,
   findAllFromLocation,
