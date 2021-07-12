@@ -58,15 +58,6 @@ const saveExperiment = async (experiment) => {
   data.costGraph = '/path';
 
   // set all elements that need to be stored in the database
-  const {
-    timestamp,
-    neuralNetworkLog,
-    assimilationLog,
-    rainGraph,
-    costGraph,
-    parameters,
-    locationId,
-  } = data;
 
   // new experiment storing
   const storedExperiment = await ExperimentModel.create({
