@@ -38,43 +38,43 @@ locationsRouter.get('/:locationId', async (req, res) => {
 // Get all sensors from a location
 locationsRouter.get('/:locationId/sensors', async (req, res) => {
   const { locationId } = req.params;
-  let timestamp;
-  if (!req.query.timestamp) {
-    const date = new Date();
-    const coeff = 1000 * 60 * 5;
-    const year = date.getFullYear();
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const day = `0${date.getDate()}`.slice(-2);
-    const formattedHours = `0${date.getHours()}`.slice(-2);
-    const rounded = new Date(Math.round(date.getTime() / coeff) * coeff);
-    const roundedMinutes = `0${rounded.getMinutes()}`.slice(-2);
-    const formattedDate = `${year}-${month}-${day}T${formattedHours}:${roundedMinutes}:00`;
-
-    timestamp = new Date(formattedDate);
-  } else {
-    timestamp = new Date(req.query.timestamp);
-  }
   try {
-    const experiment = await ExperimentModel.findExperimentByTimestamp(
-      locationId,
-      timestamp
-    );
-    const experimentId = experiment.id;
-    const sensors = await SensorModel.findAllFromLocation(locationId);
-    // const sensorsId = sensors.map((sensor) => sensor.id);
-    const augmentedSensors = await Promise.all(
-      sensors.map(async (sensor) => {
-        const status = await StatusModel.findUnique(sensor.id, experimentId);
-        const statusCode = status ? status.code : undefined;
-        const augmentedSensor = {
-          ...sensor,
-          status: statusCode,
-        };
-        return augmentedSensor;
-      })
-    );
-    console.log(augmentedSensors);
-    res.status(200).send(augmentedSensors);
+    let historyExperiment;
+    let lastExperiment;
+    let experimentId;
+    let augmentedSensors;
+    if (
+      req.query.timestamp &&
+      new Date(req.query.timestamp).getTime() < new Date().getTime()
+    ) {
+      const timestamp = new Date(req.query.timestamp);
+      historyExperiment = await ExperimentModel.findExperimentByTimestamp(
+        locationId,
+        timestamp
+      );
+      experimentId = historyExperiment ? historyExperiment.id : undefined;
+    } else {
+      lastExperiment = await ExperimentModel.findLatestExperiment(locationId);
+      experimentId = lastExperiment ? lastExperiment.id : undefined;
+    }
+
+    if (experimentId) {
+      const sensors = await SensorModel.findAllFromLocation(locationId);
+      augmentedSensors = await Promise.all(
+        sensors.map(async (sensor) => {
+          const status = await StatusModel.findUnique(sensor.id, experimentId);
+          const statusCode = status ? status.code : undefined;
+          const augmentedSensor = {
+            ...sensor,
+            status: statusCode,
+          };
+          return augmentedSensor;
+        })
+      );
+      res.status(200).send(augmentedSensors);
+    } else {
+      res.send([]);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send(error);

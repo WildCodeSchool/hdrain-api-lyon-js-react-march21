@@ -1,20 +1,24 @@
 const { prisma } = require('../db');
 const { API_BASE_URL } = require('../env');
 
-// const findMany = (locationId, timestamp) =>
-//   prisma.experiment.findMany({
-//     where: { locationId: parseInt(locationId, 10), timestamp },
-//   });
-
-const findExperimentByTimestamp = async (locationId, timestamp) => {
-  const [response] = await prisma.experiment.findMany({
+const findExperimentByTimestamp = async (locationId, timestamp) =>
+  prisma.experiment.findFirst({
     where: {
       locationId: parseInt(locationId, 10),
       timestamp,
     },
   });
-  return response;
-};
+
+const findLatestExperiment = async (locationId) =>
+  prisma.experiment.findFirst({
+    where: {
+      locationId: parseInt(locationId, 10),
+    },
+    orderBy: {
+      id: 'desc',
+    },
+    take: 1,
+  });
 
 const create = ({
   timestamp,
@@ -104,4 +108,5 @@ module.exports = {
   createManyExperiments,
   findExperimentByTimestamp,
   getImagesURL,
+  findLatestExperiment,
 };
