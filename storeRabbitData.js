@@ -148,7 +148,7 @@ const storeData = async (rabbitData) => {
 
   const newSensorsList = await sensorStoring(newExperimentInDb);
 
-  const newStatusStored = await statusStoring(
+  const newStatusStored = await storeStatus(
     newSensorsList,
     newExperimentInDb
   );
