@@ -32,7 +32,6 @@ const cleanData = (data) => {
    ...experimentData.timestamp
   );
 
-  // show results
   return experimentData;
 };
 
