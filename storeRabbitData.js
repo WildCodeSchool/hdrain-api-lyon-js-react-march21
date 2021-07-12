@@ -49,7 +49,6 @@ const saveExperiment = async (experiment) => {
   const experimentExists = await checkDbForExperiment(experiment);
 
   if (!experimentExists) {
-    return undefined;
   }
 
   // add missing element
