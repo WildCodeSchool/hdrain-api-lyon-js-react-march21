@@ -7,7 +7,6 @@ const createSensors = async (sensorsPosition, locationId, timestamp) => {
   const sensorsToStore = Object.entries(sensorsPosition);
 
   await Promise.all(sensorsToStore.map(async (sensor) => {
-    const [key, value] = entry;
     const sensorKey = parseInt(key, 10);
     const { latitude: lat, longitude: lng, lieux: spotName } = value;
 
