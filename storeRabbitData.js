@@ -35,7 +35,7 @@ const cleanData = (data) => {
   return experimentData;
 };
 
-// helper 2 : check of the experiment already exist in the db
+// helper 2 : check if the experiment already exist in the db
 const checkDbForExperiment = async (experiment) => {
   const checkExperimentOnDb = await ExperimentModel.experimentAlreadyExists(
     experiment
