@@ -52,7 +52,7 @@ const saveExperiment = async (experiment) => {
   }
 
   // add missing element
-  const data = dataToStore;
+  const data = experiement;
 
   data.rainGraph = '/path';
   data.costGraph = '/path';
