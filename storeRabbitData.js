@@ -80,9 +80,7 @@ const checkDbForSensors = async (experimentStoredData) => {
 
   // check if the sensors already exist in the db
   // make sure the sensor list is not empty
-  if (sensorsFromLocation.length === 0) {
-    return sensorsList;
-  }
+  if (!sensorsFromLocation.length) return sensorsList;
 
   // create an array of sensors
   const hdRainSensorNumber = Object.keys(experimentStoredData.sensorsPosition);
