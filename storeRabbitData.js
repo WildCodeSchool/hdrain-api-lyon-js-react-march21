@@ -57,7 +57,7 @@ const saveExperiment = async (experiment) => {
   data.rainGraph = '/path';
   data.costGraph = '/path';
 
-  // set all elements to that need to be stored in the database
+  // set all elements that need to be stored in the database
   const {
     timestamp,
     neuralNetworkLog,
