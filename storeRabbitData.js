@@ -46,7 +46,7 @@ const checkDbForExperiment = async (experiment) => await ExperimentModel.experim
 // helper 3 store expriment
 const saveExperiment = async (experiment) => {
   // check if the experiment already
-  const checkingExperiment = await checkDbForExperiment(dataToStore);
+  const experimentExists = await checkDbForExperiment(experiment);
 
   if (checkingExperiment) {
     return undefined;
