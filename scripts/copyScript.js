@@ -9,7 +9,7 @@ const source = process.env.HD_RAIN_SOURCE;
 
 // Returns a shell command to copy the file server's content to our server (using rsync through ssh)
 const command = (path, address) =>
-  ` rsync -vrzh --rsh='sshpass -p ${process.env.HD_RAIN_SERVER_PWD} ssh -o "StrictHostKeyChecking no"' wild@${address}:${source} ${target}${path}`;
+  ` rsync -vrzh --rsh='sshpass -p ${process.env.HD_RAIN_SERVER_PWD} ssh -o "StrictHostKeyChecking no"' wild@${address}:${source} ${target}/${path}`;
 
 // Interval in milliseconds
 const interval = 5 * 60 * 1000;
