@@ -9,16 +9,12 @@ const readFile = util.promisify(fs.readFile);
 const readDir = util.promisify(fs.readdir);
 const glob = util.promisify(globCB);
 
-// Path to scan
-const mainPath = `${process.env.LOCAL_TARGET}/**/[0-9][0-9]h[0-9][0-9]`;
-
-// Function to read the files where the rain graph values are stored and returns an array
+// Function to read the files where the cost graph values are stored and returns an array
 const readArrayFromFile = async (pathToFile) => {
   try {
     const buffer = await readFile(pathToFile);
     return buffer.toString('utf8').trim().split('\n').map(Number);
   } catch (error) {
-    console.error(error);
     return [];
   }
 };
@@ -31,6 +27,16 @@ const readStationStatusFromFile = async (pathToFile) => {
   } catch (error) {
     console.error(error);
     return { error };
+  }
+};
+
+// Function to read the file content en return it
+const readDataFromFile = async (pathToFile) => {
+  try {
+    const buffer = await readFile(pathToFile);
+    return buffer.toString('utf8');
+  } catch (error) {
+    return '';
   }
 };
 
@@ -47,23 +53,59 @@ const getDateFromFileDirectory = (pathToFolder) => {
 
 // Function to create an object representing an experiment using the folder's content
 const createExperiment = async (folder) => {
-  const [y1, y2, x] = await Promise.all([
+  const [J, Jb, JNL, r] = await Promise.all([
     readArrayFromFile(`${folder}/J`),
     readArrayFromFile(`${folder}/Jb`),
     readArrayFromFile(`${folder}/JNL`),
+    readArrayFromFile(`${folder}/r`),
   ]);
   return {
     timestamp: getDateFromFileDirectory(folder),
     neuralNetworkLog: `${folder}/diagnostics.png`,
-    assimilationLog: `${folder}/bash_assim.log`,
-    costGraph: JSON.stringify({ y1, y2, x }),
-
+    assimilationLog: await readDataFromFile(`${folder}/bash_assim.log`),
+    costGraph: JSON.stringify({ J, Jb, JNL, r }),
     // need to check for the rain graph source file
     rainGraph: `${folder}/diagnostics.png`,
-    parameters: `${folder}/config.cfg`,
+    parameters: await readDataFromFile(`${folder}/config.cfg`),
     locationId: 1,
   };
 };
+
+const parseSensorList = async (folder) =>
+  Object.keys(
+    JSON.parse(await readDataFromFile(`${folder}/statut_stations.log`))
+  ).map(Number);
+
+const parseSensorGeometry = async (folder) =>
+  JSON.parse(await readDataFromFile(`${folder}/geometrie.json`));
+
+// Function to return a promise
+const createSensor = async (sensorNumber, folder) =>
+  Promise.resolve({
+    sensorNumber,
+    lat: await parseSensorGeometry(folder)[sensorNumber].lat,
+    lng: await parseSensorGeometry(folder)[sensorNumber].lng,
+    locationId: 1,
+  });
+
+// Function to create a sensor from the sensor status file
+const createSensorList = async (folder) =>
+  Promise.all(
+    (await parseSensorList(folder)).map((sensorNumber) =>
+      createSensor(sensorNumber, folder)
+    )
+  );
+
+// TODO: create a function (and call it in saveFilesToDB) to save the sensorList in the DB
+const saveSensorsToDB = async (folder) => {
+  try {
+    ExperimentModel.createManyExperiments(await createSensorList(folder));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// TODO: create a function (and call it in saveFilesToDB) to save the sensors' status in the DB
 
 // Function returning wether a folder is empty or not
 const isDirNotEmpty = async (folder) => {
@@ -102,12 +144,4 @@ const saveFilesToDB = async (pathToFiles) => {
   }
 };
 
-saveFilesToDB(mainPath);
-
-module.exports = {
-  readArrayFromFile,
-  saveFilesToDB,
-  getDateFromFileDirectory,
-  readStationStatusFromFile,
-  createExperiment,
-};
+module.exports = saveFilesToDB;
