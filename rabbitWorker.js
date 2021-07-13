@@ -20,7 +20,7 @@ function connexion() {
         const queue = 'HDR_Monitoring';
         // This makes sure the queue is declared before attempting to consume from it
         channel.assertQueue(queue, {
-          // durable: true,
+          durable: true,
         });
         console.log(
           ' [*] Rabbit - Waiting for messages in %s. Press CTRL+C to exit',
@@ -31,8 +31,7 @@ function connexion() {
           async (msg) => {
             const message = msg.content.toString().toLowerCase();
             try {
-              const rabbitMqData = JSON.parse(message);
-              storeData(rabbitMqData);
+              storeData(JSON.parse(message));
             } catch (error) {
               console.error(error);
             }
