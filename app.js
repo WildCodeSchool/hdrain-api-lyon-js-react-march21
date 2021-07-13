@@ -6,12 +6,12 @@ const PgSession = require('connect-pg-simple')(session);
 const {
   PORT,
   CORS_ALLOWED_ORIGINS,
-  // DATABASE_URL,
   inTestEnv,
   inProdEnv,
   SESSION_COOKIE_SECRET,
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_DOMAIN,
+  LOCAL_TARGET,
 } = require('./env');
 const initRoutes = require('./routes');
 const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
@@ -19,6 +19,12 @@ const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
 
 require('dotenv').config();
+
+// Path to scan
+const mainPath = `${LOCAL_TARGET}/**/[0-9][0-9]h[0-9][0-9]`;
+
+require('./scripts/copyScript').copyDataPeriodically();
+require('./scripts/readFile')(mainPath);
 require('./rabbitWorker')();
 
 const { db } = require('./db');
