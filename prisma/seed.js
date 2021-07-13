@@ -5,35 +5,31 @@ const { prisma } = require('../db');
 const User = require('../models/UserModel');
 
 module.exports = async function seed() {
-  const hashedPassword = await User.hashPassword('hdr');
-
-  await prisma.user.create({
-    data: {
-      username: 'So',
-      hashedPassword,
-    },
+  await User.create({
+    username: 'test',
+    password: 'test',
   });
 
   const location = await prisma.location.create({
     data: {
       name: 'Abidjan',
-      lng: 5.316667,
-      lat: -4.033333,
+      lng: -4.033333,
+      lat: 5.316667,
     },
   });
 
   const experiments = await Promise.all(
     Array(5)
       .fill(null)
-      .map((i) =>
+      .map((_, index) =>
         prisma.experiment.create({
           data: {
-            timestamp: new Date(2021, 6, 22, 15 + i, 0),
+            timestamp: new Date(2021, 5, 12 + index, 18, 45),
             neuralNetworkLog: faker.lorem.words(),
             assimilationLog: faker.lorem.words(),
             rainGraph: 'path/to/rainGraph',
             costGraph: 'path/to/costGraph',
-            parameters: i + faker.lorem.paragraphs(),
+            parameters: faker.lorem.paragraphs(),
             locationId: location.id,
           },
         })

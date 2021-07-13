@@ -1,25 +1,32 @@
 const { prisma } = require('../db');
 
-const create = ({
-  sensorNumber,
-  spotName,
-  lat,
-  lng,
-  createdAt,
-  deletedAt,
-  locationId,
-}) =>
-  prisma.sensor.create({
-    data: {
-      sensorNumber,
-      spotName,
-      lat,
-      lng,
-      createdAt,
-      deletedAt,
-      locationId,
-    },
-  });
+// store/not sensors from HD Rain
+const createSensors = async (sensorsPosition, locationId, timestamp) => {
+  // array that will receive the final results
+  const storedSensorsList = [];
+  const sensorsToStore = Object.entries(sensorsPosition);
+
+  await Promise.all(sensorsToStore.map(async (sensor) => {
+    const [key, value] = sensor;
+    const sensorKey = parseInt(key, 10);
+    const { latitude: lat, longitude: lng, lieux: spotName } = value;
+
+    // function to store sensors in the db
+    const storedInTheDb = await prisma.sensor.create({
+      data: {
+        sensorNumber: sensorKey,
+        spotName,
+        lat,
+        lng,
+        createdAt: timestamp,
+        locationId,
+      },
+    });
+    return storedSensorsList.push(storedInTheDb);
+  }));
+
+  return storedSensorsList;
+};
 
 const findAll = () => prisma.sensor.findMany();
 
@@ -37,4 +44,9 @@ const findUnique = (sensorId) =>
     },
   });
 
-module.exports = { create, findAll, findUnique, findAllFromLocation };
+module.exports = {
+  createSensors,
+  findAll,
+  findUnique,
+  findAllFromLocation,
+};

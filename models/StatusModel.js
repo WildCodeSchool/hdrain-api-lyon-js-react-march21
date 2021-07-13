@@ -1,12 +1,15 @@
 const { prisma } = require('../db');
 
-const create = ({ code, sensor, experiment }) =>
-  prisma.sensor.create({
-    data: {
-      code,
-      sensor,
-      experiment,
-    },
+const createManyStatus = (newStatusList) =>
+  prisma.status.createMany({
+    data: newStatusList,
   });
 
-module.exports = create;
+const findUnique = async (sensorId, experimentId) =>
+  prisma.status.findFirst({
+    where: {
+      sensorId: parseInt(sensorId, 10),
+      experimentId: parseInt(experimentId, 10),
+    },
+  });
+module.exports = { createManyStatus, findUnique };

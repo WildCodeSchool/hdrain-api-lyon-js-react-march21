@@ -7,17 +7,19 @@ const prisma = new PrismaClient();
 /* ----------------------- DB CONNECTION -----------------------------------------*/
 
 const db = new Pool({
-  user: process.env.DB_USERNAME,
   host: process.env.DB_URL,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 db.on('error', console.error.bind(console, 'connection error:')).once(
   'open',
   () => {
-    console.log('database connection established successfully');
+    console.log(
+      `Database connection established successfully on port: ${db.port}`
+    );
   }
 );
 

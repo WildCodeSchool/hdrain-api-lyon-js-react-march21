@@ -28,6 +28,7 @@ const port = PORT || 5000;
 const app = express();
 
 app.use(express.json());
+app.use('/storage', express.static('storage'));
 app.set('x-powered-by', false); // for security
 app.set('trust proxy', 1); // trust first proxy
 
@@ -50,14 +51,17 @@ app.use(
     key: SESSION_COOKIE_NAME,
     secret: SESSION_COOKIE_SECRET,
     store: new PgSession({
+      createTableIfMissing: true,
       pool: db,
       tableName: 'session',
     }),
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     cookie: {
       secure: inProdEnv,
       domain: SESSION_COOKIE_DOMAIN,
+      sameSite: true,
+      httpOnly: true,
     },
   })
 );

@@ -2,6 +2,7 @@ const locationsRouter = require('express').Router();
 const LocationModel = require('../models/LocationModel');
 const SensorModel = require('../models/SensorModel');
 const ExperimentModel = require('../models/ExperimentModel');
+const StatusModel = require('../models/StatusModel');
 
 // LOCATIONS
 
@@ -38,10 +39,42 @@ locationsRouter.get('/:locationId', async (req, res) => {
 locationsRouter.get('/:locationId/sensors', async (req, res) => {
   const { locationId } = req.params;
   try {
-    // Retrieve specific sensor from the DB
-    const sensors = await SensorModel.findAllFromLocation(locationId);
-    if (!sensors.length) res.status(404).send('No sensor found');
-    else res.status(200).send(sensors);
+    let historyExperiment;
+    let lastExperiment;
+    let experimentId;
+    let augmentedSensors;
+    if (
+      req.query.timestamp &&
+      new Date(req.query.timestamp).getTime() < new Date().getTime()
+    ) {
+      const timestamp = new Date(req.query.timestamp);
+      historyExperiment = await ExperimentModel.findExperimentByTimestamp(
+        locationId,
+        timestamp
+      );
+      experimentId = historyExperiment ? historyExperiment.id : undefined;
+    } else {
+      lastExperiment = await ExperimentModel.findLatestExperiment(locationId);
+      experimentId = lastExperiment ? lastExperiment.id : undefined;
+    }
+
+    if (experimentId) {
+      const sensors = await SensorModel.findAllFromLocation(locationId);
+      augmentedSensors = await Promise.all(
+        sensors.map(async (sensor) => {
+          const status = await StatusModel.findUnique(sensor.id, experimentId);
+          const statusCode = status ? status.code : undefined;
+          const augmentedSensor = {
+            ...sensor,
+            status: statusCode,
+          };
+          return augmentedSensor;
+        })
+      );
+      res.status(200).send(augmentedSensors);
+    } else {
+      res.send([]);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
@@ -82,39 +115,36 @@ locationsRouter.post('/:locationId/sensors', async (req, res) => {
   }
 });
 
-
 // Get experiment at a single timestamp from a location
 locationsRouter.get('/:locationId/experiments', async (req, res) => {
   const { locationId } = req.params;
   const timestamp = new Date(req.query.timestamp);
-  console.log(timestamp);
   try {
     // Retrieve all experiment of a given location from the DB
     const experiment = await ExperimentModel.findExperimentByTimestamp(
       locationId,
       timestamp
-      );
-      res.status(200).send(experiment);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send(error);
-    }
-  });
-  
-  // EXPERIMENTS
-  
-  // Get all experiments from a location
-  // locationsRouter.get('/:locationId/experiments', async (req, res) => {
-  //   const { locationId } = req.params;
-  //   try {
-  //     // Retrieve all experiments of a given location from the DB
-  //     const experiments = await ExperimentModel.findMany(locationId);
-  //     res.status(200).send(experiments);
-  //   } catch (error) {
-  //     console.error(error);
-  //     res.status(500).send(error);
-  //   }
-  // });
-  
-  module.exports = locationsRouter;
-  
+    );
+    res.status(200).send(ExperimentModel.getImagesURL(experiment));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+// EXPERIMENTS
+
+// Get all experiments from a location
+// locationsRouter.get('/:locationId/experiments', async (req, res) => {
+//   const { locationId } = req.params;
+//   try {
+//     // Retrieve all experiments of a given location from the DB
+//     const experiments = await ExperimentModel.findMany(locationId);
+//     res.status(200).send(experiments);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send(error);
+//   }
+// });
+
+module.exports = locationsRouter;

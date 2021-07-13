@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// require('dotenv').config();
 const amqp = require('amqplib/callback_api');
+const storeData = require('./storeRabbitData');
 
-function rabbit() {
+
+function connexion() {
   // connect to RabbitMQ server
   amqp.connect(
     process.env.RABBIT_MQ_CONNECTION_STRING,
@@ -32,9 +33,16 @@ function rabbit() {
 
         channel.consume(
           queue,
-          (msg) => {
-            const content = JSON.parse(msg.content);
-            console.log(' [x] Received: ', content);
+          async (msg) => {
+            const message = msg.content.toString().toLowerCase();
+            try {
+              const rabbitMqData = JSON.parse(message);
+              storeData(rabbitMqData);
+
+            } catch (error) {
+              console.error(error);
+            }
+            
           },
           {
             // automatic acknowledgment mode,
@@ -46,4 +54,4 @@ function rabbit() {
   );
 }
 
-module.exports = rabbit;
+module.exports = connexion;
