@@ -70,14 +70,16 @@ module.exports = async function seed() {
   //     )
   // );
 
-//   await prisma.status.create({
-//     data: {
-//       code: parseInt(Math.random() * 2, 10),
-//       experimentId: experiments[4].id,
-//       sensorId: sensors[4].id,
-//     },
-//   });
-// };
+  //   await prisma.status.create({
+  //     data: {
+  //       code: parseInt(Math.random() * 2, 10),
+  //       experimentId: experiments[4].id,
+  //       sensorId: sensors[4].id,
+  //     },
+  //   });
+  // };
+};
+
 module
   .exports()
   .catch((e) => {
