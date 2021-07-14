@@ -79,11 +79,14 @@ Si vous voulez partir d'une base vierge :
 
 - Caprover > Apps > One-Click Apps/Databases > RabbitMQ
 - app name : rabbit-mq
-- onglet App configs : Environmental Variables: cocher "bulk edit" et copier dans le champ :
+- onglet App configs :
+  - Environmental Variables: cocher "bulk edit" et copier dans le champ :
 
 RABBITMQ_DEFAULT_USER=hdrain
 RABBITMQ_DEFAULT_PASS=[RABBIT_PASSWORD]
 RABBITMQ_NODENAME=rabbit@localhost
+
+- Add Port Mapping and in Server Port and Container Port : enter : 5672
 
 ### STEP 4 : créer l'API
 
@@ -92,18 +95,28 @@ RABBITMQ_NODENAME=rabbit@localhost
 - onglet App Configs, Environmental Variables: cocher "bulk edit" et copier dans le champ :
 
 ```
-SERVER_PORT=5000
-DB_HOST=srv-captain--api-db
-DB_PORT=3306
-DB_USER=root
-DB_PASS=[DB_PASS]
-API_KEY=[API_KEY]
-DB_NAME=contacts_api_database
+PORT=5000
+NODE_ENV=production
+CORS_ALLOWED_ORIGINS=[NOM DOMAINE]
+DATABASE_URL=postgres://hdrain:D+fNJgHPZ_LPbF8F@srv-captain--hdrain-db/hdrain
+SESSION_COOKIE_NAME=hdrain_api_session_id
+SESSION_COOKIE_DOMAIN=.calcul.hd-rain.tech
+SESSION_COOKIE_SECRET=GqGQQazcxqzqrdsdsRefgerg33433$@@S5zefzrdty221w&#fs@%fuyaz
+DB_URL=srv-captain--hdrain-db
+DB_PORT=5432
+DB_NAME=[DB_NAME]
+DB_USERNAME=[DB_USERNAME]
+DB_PASSWORD=[DB_USERNAME]
+HD_RAIN_SERVER_LIST=[VM_SERVER_IP]
+HD_RAIN_LOCATION_LIST=Abidjan
+HD_RAIN_SERVER_PWD=[SERVER_PWD]
+RABBIT_MQ_CONNECTION_STRING=[RABBIT_MQ_CONNECTION_STRING]
+HD_RAIN_SOURCE=[HD_RAIN_SOURCE]
 ```
 
 - Cliquer sur "Add Persistent directory" plus bas
-- Renseigner dans Path in App : /usr/src/app/file-storage
-- Label : file-storage
+- Renseigner dans Path in App : /usr/src/app/storage
+- Label : storage
 - Cliquer sur "Save & Update"
 - Onglet "Deployement"
 - Aller à Method 3: Deploy from Github/Bitbucket/Gitlab
@@ -144,12 +157,12 @@ Si l'API doit servir des fichiers uploadés par les utilisateurs sur le système
 - "Save & Update"
 - onglet "Deployement"
 - aller à la section Method 3: Deploy from Github/Bitbucket/Gitlab
-- Repository : https://github.com/fl-lyonnais-dev/fl-lyonnais-front-office
+- Repository : [URL_REPO_FRONT]
 - Branch : main
 - Username : [GH_USER]
 - Password : [GH_PASSWORD]
 - "Save & Update"
 - copier la valeur du champs apparu dans "Method 3: Deploy from Github/Bitbucket/Gitlab"
-- aller sur https://github.com/fl-lyonnais-dev/fl-lyonnais-front-office/settings/hooks
+- aller sur [URL_REPO_FRONT]/settings/hooks
 - cliquer sur "add webhook"
 - coller la valeur de l'input copiée précédement dans le champs Payload URL de github, cliquer sur le bouton vert "Add webhook".
