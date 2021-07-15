@@ -21,16 +21,6 @@ const readArrayFromFile = async (pathToFile) => {
   }
 };
 
-// Function returning an object of station's status
-const readStationStatusFromFile = async (pathToFile) => {
-  try {
-    const buffer = await readFile(pathToFile);
-    return JSON.parse(buffer);
-  } catch (error) {
-    return { error };
-  }
-};
-
 // Function to read the file content en return it
 const readDataFromFile = async (pathToFile) => {
   try {
@@ -91,7 +81,7 @@ const saveDataToDB = async (folder) => {
     // need to check for the rain graph source file
     rainGraph: `${folder}/diagnostics.png`,
     parameters: await readDataFromFile(`${folder}/config.cfg`),
-    locationId: 1,
+    locationId: 1, // LOL
   });
   // Frome the saved experiment, grab its ID (with locationId) and use them to save the list of sensors if not already present in the DB
   const experimentId = experiment.id;
@@ -130,37 +120,18 @@ const saveDataToDB = async (folder) => {
   });
 };
 
-// Function to save the sensorList in the DB
-const saveSensorsToDB = async (folder) => {
-  try {
-    SensorModel.createSensors(
-      await readStationStatusFromFile(folder),
-      1,
-      getDateFromFileDirectory(folder)
-    );
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 // Main function to save of the files info to the DB
 const saveFilesToDB = async (pathToFiles) => {
   try {
     const folders = await glob(pathToFiles);
     const timestampsInDB = await ExperimentModel.getAllTimestamps();
-    const newExperiementsArray = await Promise.all(
+    await Promise.all(
       (
         await asyncFilter(await asyncFilter(folders, isDirNotEmpty), (folder) =>
           unprocessedFolders(folder, timestampsInDB)
         )
       ).map(saveDataToDB)
     );
-
-    const createdExperiments = await ExperimentModel.createManyExperiments(
-      newExperiementsArray
-    );
-    saveSensorsToDB(pathToFiles);
-    console.log(createdExperiments);
   } catch (error) {
     console.error(error);
   }
