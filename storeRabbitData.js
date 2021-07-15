@@ -8,8 +8,8 @@ const SensorModel = require('./models/SensorModel');
 const cleanData = (data) => {
   // data to send in the database
   if (!data.config) {
-    return null
-  };
+    return null;
+  }
 
   const experimentData = {
     timestamp: data.date.replace(/h/, '_').split('_'),
@@ -27,8 +27,7 @@ const cleanData = (data) => {
     experimentData.timestamp[1] - 1,
     experimentData.timestamp[2],
     experimentData.timestamp[3],
-    experimentData.timestamp[4],
-   
+    experimentData.timestamp[4]
   );
 
   return experimentData;
@@ -45,25 +44,24 @@ const saveExperiment = async (experiment) => {
   const experimentExists = await checkDbForExperiment(experiment);
 
   if (!experimentExists) {
-
     // add missing element
     const data = experiment;
-  
+
     data.rainGraph = '/path';
     data.costGraph = '/path';
-  
+
     // set all elements that need to be stored in the database
-  
+
     // new experiment storing
     const storedExperiment = await ExperimentModel.create(data);
-  
-    console.log('experiment stored in DB: ', storedExperiment.id);
-  
-    data.experimentId = storedExperiment.id;
-  
-    return data;
-  } return undefined
 
+    console.log('experiment stored in DB: ', storedExperiment.id);
+
+    data.experimentId = storedExperiment.id;
+
+    return data;
+  }
+  return undefined;
 };
 
 // helper 4 : check if sensors exist in the db
@@ -124,10 +122,7 @@ const storeStatus = async (listOfSensors, newExperimentData) => {
     sensorId: sensor.id,
     experimentId,
   }));
-
- return StatusModel.createManyStatus(statusToStore);
-
-  
+  return StatusModel.createManyStatus(statusToStore);
 };
 
 // -------------------FUNCTION TO STORE ALL-------------------- //
@@ -135,7 +130,7 @@ const storeStatus = async (listOfSensors, newExperimentData) => {
 const storeData = async (rabbitData) => {
   const hdRainDataToStore = await cleanData(rabbitData);
 
-  if(!hdRainDataToStore) return console.log('wrong data');
+  if (!hdRainDataToStore) return console.log('wrong data');
 
   const newExperimentInDb = await saveExperiment(hdRainDataToStore);
 
@@ -148,7 +143,6 @@ const storeData = async (rabbitData) => {
 
   console.log('New experiments stored in db :', newExperimentInDb.experimentId);
   return console.log('New status stored in db :', newStatusStored);
-  
 
   // // store a status for each sensor in this location
 };

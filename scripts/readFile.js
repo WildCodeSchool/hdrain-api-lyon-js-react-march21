@@ -2,6 +2,8 @@ const fs = require('fs');
 const util = require('util');
 const globCB = require('glob');
 const ExperimentModel = require('../models/ExperimentModel');
+const SensorModel = require('../models/SensorModel');
+const StatusModel = require('../models/StatusModel');
 
 // Convert `fs.readFile()` into a function that takes the
 // same parameters but returns a promise.
@@ -25,7 +27,6 @@ const readStationStatusFromFile = async (pathToFile) => {
     const buffer = await readFile(pathToFile);
     return JSON.parse(buffer);
   } catch (error) {
-    console.error(error);
     return { error };
   }
 };
@@ -51,62 +52,6 @@ const getDateFromFileDirectory = (pathToFolder) => {
   return date.toISOString();
 };
 
-// Function to create an object representing an experiment using the folder's content
-const createExperiment = async (folder) => {
-  const [J, Jb, JNL, r] = await Promise.all([
-    readArrayFromFile(`${folder}/J`),
-    readArrayFromFile(`${folder}/Jb`),
-    readArrayFromFile(`${folder}/JNL`),
-    readArrayFromFile(`${folder}/r`),
-  ]);
-  return {
-    timestamp: getDateFromFileDirectory(folder),
-    neuralNetworkLog: `${folder}/diagnostics.png`,
-    assimilationLog: await readDataFromFile(`${folder}/bash_assim.log`),
-    costGraph: JSON.stringify({ J, Jb, JNL, r }),
-    // need to check for the rain graph source file
-    rainGraph: `${folder}/diagnostics.png`,
-    parameters: await readDataFromFile(`${folder}/config.cfg`),
-    locationId: 1,
-  };
-};
-
-const parseSensorList = async (folder) =>
-  Object.keys(
-    JSON.parse(await readDataFromFile(`${folder}/statut_stations.log`))
-  ).map(Number);
-
-const parseSensorGeometry = async (folder) =>
-  JSON.parse(await readDataFromFile(`${folder}/geometrie.json`));
-
-// Function to return a promise
-const createSensor = async (sensorNumber, folder) =>
-  Promise.resolve({
-    sensorNumber,
-    lat: await parseSensorGeometry(folder)[sensorNumber].lat,
-    lng: await parseSensorGeometry(folder)[sensorNumber].lng,
-    locationId: 1,
-  });
-
-// Function to create a sensor from the sensor status file
-const createSensorList = async (folder) =>
-  Promise.all(
-    (await parseSensorList(folder)).map((sensorNumber) =>
-      createSensor(sensorNumber, folder)
-    )
-  );
-
-// TODO: create a function (and call it in saveFilesToDB) to save the sensorList in the DB
-const saveSensorsToDB = async (folder) => {
-  try {
-    ExperimentModel.createManyExperiments(await createSensorList(folder));
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-// TODO: create a function (and call it in saveFilesToDB) to save the sensors' status in the DB
-
 // Function returning wether a folder is empty or not
 const isDirNotEmpty = async (folder) => {
   const dir = await readDir(folder);
@@ -118,9 +63,84 @@ const unprocessedFolders = async (folder, timestampsInDB) =>
   !(await timestampsInDB[getDateFromFileDirectory(folder)]);
 
 // Function to filter an array asynchronously
-const asyncFilter = async (folders, predicate) => {
-  const boolTable = await Promise.all(folders.map(predicate));
-  return folders.filter((_, index) => boolTable[index]);
+const asyncFilter = async (items, predicate) => {
+  const boolTable = await Promise.all(items.map(predicate));
+  return items.filter((_, index) => boolTable[index]);
+};
+
+const parseSensorList = async (folder) =>
+  JSON.parse(await readDataFromFile(`${folder}/geometrie.json`));
+
+const parseSensorStatus = async (folder) =>
+  JSON.parse(await readDataFromFile(`${folder}/statut_stations.log`));
+
+// Function to save one experiment, and its sensors and their status
+const saveDataToDB = async (folder) => {
+  const [J, Jb, JNL, r] = await Promise.all([
+    readArrayFromFile(`${folder}/Jb`),
+    readArrayFromFile(`${folder}/J`),
+    readArrayFromFile(`${folder}/JNL`),
+    readArrayFromFile(`${folder}/r`),
+  ]);
+  // Save the experiment in the DB
+  const experiment = await ExperimentModel.create({
+    timestamp: getDateFromFileDirectory(folder),
+    neuralNetworkLog: `${folder}/diagnostics.png`,
+    assimilationLog: await readDataFromFile(`${folder}/bash_assim.log`),
+    costGraph: JSON.stringify({ J, Jb, JNL, r }),
+    // need to check for the rain graph source file
+    rainGraph: `${folder}/diagnostics.png`,
+    parameters: await readDataFromFile(`${folder}/config.cfg`),
+    locationId: 1,
+  });
+  // Frome the saved experiment, grab its ID (with locationId) and use them to save the list of sensors if not already present in the DB
+  const experimentId = experiment.id;
+  const sensorList = await parseSensorList(folder);
+  const sensorNumberList = Object.keys(sensorList);
+  const filteredSensorList = await asyncFilter(
+    sensorNumberList,
+    (sensorNumber) => SensorModel.checkIfSensorExists(1, sensorNumber)
+  );
+  // Save the sensors in the DB
+  Promise.all(
+    filteredSensorList.map((id) =>
+      SensorModel.create({
+        experimentId,
+        sensorNumber: id,
+        spotName: sensorList[id].lieux,
+        lat: sensorList[id].latitude,
+        lng: sensorList[id].longitude,
+        createAt: experiment.timestamp,
+      })
+    )
+  );
+  // Get all sensors of an experiment from the DB
+  const experimentSensorList = await SensorModel.findAllFromExperiment(
+    experimentId
+  );
+  const sensorsStatus = parseSensorStatus(folder);
+  // Save the status of the sensors in the DB
+  experimentSensorList.map((sensor) => {
+    const status = sensorsStatus[sensor.sensorNumber];
+    return StatusModel.create({
+      sensorId: sensor.id,
+      experimentId,
+      code: status,
+    });
+  });
+};
+
+// Function to save the sensorList in the DB
+const saveSensorsToDB = async (folder) => {
+  try {
+    SensorModel.createSensors(
+      await readStationStatusFromFile(folder),
+      1,
+      getDateFromFileDirectory(folder)
+    );
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 // Main function to save of the files info to the DB
@@ -133,11 +153,13 @@ const saveFilesToDB = async (pathToFiles) => {
         await asyncFilter(await asyncFilter(folders, isDirNotEmpty), (folder) =>
           unprocessedFolders(folder, timestampsInDB)
         )
-      ).map(createExperiment)
+      ).map(saveDataToDB)
     );
+
     const createdExperiments = await ExperimentModel.createManyExperiments(
       newExperiementsArray
     );
+    saveSensorsToDB(pathToFiles);
     console.log(createdExperiments);
   } catch (error) {
     console.error(error);
