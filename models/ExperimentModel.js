@@ -15,7 +15,7 @@ const findLatestExperiment = async (locationId) =>
       locationId: parseInt(locationId, 10),
     },
     orderBy: {
-      id: 'desc',
+      timestamp: 'desc',
     },
     take: 1,
   });

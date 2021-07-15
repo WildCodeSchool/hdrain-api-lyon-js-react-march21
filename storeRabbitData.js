@@ -1,6 +1,11 @@
 const ExperimentModel = require('./models/ExperimentModel');
 const StatusModel = require('./models/StatusModel');
 const SensorModel = require('./models/SensorModel');
+// const LocationModel = require('./models/LocationModel');
+
+
+
+
 
 // -------------------HELPERS--------------------- //
 
@@ -8,8 +13,8 @@ const SensorModel = require('./models/SensorModel');
 const cleanData = (data) => {
   // data to send in the database
   if (!data.config) {
-    return null
-  };
+    return null;
+  }
 
   const experimentData = {
     timestamp: data.date.replace(/h/, '_').split('_'),
@@ -17,7 +22,7 @@ const cleanData = (data) => {
     neuralNetworkLog: data['log rn'],
     parameters: data.config,
     status: JSON.parse(data.statuts),
-    locationId: data.location ? 1 : 1,
+    locationId: data.location ? data.location : undefined,
     sensorsPosition: JSON.parse(JSON.parse(data.geometrie)),
   };
 
@@ -27,8 +32,7 @@ const cleanData = (data) => {
     experimentData.timestamp[1] - 1,
     experimentData.timestamp[2],
     experimentData.timestamp[3],
-    experimentData.timestamp[4],
-   
+    experimentData.timestamp[4]
   );
 
   return experimentData;
@@ -45,25 +49,24 @@ const saveExperiment = async (experiment) => {
   const experimentExists = await checkDbForExperiment(experiment);
 
   if (!experimentExists) {
-
     // add missing element
     const data = experiment;
-  
+
     data.rainGraph = '/path';
     data.costGraph = '/path';
-  
+
     // set all elements that need to be stored in the database
-  
+
     // new experiment storing
     const storedExperiment = await ExperimentModel.create(data);
-  
-    console.log('experiment stored in DB: ', storedExperiment.id);
-  
-    data.experimentId = storedExperiment.id;
-  
-    return data;
-  } return undefined
 
+    console.log('experiment stored in DB: ', storedExperiment.id);
+
+    data.experimentId = storedExperiment.id;
+
+    return data;
+  }
+  return undefined;
 };
 
 // helper 4 : check if sensors exist in the db
@@ -125,17 +128,50 @@ const storeStatus = async (listOfSensors, newExperimentData) => {
     experimentId,
   }));
 
- return StatusModel.createManyStatus(statusToStore);
-
-  
+  return StatusModel.createManyStatus(statusToStore);
 };
+
+// helper 7 : check location 
+
+// to use later
+
+// const checkLocation = async (hdRainData) => {
+
+// const changeLocationId = (arrayOfLocations) => {
+//   if (hdRainData.location === undefined) {
+//     return false
+//   }
+
+//   const matchingLocation = arrayOfLocations.map(
+//     location => {
+//       if(location.name === hdRainData.location) {
+//         hdRainData.location = location.name;
+
+//       }
+//     });
+
+//   return matchingLocation;
+// };
+
+// const locationInDb = await LocationModel.findMany();
+
+// const goodLocation = changeLocationId(locationInDb);
+
+
+// }
+
+
+
+
+
+
 
 // -------------------FUNCTION TO STORE ALL-------------------- //
 
 const storeData = async (rabbitData) => {
   const hdRainDataToStore = await cleanData(rabbitData);
 
-  if(!hdRainDataToStore) return console.log('wrong data');
+  if (!hdRainDataToStore) return console.log('wrong data');
 
   const newExperimentInDb = await saveExperiment(hdRainDataToStore);
 
@@ -148,7 +184,6 @@ const storeData = async (rabbitData) => {
 
   console.log('New experiments stored in db :', newExperimentInDb.experimentId);
   return console.log('New status stored in db :', newStatusStored);
-  
 
   // // store a status for each sensor in this location
 };
@@ -156,22 +191,3 @@ const storeData = async (rabbitData) => {
 // filter the data we need to store
 
 module.exports = storeData;
-
-// to use later
-
-// check the location of the experiment
-// const locationInDb = await LocationModel.findMany();
-
-// const changeLocationId = (arrayOfLocations) => {
-//   if (hdRainDataToStore.location === undefined) {
-//     return false
-//   }
-
-//   const matchingLocation = arrayOfLocations.find(
-//     (location) => location.name === hdRainDataToStore.location
-//   );
-
-//   return matchingLocation;
-// };
-
-// const goodLocation = changeLocationId(locationInDb);
