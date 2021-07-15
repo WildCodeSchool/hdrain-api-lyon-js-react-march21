@@ -2,38 +2,43 @@
 
 ## Choisir un serveur et un nom de domaine
 
-- Le choix du provider est libre, cependant il est recommandé de disposer d'au moins un 1 Go de Ram et 30 Go d'espace de stockage . [La procédure suivante a été testée sur ce VPS (ubuntu 20.04)](<https://us.ovh.com/us/order/vps/?v=3#/vps/build?selection=~(range~'Essential~pricingMode~'default~flavor~'vps-essential-2-4-80~os~'ubuntu_20_04~datacenters~(SBG~1))>)
+- Le choix du provider est libre, cependant il est recommandé de disposer d'au moins un 1 Go de Ram et 30 Go d'espace de stockage .
+
 - Acheter un nom de domaine et le faire pointer sur l'adresse du serveur (il sera référencé dans ce document sous l'alias [NOM DE DOMAINE])
+
+Rappel : la machine sélectionnée pour le projet tourne sur Debian GNU/Linux 9 (stretch)
 
 ## Installer Docker sur le serveur :
 
-Se connecter en SSH au serveur sous ubuntu, puis tapez les commandes suivantes
+Se connecter en SSH au serveur puis tapez les commandes suivantes
 
-```bash
 sudo apt-get update
 sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common \
-    ufw
- curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+ apt-transport-https \
+ ca-certificates \
+ curl \
+ gnupg-agent \
+ software-properties-common \
+ ufw
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 sudo apt-key fingerprint 0EBFCD88
 echo \
-  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+ "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
+ $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 sudo usermod -aG docker $USER
 newgrp docker
+
 ```
 
 ## Installation [Caprover](https://caprover.com/docs/get-started.html) :
 
 ```
+
 sudo ufw allow 80,443,3000,996,7946,4789,2377/tcp; sudo ufw allow 7946,4789,2377/udp;
 docker run -p 80:80 -p 443:443 -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock -v /captain:/captain caprover/caprover
+
 ```
 
 Attendre 60 secondes
@@ -46,10 +51,9 @@ Attendre 60 secondes
 ### STEP 1 : créer la base de données
 
 - Caprover > Apps > One-Click Apps/Databases > postGres
-- App name : hdrain
+- App name : hdrain-db
   Postgres Default Database : hdrain
-- MySQL Root password : [DB_PASS]
-- MySQL version : 5.7
+- Postgres password : [DB_PASS]
 - Deploy
 
 ### STEP 2 : créer l'interface d'admin de la base de données
@@ -86,7 +90,7 @@ RABBITMQ_DEFAULT_USER=hdrain
 RABBITMQ_DEFAULT_PASS=[RABBIT_PASSWORD]
 RABBITMQ_NODENAME=rabbit@localhost
 
-- Add Port Mapping and in Server Port and Container Port : enter : 5672
+- Add Port Mapping and in Server Port and Container Port : 5672
 
 ### STEP 4 : créer l'API
 
@@ -95,23 +99,26 @@ RABBITMQ_NODENAME=rabbit@localhost
 - onglet App Configs, Environmental Variables: cocher "bulk edit" et copier dans le champ :
 
 ```
+
+(Les champs à remplir pour ces variables d'environnement vous seront fournies dans un document séparé, non versionné)
 PORT=5000
 NODE_ENV=production
 CORS_ALLOWED_ORIGINS=[NOM DOMAINE]
-DATABASE_URL=postgres://hdrain:D+fNJgHPZ_LPbF8F@srv-captain--hdrain-db/hdrain
-SESSION_COOKIE_NAME=hdrain_api_session_id
-SESSION_COOKIE_DOMAIN=.calcul.hd-rain.tech
-SESSION_COOKIE_SECRET=GqGQQazcxqzqrdsdsRefgerg33433$@@S5zefzrdty221w&#fs@%fuyaz
-DB_URL=srv-captain--hdrain-db
+DATABASE_URL=[DATABASE_URL]
+SESSION_COOKIE_NAME=[SESSION_COOKIE_NAME]
+SESSION_COOKIE_DOMAIN=[SESSION_COOKIE_DOMAIN]
+SESSION_COOKIE_SECRET=[SESSION_COOKIE_SECRET]
+DB_URL=[DB_URL]
 DB_PORT=5432
 DB_NAME=[DB_NAME]
 DB_USERNAME=[DB_USERNAME]
 DB_PASSWORD=[DB_USERNAME]
 HD_RAIN_SERVER_LIST=[VM_SERVER_IP]
-HD_RAIN_LOCATION_LIST=Abidjan
+HD_RAIN_LOCATION_LIST=[HD_RAIN_LOCATION_LIST]
 HD_RAIN_SERVER_PWD=[SERVER_PWD]
 RABBIT_MQ_CONNECTION_STRING=[RABBIT_MQ_CONNECTION_STRING]
 HD_RAIN_SOURCE=[HD_RAIN_SOURCE]
+
 ```
 
 - Cliquer sur "Add Persistent directory" plus bas
@@ -139,7 +146,7 @@ Si l'API doit servir des fichiers uploadés par les utilisateurs sur le système
 - Deploy
 - Enable https, cocher "Force HTTPS by redirecting all HTTP traffic to HTTPS", cliquer sur "Save & Update"
 - Onglet App configs
-- Dans la section Persistent Directories, mettre à jour le label coresspondant au "path in app" /srv ("filebrowser-files"). La nouvelle valeur doit être "file-storage".
+- Dans la section Persistent Directories, mettre à jour le label coresspondant au "path in app" /srv ("filebrowser-files"). La nouvelle valeur doit être "storage".
 - Se rendre sur https://<span>filebrowser.[NOM DOMAINE]/</span>
 - Se connecter avec les identifiant : admin / admin
 - Se rendre dans settings et changer le mot de passe puis cliquer sur le bouton "update"
@@ -166,3 +173,4 @@ Si l'API doit servir des fichiers uploadés par les utilisateurs sur le système
 - aller sur [URL_REPO_FRONT]/settings/hooks
 - cliquer sur "add webhook"
 - coller la valeur de l'input copiée précédement dans le champs Payload URL de github, cliquer sur le bouton vert "Add webhook".
+```
