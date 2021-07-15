@@ -1,11 +1,7 @@
 const ExperimentModel = require('./models/ExperimentModel');
 const StatusModel = require('./models/StatusModel');
 const SensorModel = require('./models/SensorModel');
-// const LocationModel = require('./models/LocationModel');
-
-
-
-
+const LocationModel = require('./models/LocationModel');
 
 // -------------------HELPERS--------------------- //
 
@@ -131,40 +127,32 @@ const storeStatus = async (listOfSensors, newExperimentData) => {
   return StatusModel.createManyStatus(statusToStore);
 };
 
-// helper 7 : check location 
+// helper 7 : check location
 
 // to use later
 
-// const checkLocation = async (hdRainData) => {
+const checkLocation = async (hdRainData) => {
+  const dataSaved = hdRainData;
 
-// const changeLocationId = (arrayOfLocations) => {
-//   if (hdRainData.location === undefined) {
-//     return false
-//   }
+  const changeLocationId = (arrayOfLocations) => {
+    if (dataSaved.locationId === undefined) {
+      return false;
+    }
 
-//   const matchingLocation = arrayOfLocations.map(
-//     location => {
-//       if(location.name === hdRainData.location) {
-//         hdRainData.location = location.name;
+    const [matchingLocation] = arrayOfLocations.map((location) => {
+      if (location.name !== dataSaved.locationId) return null;
+      return { ...dataSaved, locationId: location.id };
+    });
 
-//       }
-//     });
+    return matchingLocation;
+  };
 
-//   return matchingLocation;
-// };
+  const locationInDb = await LocationModel.findMany();
 
-// const locationInDb = await LocationModel.findMany();
+  const dataWithLocationId = changeLocationId(locationInDb);
 
-// const goodLocation = changeLocationId(locationInDb);
-
-
-// }
-
-
-
-
-
-
+  return dataWithLocationId;
+};
 
 // -------------------FUNCTION TO STORE ALL-------------------- //
 
@@ -172,6 +160,7 @@ const storeData = async (rabbitData) => {
   const hdRainDataToStore = await cleanData(rabbitData);
 
   if (!hdRainDataToStore) return console.log('wrong data');
+
 
   const newExperimentInDb = await saveExperiment(hdRainDataToStore);
 
