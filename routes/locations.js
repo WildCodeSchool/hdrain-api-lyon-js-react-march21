@@ -45,7 +45,7 @@ locationsRouter.get('/:locationId/sensors', async (req, res) => {
     let lastExperiment;
     let experimentId;
     let augmentedSensors;
-    const reqTimestamp = req.query?.timestamp;
+    const reqTimestamp = req.query.timestamp ? req.query.timestamp : undefined;
     if (reqTimestamp && isDatePassed(reqTimestamp)) {
       const timestamp = new Date(reqTimestamp);
       historyExperiment = await ExperimentModel.findExperimentByTimestamp(
@@ -121,7 +121,7 @@ locationsRouter.post('/:locationId/sensors', async (req, res) => {
 locationsRouter.get('/:locationId/experiments', async (req, res) => {
   const { locationId } = req.params;
   let experiment;
-  const reqTimestamp = req.query?.timestamp;
+  const reqTimestamp = req.query.timestamp ? req.query.timestamp : undefined;
   try {
     if (reqTimestamp && isDatePassed(reqTimestamp)) {
       const timestamp = new Date(reqTimestamp);

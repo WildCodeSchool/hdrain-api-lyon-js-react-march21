@@ -86,9 +86,9 @@ Si vous voulez partir d'une base vierge :
 - onglet App configs :
   - Environmental Variables: cocher "bulk edit" et copier dans le champ :
 
-RABBITMQ_DEFAULT_USER=hdrain
+RABBITMQ_DEFAULT_USER=[RABBITMQ_DEFAULT_USER]
 RABBITMQ_DEFAULT_PASS=[RABBIT_PASSWORD]
-RABBITMQ_NODENAME=rabbit@localhost
+RABBITMQ_NODENAME=[RABBITMQ_NODENAME]
 
 - Add Port Mapping and in Server Port and Container Port : 5672
 
