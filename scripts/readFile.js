@@ -58,9 +58,11 @@ const asyncFilter = async (items, predicate) => {
   return items.filter((_, index) => boolTable[index]);
 };
 
+// Function to parse the sensors' list from the geometrie file
 const parseSensorList = async (folder) =>
   JSON.parse(await readDataFromFile(`${folder}/geometrie.json`));
 
+// Function to parse the sensors' satuts
 const parseSensorStatus = async (folder) =>
   JSON.parse(await readDataFromFile(`${folder}/statut_stations.log`));
 
@@ -81,7 +83,7 @@ const saveDataToDB = async (folder) => {
     // need to check for the rain graph source file
     rainGraph: `${folder}/diagnostics.png`,
     parameters: await readDataFromFile(`${folder}/config.cfg`),
-    locationId: 1, // LOL
+    locationId: 1,
   });
   // Frome the saved experiment, grab its ID (with locationId) and use them to save the list of sensors if not already present in the DB
   const experimentId = experiment.id;
@@ -108,7 +110,7 @@ const saveDataToDB = async (folder) => {
   const experimentSensorList = await SensorModel.findAllFromExperiment(
     experimentId
   );
-  const sensorsStatus = parseSensorStatus(folder);
+  const sensorsStatus = await parseSensorStatus(folder);
   // Save the status of the sensors in the DB
   experimentSensorList.map((sensor) => {
     const status = sensorsStatus[sensor.sensorNumber];
