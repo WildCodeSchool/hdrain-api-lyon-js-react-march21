@@ -12,14 +12,14 @@ const readDir = util.promisify(fs.readdir);
 const glob = util.promisify(globCB);
 
 // Function to read the files where the cost graph values are stored and returns an array
-const readArrayFromFile = async (pathToFile) => {
-  try {
-    const buffer = await readFile(pathToFile);
-    return buffer.toString('utf8').trim().split('\n').map(Number);
-  } catch (error) {
-    return [];
-  }
-};
+// const readArrayFromFile = async (pathToFile) => {
+//   try {
+//     const buffer = await readFile(pathToFile);
+//     return buffer.toString('utf8').trim().split('\n').map(Number);
+//   } catch (error) {
+//     return [];
+//   }
+// };
 
 // Function to read the file content en return it
 const readDataFromFile = async (pathToFile) => {
@@ -68,21 +68,22 @@ const parseSensorStatus = async (folder) =>
 
 // Function to save one experiment, and its sensors and their status
 const saveDataToDB = async (folder) => {
-  const [J, Jb, JNL, r] = await Promise.all([
-    readArrayFromFile(`${folder}/Jb`),
-    readArrayFromFile(`${folder}/J`),
-    readArrayFromFile(`${folder}/JNL`),
-    readArrayFromFile(`${folder}/r`),
-  ]);
+  // const [J, Jb, JNL, r] = await Promise.all([
+  //   readArrayFromFile(`${folder}/Jb`),
+  //   readArrayFromFile(`${folder}/J`),
+  //   readArrayFromFile(`${folder}/JNL`),
+  //   readArrayFromFile(`${folder}/r`),
+  // ]);
   // Save the experiment in the DB
   const experiment = await ExperimentModel.create({
     timestamp: getDateFromFileDirectory(folder),
     neuralNetworkLog: `${folder}/diagnostics.png`,
     assimilationLog: await readDataFromFile(`${folder}/bash_assim.log`),
-    costGraph: JSON.stringify({ J, Jb, JNL, r }),
+    rainGraph: `${folder}/fig.png`,
     // need to check for the rain graph source file
-    rainGraph: `${folder}/diagnostics.png`,
+    costGraph: `${folder}/diagnostics.png`,
     parameters: await readDataFromFile(`${folder}/config.cfg`),
+    rainMap: `${folder}/champs_assim_t3.png`,
     locationId: 1,
   });
   // Frome the saved experiment, grab its ID (with locationId) and use them to save the list of sensors if not already present in the DB
