@@ -38,7 +38,7 @@ function connexion() {
               const rabbitMqData = JSON.parse(message);
               storeData(rabbitMqData);
             } catch (error) {
-              // console.error(error);
+              console.error(error);
             }
           },
           {
