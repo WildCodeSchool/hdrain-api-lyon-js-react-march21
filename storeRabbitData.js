@@ -18,8 +18,23 @@ const cleanData = (data) => {
     neuralNetworkLog: data['log rn'],
     parameters: data.config,
     status: JSON.parse(data.statuts),
-    locationId: data.location ? data.location : undefined,
     sensorsPosition: JSON.parse(JSON.parse(data.geometrie)),
+    location: data.location
+      ? data.location.charAt(0).toUpperCase() + data.location.slice(1)
+      : 'Abidjan',
+    locCoord: {
+      lat: data.coordoonees ? data.coordoonees[0] : 'undefined',
+      lng: data.coordoonees ? data.coordoonees[1] : 'undefined',
+    },
+    sendingDate: data['date envoi']
+      ? data['date envoi'].replace(/-,:/g, '_').split('_')
+      : 'undefined',
+    rainGraph: data['champs assim']
+      ? data['champs assim'].toString('base64')
+      : 'undefined',
+    costGraph: data.diagnostics
+      ? data.diagnostics.toString('base64')
+      : 'undefined',
   };
 
   // change date fortmat
@@ -31,13 +46,24 @@ const cleanData = (data) => {
     experimentData.timestamp[4]
   );
 
+  if (experimentData.sendingDate === 'undefined') return experimentData;
+
+  experimentData.sendingDate = new Date(
+    experimentData.sendingDate[0],
+    experimentData.sendingDate[1] - 1,
+    experimentData.sendingDate[2],
+    experimentData.sendingDate[3],
+    experimentData.sendingDate[4]
+  );
+
   return experimentData;
 };
 
 // helper 2 : check if the experiment already exist in the db
 
-const checkDbForExperiment = async (experimentToCheck) =>
+const checkDbForExperiment = (experimentToCheck) => {
   ExperimentModel.getExperiment(experimentToCheck);
+};
 
 // helper 3 store expriment
 const saveExperiment = async (experiment) => {
@@ -45,13 +71,7 @@ const saveExperiment = async (experiment) => {
   const experimentExists = await checkDbForExperiment(experiment);
 
   if (!experimentExists) {
-    // add missing element
     const data = experiment;
-
-    data.rainGraph = '/path';
-    data.costGraph = '/path';
-
-    // set all elements that need to be stored in the database
 
     // new experiment storing
     const storedExperiment = await ExperimentModel.create(data);
@@ -131,27 +151,21 @@ const storeStatus = async (listOfSensors, newExperimentData) => {
 
 // to use later
 
+const changeLocationId = async (arrayOfLocations, expSaved) => {
+  const [expWithLocation] = arrayOfLocations.filter(
+    (location) => location.name === expSaved.location
+  );
+
+
+  return { ...expSaved, locationId: expWithLocation.id };
+};
+
 const checkLocation = async (hdRainData) => {
-  const dataSaved = hdRainData;
-
-  const changeLocationId = (arrayOfLocations) => {
-    if (dataSaved.locationId === undefined) {
-      return false;
-    }
-
-    const [matchingLocation] = arrayOfLocations.map((location) => {
-      if (location.name !== dataSaved.locationId) return null;
-      return { ...dataSaved, locationId: location.id };
-    });
-
-    return matchingLocation;
-  };
-
   const locationInDb = await LocationModel.findMany();
 
-  const dataWithLocationId = changeLocationId(locationInDb);
+  const changedExpLocId = await changeLocationId(locationInDb, hdRainData);
 
-  return dataWithLocationId;
+  return changedExpLocId;
 };
 
 // -------------------FUNCTION TO STORE ALL-------------------- //
@@ -161,8 +175,9 @@ const storeData = async (rabbitData) => {
 
   if (!hdRainDataToStore) return console.log('wrong data');
 
+  const experiementWithLocId = await checkLocation(hdRainDataToStore);
 
-  const newExperimentInDb = await saveExperiment(hdRainDataToStore);
+  const newExperimentInDb = await saveExperiment(experiementWithLocId);
 
   // no new experiment stored
   if (!newExperimentInDb) return console.log('The experiment already exists');
@@ -172,6 +187,7 @@ const storeData = async (rabbitData) => {
   const newStatusStored = await storeStatus(newSensorsList, newExperimentInDb);
 
   console.log('New experiments stored in db :', newExperimentInDb.experimentId);
+
   return console.log('New status stored in db :', newStatusStored);
 
   // // store a status for each sensor in this location
