@@ -6,7 +6,7 @@ const storeData = require('./storeRabbitData');
 function connexion() {
   // connect to RabbitMQ server
   amqp.connect(
-    process.env.RABBIT_MQ_CONNECTION_STRING,
+    process.env.RABBIT_MQ_CONNECTION_STRING_TEST,
     (error0, connection) => {
       if (error0) {
         throw error0;
