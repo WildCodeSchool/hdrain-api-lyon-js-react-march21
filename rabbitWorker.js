@@ -2,7 +2,6 @@
 const amqp = require('amqplib/callback_api');
 const storeData = require('./storeRabbitData');
 
-
 function connexion() {
   // connect to RabbitMQ server
   amqp.connect(
@@ -34,15 +33,13 @@ function connexion() {
         channel.consume(
           queue,
           async (msg) => {
-            const message = msg.content.toString().toLowerCase();
+            const message = msg.content.toString('utf8').toLowerCase();
             try {
               const rabbitMqData = JSON.parse(message);
               storeData(rabbitMqData);
-
             } catch (error) {
               console.error(error);
             }
-            
           },
           {
             // automatic acknowledgment mode,
