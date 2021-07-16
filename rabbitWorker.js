@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-unused-vars */
 const amqp = require('amqplib/callback_api');
 const storeData = require('./storeRabbitData');
 
