@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-unused-vars */
 const amqp = require('amqplib/callback_api');
 const storeData = require('./storeRabbitData');
 
@@ -24,7 +23,6 @@ function connexion() {
         // This makes sure the queue is declared before attempting to consume from it
         channel.assertQueue(queue, {
           durable: true,
-          // maxLength: 300,
         });
 
         console.log(
@@ -40,7 +38,7 @@ function connexion() {
               const rabbitMqData = JSON.parse(message);
               storeData(rabbitMqData);
             } catch (error) {
-              // console.error(error);
+              console.error(error);
             }
           },
           {
