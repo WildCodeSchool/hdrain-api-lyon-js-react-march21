@@ -23,7 +23,6 @@ function connexion() {
         // This makes sure the queue is declared before attempting to consume from it
         channel.assertQueue(queue, {
           durable: true,
-          // maxLength: 300,
         });
 
         console.log(
