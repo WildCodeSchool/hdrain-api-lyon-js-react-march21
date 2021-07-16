@@ -149,7 +149,6 @@ const storeStatus = async (listOfSensors, newExperimentData) => {
 
 // helper 7 : check location
 
-// to use later
 
 const changeLocationId = async (arrayOfLocations, expSaved) => {
   const [expWithLocation] = arrayOfLocations.filter(
