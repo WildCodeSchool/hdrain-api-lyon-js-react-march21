@@ -11,16 +11,6 @@ const readFile = util.promisify(fs.readFile);
 const readDir = util.promisify(fs.readdir);
 const glob = util.promisify(globCB);
 
-// Function to read the files where the cost graph values are stored and returns an array
-// const readArrayFromFile = async (pathToFile) => {
-//   try {
-//     const buffer = await readFile(pathToFile);
-//     return buffer.toString('utf8').trim().split('\n').map(Number);
-//   } catch (error) {
-//     return [];
-//   }
-// };
-
 // Function to read the file content en return it
 const readDataFromFile = async (pathToFile) => {
   try {
@@ -68,12 +58,6 @@ const parseSensorStatus = async (folder) =>
 
 // Function to save one experiment, and its sensors and their status
 const saveDataToDB = async (folder) => {
-  // const [J, Jb, JNL, r] = await Promise.all([
-  //   readArrayFromFile(`${folder}/Jb`),
-  //   readArrayFromFile(`${folder}/J`),
-  //   readArrayFromFile(`${folder}/JNL`),
-  //   readArrayFromFile(`${folder}/r`),
-  // ]);
   // Save the experiment in the DB
   const experiment = await ExperimentModel.create({
     timestamp: getDateFromFileDirectory(folder),
@@ -88,21 +72,21 @@ const saveDataToDB = async (folder) => {
   });
   // Frome the saved experiment, grab its ID (with locationId) and use them to save the list of sensors if not already present in the DB
   const experimentId = experiment.id;
-  const sensorList = await parseSensorList(folder);
-  const sensorNumberList = Object.keys(sensorList);
+  const sensors = await parseSensorList(folder);
+  const sensorNumberList = Object.keys(sensors).map(Number);
   const filteredSensorList = await asyncFilter(
     sensorNumberList,
-    (sensorNumber) => SensorModel.checkIfSensorExists(1, sensorNumber)
+    async (sensorNumber) => SensorModel.sensorAlreadyExists(1, sensorNumber)
   );
   // Save the sensors in the DB
   Promise.all(
-    filteredSensorList.map((id) =>
+    filteredSensorList.map(async (number) =>
       SensorModel.create({
         experimentId,
-        sensorNumber: id,
-        spotName: sensorList[id].lieux,
-        lat: sensorList[id].latitude,
-        lng: sensorList[id].longitude,
+        sensorNumber: number,
+        spotName: sensors[number].lieux,
+        lat: sensors[number].latitude,
+        lng: sensors[number].longitude,
         createAt: experiment.timestamp,
       })
     )
