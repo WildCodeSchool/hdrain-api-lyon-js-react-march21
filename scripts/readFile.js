@@ -76,7 +76,7 @@ const saveDataToDB = async (folder) => {
   const sensorNumberList = Object.keys(sensors).map(Number);
   const filteredSensorList = await asyncFilter(
     sensorNumberList,
-    async (sensorNumber) => SensorModel.sensorAlreadyExists(1, sensorNumber)
+    async (sensorNumber) => SensorModel.sensorDoesNotExist(1, sensorNumber)
   );
   // Save the sensors in the DB
   Promise.all(
@@ -108,7 +108,7 @@ const saveDataToDB = async (folder) => {
 };
 
 // Main function to save of the files info to the DB
-const saveFilesToDB = async (pathToFiles) => {
+const main = async (pathToFiles) => {
   try {
     const folders = await glob(pathToFiles);
     const timestampsInDB = await ExperimentModel.getAllTimestamps();
@@ -124,4 +124,4 @@ const saveFilesToDB = async (pathToFiles) => {
   }
 };
 
-module.exports = saveFilesToDB;
+module.exports = main;

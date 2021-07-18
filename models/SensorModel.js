@@ -69,19 +69,19 @@ const findUnique = (sensorId) =>
   });
 
 // Create a function to check if a sensor already exists in the DB
-const sensorAlreadyExists = (locationId, sensorNumber) =>
-  !!prisma.sensor.findFirst({
+const sensorDoesNotExist = async (locationId, sensorNumber) =>
+  !(await prisma.sensor.findFirst({
     where: {
       locationId: parseInt(locationId, 10),
       sensorNumber,
     },
-  });
+  }));
 
 module.exports = {
   createSensors,
   findAll,
   findUnique,
   findAllFromLocation,
-  sensorAlreadyExists,
+  sensorDoesNotExist,
   findAllFromExperiment,
 };
