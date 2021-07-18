@@ -22,7 +22,6 @@ model session {
   expire DateTime @db.Timestamp(6)
 }
 
-// beginning of location model
 model location {
   id          Int          @id @default(autoincrement())
   name        String       @db.VarChar(255)
@@ -50,9 +49,9 @@ model experiment {
   timestamp        DateTime @db.Timestamptz
   neuralNetworkLog String   @db.Text
   assimilationLog  String   @db.Text
-  rainGraph        String   @db.Text
-  rainMap          String   @db.Text
-  costGraph        String   @db.Text
+  rainGraph        String?   @db.Text
+  rainMap          String?   @db.Text
+  costGraph        String?   @db.Text
   parameters       String   @db.Text
   location         location @relation(fields: [locationId], references: [id])
   locationId       Int      @db.Integer
