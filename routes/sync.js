@@ -1,6 +1,6 @@
 const syncRouter = require('express').Router();
-const copyData = require('../scripts/copyScript');
-const saveFilesToDB = require('../scripts/readFile');
+// const copyData = require('../scripts/copyScript');
+const saveDataToDB = require('../scripts/readFile');
 
 // Path to scan
 const mainPath = `${process.env.LOCAL_TARGET}/**/[0-9][0-9]h[0-9][0-9]`;
@@ -12,8 +12,9 @@ syncRouter.get('/', async (req, res) => {
     try {
       copyStartedAt = new Date();
       res.status(200).send(`Sync started at ${copyStartedAt.toLocaleString()}`);
-      await copyData();
-      await saveFilesToDB(mainPath);
+      // TODO: uncomment the following lines in production
+      // await copyData();
+      await saveDataToDB(mainPath);
       copyStartedAt = null;
     } catch (error) {
       console.error(error);
