@@ -47,12 +47,12 @@ const createSensors = async (sensorsPosition, locationId, timestamp) => {
 
 const findAll = () => prisma.sensor.findMany();
 
-const findAllFromExperiment = (experimentId) =>
-  prisma.sensor.findMany({
-    where: {
-      experimentId: parseInt(experimentId, 10),
-    },
-  });
+// const findAllFromExperiment = (experimentId) =>
+//   prisma.sensor.findMany({
+//     where: {
+//       experimentId: parseInt(experimentId, 10),
+//     },
+//   });
 
 const findAllFromLocation = (locationId) =>
   prisma.sensor.findMany({
@@ -83,5 +83,5 @@ module.exports = {
   findUnique,
   findAllFromLocation,
   sensorDoesNotExist,
-  findAllFromExperiment,
+  // findAllFromExperiment,
 };
