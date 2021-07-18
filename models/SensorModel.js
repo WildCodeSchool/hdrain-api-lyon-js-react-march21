@@ -79,6 +79,7 @@ const sensorDoesNotExist = async (locationId, sensorNumber) =>
 
 module.exports = {
   createSensors,
+  create,
   findAll,
   findUnique,
   findAllFromLocation,
