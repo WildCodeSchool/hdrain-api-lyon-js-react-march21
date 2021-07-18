@@ -73,11 +73,15 @@ const saveDataToDB = async (folder) => {
   // Frome the saved experiment, grab its ID (with locationId) and use them to save the list of sensors if not already present in the DB
   const experimentId = experiment.id;
   const sensors = await parseSensorList(folder);
+  console.log({ sensors });
+  // FIX-ME
   const sensorNumberList = Object.keys(sensors).map(Number);
+  console.log({ sensorNumberList });
   const filteredSensorList = await asyncFilter(
     sensorNumberList,
     async (sensorNumber) => SensorModel.sensorDoesNotExist(1, sensorNumber)
   );
+  console.log({ filteredSensorList });
   // Save the sensors in the DB
   Promise.all(
     filteredSensorList.map(async (number) =>
@@ -92,9 +96,8 @@ const saveDataToDB = async (folder) => {
     )
   );
   // Get all sensors of an experiment from the DB
-  const experimentSensorList = await SensorModel.findAllFromExperiment(
-    experimentId
-  );
+  const experimentSensorList = await SensorModel.findAllFromLocation(1);
+  console.log({ experimentSensorList });
   const sensorsStatus = await parseSensorStatus(folder);
   // Save the status of the sensors in the DB
   experimentSensorList.map((sensor) => {
