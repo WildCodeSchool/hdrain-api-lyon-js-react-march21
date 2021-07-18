@@ -45,17 +45,17 @@ locationsRouter.get('/:locationId/sensors', async (req, res) => {
     let lastExperiment;
     let experimentId;
     let augmentedSensors;
-    const reqTimestamp = req.query.timestamp ? req.query.timestamp : undefined;
+    const reqTimestamp = req.query?.timestamp;
     if (reqTimestamp && isDatePassed(reqTimestamp)) {
       const timestamp = new Date(reqTimestamp);
       historyExperiment = await ExperimentModel.findExperimentByTimestamp(
         locationId,
         timestamp
       );
-      experimentId = historyExperiment ? historyExperiment.id : undefined;
+      experimentId = historyExperiment?.id;
     } else {
       lastExperiment = await ExperimentModel.findLatestExperiment(locationId);
-      experimentId = lastExperiment ? lastExperiment.id : undefined;
+      experimentId = lastExperiment?.id;
     }
 
     if (experimentId) {
@@ -63,12 +63,10 @@ locationsRouter.get('/:locationId/sensors', async (req, res) => {
       augmentedSensors = await Promise.all(
         sensors.map(async (sensor) => {
           const status = await StatusModel.findUnique(sensor.id, experimentId);
-          const statusCode = status ? status.code : undefined;
-          const augmentedSensor = {
+          return {
             ...sensor,
-            status: statusCode,
+            status: status?.code,
           };
-          return augmentedSensor;
         })
       );
       res.status(200).send(augmentedSensors);
