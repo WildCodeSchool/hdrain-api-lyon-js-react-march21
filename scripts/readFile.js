@@ -11,6 +11,8 @@ const readFile = util.promisify(fs.readFile);
 const readDir = util.promisify(fs.readdir);
 const glob = util.promisify(globCB);
 
+const BASE_URL = process.env.API_BASE_URL;
+
 // Function to read the file content en return it
 const readDataFromFile = async (pathToFile) => {
   try {
@@ -57,36 +59,33 @@ const parseSensorStatus = async (folder) =>
   JSON.parse(await readDataFromFile(`${folder}/statut_stations.log`));
 
 // Function to save one experiment, and its sensors and their status
-const saveDataToDB = async (folder) => {
+const saveExperimentSensorsAndStatus = async (folder) => {
   // Save the experiment in the DB
   const experiment = await ExperimentModel.create({
     timestamp: getDateFromFileDirectory(folder),
-    neuralNetworkLog: `${folder}/diagnostics.png`,
+    neuralNetworkLog: `${BASE_URL}/${folder}/diagnostics.png`,
     assimilationLog: await readDataFromFile(`${folder}/bash_assim.log`),
-    rainGraph: `${folder}/fig.png`,
     // need to check for the rain graph source file
-    costGraph: `${folder}/diagnostics.png`,
+    rainGraph: `${BASE_URL}/${folder}/fig.png`,
+    rainMap: `${BASE_URL}/${folder}/champs_assim_t3.png`,
+    costGraph: `${BASE_URL}/${folder}/diagnostics.png`,
     parameters: await readDataFromFile(`${folder}/config.cfg`),
-    rainMap: `${folder}/champs_assim_t3.png`,
     locationId: 1,
   });
   // Frome the saved experiment, grab its ID (with locationId) and use them to save the list of sensors if not already present in the DB
   const experimentId = experiment.id;
   const sensors = await parseSensorList(folder);
-  console.log({ sensors });
-  // FIX-ME
   const sensorNumberList = Object.keys(sensors).map(Number);
-  console.log({ sensorNumberList });
-  const filteredSensorList = await asyncFilter(
-    sensorNumberList,
-    async (sensorNumber) => SensorModel.sensorDoesNotExist(1, sensorNumber)
+  // FIXME: this is a workaround to avoid recreating existing sensors
+  const newSensors = await asyncFilter(sensorNumberList, async (sensorNumber) =>
+    SensorModel.sensorDoesNotExist(1, sensorNumber)
   );
-  console.log({ filteredSensorList });
   // Save the sensors in the DB
-  Promise.all(
-    filteredSensorList.map(async (number) =>
+  await Promise.all(
+    newSensors.map(async (number) =>
       SensorModel.create({
         experimentId,
+        locationId: 1,
         sensorNumber: number,
         spotName: sensors[number].lieux,
         lat: sensors[number].latitude,
@@ -96,22 +95,24 @@ const saveDataToDB = async (folder) => {
     )
   );
   // Get all sensors of an experiment from the DB
-  const experimentSensorList = await SensorModel.findAllFromLocation(1);
-  console.log({ experimentSensorList });
+  const sensorsAtLocation = await SensorModel.findAllFromLocation(1);
   const sensorsStatus = await parseSensorStatus(folder);
+  console.log({ sensorsStatus });
   // Save the status of the sensors in the DB
-  experimentSensorList.map((sensor) => {
+  const creation = sensorsAtLocation.map((sensor) => {
     const status = sensorsStatus[sensor.sensorNumber];
+    console.log({ status });
     return StatusModel.create({
       sensorId: sensor.id,
       experimentId,
       code: status,
     });
   });
+  console.log({ creation });
 };
 
 // Main function to save of the files info to the DB
-const main = async (pathToFiles) => {
+const saveDataToDB = async (pathToFiles) => {
   try {
     const folders = await glob(pathToFiles);
     const timestampsInDB = await ExperimentModel.getAllTimestamps();
@@ -120,11 +121,11 @@ const main = async (pathToFiles) => {
         await asyncFilter(await asyncFilter(folders, isDirNotEmpty), (folder) =>
           unprocessedFolders(folder, timestampsInDB)
         )
-      ).map(saveDataToDB)
+      ).map(saveExperimentSensorsAndStatus)
     );
   } catch (error) {
     console.error(error);
   }
 };
 
-module.exports = main;
+module.exports = saveDataToDB;
