@@ -1,5 +1,3 @@
-// const faker = require('faker');
-
 const { prisma } = require('../db');
 
 const User = require('../models/UserModel');
