@@ -1,3 +1,5 @@
+const fs = require('fs');
+const ReadableData = require('stream').Readable;
 const ExperimentModel = require('./models/ExperimentModel');
 const StatusModel = require('./models/StatusModel');
 const SensorModel = require('./models/SensorModel');
@@ -29,11 +31,11 @@ const cleanData = (data) => {
     sendingDate: data['date envoi']
       ? data['date envoi'].replace(/-,:/g, '_').split('_')
       : 'undefined',
-    rainGraph: data['champs assim']
-      ? data['champs assim'].toString('base64')
+    rainMap: data['champs assim']
+      ? data['champs assim']
       : 'undefined',
     costGraph: data.diagnostics
-      ? data.diagnostics.toString('base64')
+      ? data.diagnostics
       : 'undefined',
   };
 
@@ -59,11 +61,26 @@ const cleanData = (data) => {
   return experimentData;
 };
 
-// helper 2 : check if the experiment already exist in the db
+// helper 2.1 : check if the experiment already exist in the db
 
-const checkDbForExperiment = (experimentToCheck) => {
-  ExperimentModel.getExperiment(experimentToCheck);
+const checkDbForExperiment = async (experimentToCheck) => {
+  await ExperimentModel.getExperiment(experimentToCheck);
 };
+
+// helper 2.2 : store image in server and get the path 
+
+const storeImgInServer = (expData) => {
+  var rainMapBase64 = expData.rainGraph;
+  var costGraphBase64 = expData.costGraph;
+
+  const imageBufferData = Buffer.from(base64, ‘base64’)
+  var streamObj = new ReadableData()
+  streamObj.push(imageBufferData)
+  streamObj.push(null)
+  streamObj.pipe(fs.createWriteStream(‘testImage.jpg’));
+
+};
+
 
 // helper 3 store expriment
 const saveExperiment = async (experiment) => {
@@ -72,6 +89,9 @@ const saveExperiment = async (experiment) => {
 
   if (!experimentExists) {
     const data = experiment;
+
+    // store rainMap and cost graph 
+
 
     // new experiment storing
     const storedExperiment = await ExperimentModel.create(data);
