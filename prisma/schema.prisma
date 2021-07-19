@@ -33,7 +33,7 @@ model location {
 
 model sensor {
   id           Int       @id @default(autoincrement())
-  sensorNumber Int       @unique
+  sensorNumber Int       @db.Integer
   spotName     String    @db.VarChar(255)
   lat          Decimal
   lng          Decimal
