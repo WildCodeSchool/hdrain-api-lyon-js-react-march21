@@ -52,7 +52,7 @@ const asyncFilter = async (items, predicate) => {
 
 // Function to parse the sensors' list from the geometrie file
 const parseSensorList = async (folder) =>
-  JSON.parse(await readDataFromFile(`${folder}/geometrie.json`));
+  JSON.parse(JSON.parse(await readDataFromFile(`${folder}/geometrie.json`)));
 
 // Function to parse the sensors' satuts
 const parseSensorStatus = async (folder) =>
@@ -76,39 +76,38 @@ const saveExperimentSensorsAndStatus = async (folder) => {
   const experimentId = experiment.id;
   const sensors = await parseSensorList(folder);
   const sensorNumberList = Object.keys(sensors).map(Number);
-  // FIXME: this is a workaround to avoid recreating existing sensors
   const newSensors = await asyncFilter(sensorNumberList, async (sensorNumber) =>
     SensorModel.sensorDoesNotExist(1, sensorNumber)
   );
-  // Save the sensors in the DB
+  // Save the sensors to the DB
   await Promise.all(
     newSensors.map(async (number) =>
       SensorModel.create({
         experimentId,
         locationId: 1,
         sensorNumber: number,
-        spotName: sensors[number].lieux,
-        lat: sensors[number].latitude,
-        lng: sensors[number].longitude,
+        spotName: sensors[number]?.lieux,
+        lat: sensors[number]?.latitude,
+        lng: sensors[number]?.longitude,
         createAt: experiment.timestamp,
       })
     )
   );
-  // Get all sensors of an experiment from the DB
+  // Get all sensors of a location from the DB
   const sensorsAtLocation = await SensorModel.findAllFromLocation(1);
   const sensorsStatus = await parseSensorStatus(folder);
-  console.log({ sensorsStatus });
   // Save the status of the sensors in the DB
-  const creation = sensorsAtLocation.map((sensor) => {
-    const status = sensorsStatus[sensor.sensorNumber];
-    console.log({ status });
-    return StatusModel.create({
-      sensorId: sensor.id,
-      experimentId,
-      code: status,
-    });
-  });
-  console.log({ creation });
+  await Promise.all(
+    sensorsAtLocation.map((sensor) => {
+      const { sensorNumber, id } = sensor;
+      const status = sensorsStatus[sensorNumber];
+      return StatusModel.create({
+        code: status,
+        sensorId: id,
+        experimentId,
+      });
+    })
+  );
 };
 
 // Main function to save of the files info to the DB
