@@ -13,6 +13,10 @@ const glob = util.promisify(globCB);
 
 const BASE_URL = process.env.API_BASE_URL;
 
+// Function to remove the elements of array2 from array1 and return the resulting array
+const removeFromArray = (array1, array2) =>
+  array1.filter((element) => !array2.includes(element));
+
 // Function to read the file content en return it
 const readDataFromFile = async (pathToFile) => {
   try {
@@ -51,12 +55,37 @@ const asyncFilter = async (items, predicate) => {
 };
 
 // Function to parse the sensors' list from the geometrie file
-const parseSensorList = async (folder) =>
-  JSON.parse(JSON.parse(await readDataFromFile(`${folder}/geometrie.json`)));
+// There are different file format thus, we sometimes need to JSON.parse(JSON.parse(data))
+const parseSensorList = async (folder) => {
+  try {
+    const data = await readDataFromFile(`${folder}/geometrie.json`);
+    const firstParse = JSON.parse(data);
+    const object =
+      typeof firstParse === 'string' ? JSON.parse(firstParse) : firstParse;
+    return object;
+  } catch (error) {
+    console.error(
+      `There was an error with the data from ${folder}/geometrie.json`
+    );
+    return {};
+  }
+};
 
 // Function to parse the sensors' satuts
-const parseSensorStatus = async (folder) =>
-  JSON.parse(await readDataFromFile(`${folder}/statut_stations.log`));
+const parseSensorStatus = async (folder) => {
+  try {
+    const data = await readDataFromFile(`${folder}/statut_stations.log`);
+    const firstParse = JSON.parse(data);
+    const object =
+      typeof firstParse === 'string' ? JSON.parse(firstParse) : firstParse;
+    return object;
+  } catch (error) {
+    console.error(
+      `There was an error with the data from ${folder}/statut_stations.log`
+    );
+    return {};
+  }
+};
 
 // Function to save one experiment, and its sensors and their status
 const saveExperimentSensorsAndStatus = async (folder) => {
@@ -76,29 +105,37 @@ const saveExperimentSensorsAndStatus = async (folder) => {
   const experimentId = experiment.id;
   const sensors = await parseSensorList(folder);
   const sensorNumberList = Object.keys(sensors).map(Number);
-  const newSensors = await asyncFilter(sensorNumberList, async (sensorNumber) =>
-    SensorModel.sensorDoesNotExist(1, sensorNumber)
+  // Get all the sensors in the DB with locationId
+  const sensorList = await SensorModel.findAllFromLocation(1);
+
+  const newSensors = removeFromArray(
+    sensorNumberList,
+    sensorList.map((sensor) => sensor.sensorNumber)
   );
   // Save the sensors to the DB
   await Promise.all(
-    newSensors.map(async (number) =>
-      SensorModel.create({
-        experimentId,
-        locationId: 1,
-        sensorNumber: number,
-        spotName: sensors[number]?.lieux,
-        lat: sensors[number]?.latitude,
-        lng: sensors[number]?.longitude,
-        createAt: experiment.timestamp,
-      })
-    )
+    newSensors.map(async (number) => {
+      try {
+        SensorModel.create({
+          experimentId,
+          locationId: 1,
+          sensorNumber: number,
+          spotName: sensors[number]?.lieux || '',
+          lat: sensors[number]?.latitude || 0,
+          lng: sensors[number]?.longitude || 0,
+          createAt: experiment.timestamp,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    })
   );
   // Get all sensors of a location from the DB
   const sensorsAtLocation = await SensorModel.findAllFromLocation(1);
   const sensorsStatus = await parseSensorStatus(folder);
   // Save the status of the sensors in the DB
   await Promise.all(
-    sensorsAtLocation.map((sensor) => {
+    sensorsAtLocation.map(async (sensor) => {
       const { sensorNumber, id } = sensor;
       const status = sensorsStatus[sensorNumber];
       return StatusModel.create({
