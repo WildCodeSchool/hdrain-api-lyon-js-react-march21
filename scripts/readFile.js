@@ -134,17 +134,17 @@ const saveExperimentSensorsAndStatus = async (folder) => {
   const sensorsAtLocation = await SensorModel.findAllFromLocation(1);
   const sensorsStatus = await parseSensorStatus(folder);
   // Save the status of the sensors in the DB
-  await Promise.all(
-    sensorsAtLocation.map(async (sensor) => {
-      const { sensorNumber, id } = sensor;
-      const status = sensorsStatus[sensorNumber];
-      return StatusModel.create({
-        code: status,
-        sensorId: id,
-        experimentId,
-      });
-    })
-  );
+  sensorsAtLocation.map(async (sensor) => {
+    const { sensorNumber, id } = sensor;
+    const status = sensorsStatus[sensorNumber];
+    console.log({ status });
+    return StatusModel.create({
+      // If no status was specified in the file, the status is 'offline'
+      code: status || 0,
+      sensorId: id,
+      experimentId,
+    });
+  });
 };
 
 // Main function to save of the files info to the DB
