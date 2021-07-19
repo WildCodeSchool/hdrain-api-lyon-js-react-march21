@@ -15,7 +15,7 @@ const create = async ({
       lat,
       lng,
       createdAt: timestamp,
-      locationId,
+      locationId: parseInt(locationId, 10),
     },
   });
 
