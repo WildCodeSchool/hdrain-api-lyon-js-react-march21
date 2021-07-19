@@ -47,13 +47,6 @@ const createSensors = async (sensorsPosition, locationId, timestamp) => {
 
 const findAll = () => prisma.sensor.findMany();
 
-// const findAllFromExperiment = (experimentId) =>
-//   prisma.sensor.findMany({
-//     where: {
-//       experimentId: parseInt(experimentId, 10),
-//     },
-//   });
-
 const findAllFromLocation = (locationId) =>
   prisma.sensor.findMany({
     where: {
@@ -68,21 +61,10 @@ const findUnique = (sensorId) =>
     },
   });
 
-// Create a function to check if a sensor already exists in the DB
-const sensorDoesNotExist = async (locationId, sensorNumber) =>
-  !(await prisma.sensor.findFirst({
-    where: {
-      locationId: parseInt(locationId, 10),
-      sensorNumber,
-    },
-  }));
-
 module.exports = {
   createSensors,
   create,
   findAll,
   findUnique,
   findAllFromLocation,
-  sensorDoesNotExist,
-  // findAllFromExperiment,
 };
