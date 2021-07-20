@@ -59,7 +59,7 @@ const createExperiment = async (folder) => {
     costGraph: JSON.stringify({ y1, y2, x }),
 
     // need to check for the rain map source file
-    rainMap: `${folder}/diagnostics.png`,
+    rainMap: `${folder}/champs_assim_t3.png`,
     parameters: `${folder}/config.cfg`,
     locationId: 1,
   };
