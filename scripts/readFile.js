@@ -134,17 +134,18 @@ const saveExperimentSensorsAndStatus = async (folder) => {
   const sensorsAtLocation = await SensorModel.findAllFromLocation(1);
   const sensorsStatus = await parseSensorStatus(folder);
   // Save the status of the sensors in the DB
-  sensorsAtLocation.map(async (sensor) => {
-    const { sensorNumber, id } = sensor;
-    const status = sensorsStatus[sensorNumber];
-    console.log({ status });
-    return StatusModel.create({
-      // If no status was specified in the file, the status is 'offline'
-      code: status || 0,
-      sensorId: id,
-      experimentId,
-    });
-  });
+  return Promise.all(
+    sensorsAtLocation.map(async (sensor) => {
+      const { sensorNumber, id } = sensor;
+      const status = sensorsStatus[sensorNumber];
+      return StatusModel.create({
+        // If no status was specified in the file, the status is 'offline'
+        code: status || 0,
+        sensorId: id,
+        experimentId,
+      });
+    })
+  );
 };
 
 // Main function to save of the files info to the DB
@@ -152,13 +153,16 @@ const saveDataToDB = async (pathToFiles) => {
   try {
     const folders = await glob(pathToFiles);
     const timestampsInDB = await ExperimentModel.getAllTimestamps();
-    await Promise.all(
-      (
-        await asyncFilter(await asyncFilter(folders, isDirNotEmpty), (folder) =>
-          unprocessedFolders(folder, timestampsInDB)
-        )
-      ).map(saveExperimentSensorsAndStatus)
+    const pathTable = await Promise.all(
+      await asyncFilter(await asyncFilter(folders, isDirNotEmpty), (folder) =>
+        unprocessedFolders(folder, timestampsInDB)
+      )
     );
+
+    await pathTable.reduce(async (accumulator, path) => {
+      await accumulator;
+      return saveExperimentSensorsAndStatus(path);
+    }, Promise.resolve());
   } catch (error) {
     console.error(error);
   }
