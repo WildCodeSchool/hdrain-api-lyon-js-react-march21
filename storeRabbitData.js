@@ -72,32 +72,34 @@ const storeImgInServer = async (expData) => {
   const rainMapBufferData = Buffer.from(rainMapbase64, 'base64');
   const costGraphBufferData = Buffer.from(costGraphbase64, 'base64');
 
-  // change date format 
+  // change date format
   const timestampExp = expData.timestamp.toISOString();
 
   const fileNameRainMap = `rainMap_${timestampExp}.png`;
   const fileNameCostGraph = `costGraph_${timestampExp}.png`;
 
+  // create folders
+  const folderRainMap = join('storage', 'experimentsImages', 'rainMap');
+
+  const folderCostGraph = join('storage', 'experimentsImages', 'costGraph');
+
   // create path
-  const rainMapPath = join(
-    'storage',
-    'experimentsImages',
-    'rainMap',
-    fileNameRainMap
-  );
-  const costGraphPath = join(
-    'storage',
-    'experimentsImages',
-    'costGraph',
-    fileNameCostGraph
-  );
+  const rainMapPath = join(folderRainMap, fileNameRainMap);
+  const costGraphPath = join(folderCostGraph, fileNameCostGraph);
 
-  // store rain map
-  await fsp.writeFile(rainMapPath, rainMapBufferData);
+  // create folders
+  await fsp.mkdir(join('./', folderRainMap), { recursive: true }, (err) => {
+    if (err) throw err;
+  })
+  await fsp.mkdir(join('./', folderCostGraph), { recursive: true }, (err) => {
+    if (err) throw err;
+  })
 
-  // store cost graph
+  // store images
+  await fsp.writeFile(rainMapPath, rainMapBufferData)
+
   await fsp.writeFile(costGraphPath, costGraphBufferData);
- 
+
   console.log('images stored');
 
   // re-assign path to the exp object
