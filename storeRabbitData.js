@@ -72,30 +72,35 @@ const storeImgInServer = async (expData) => {
   const rainMapBufferData = Buffer.from(rainMapbase64, 'base64');
   const costGraphBufferData = Buffer.from(costGraphbase64, 'base64');
 
-  // date format
-  const expYear = expData.timestamp.getFullYear();
-  const expMonth = expData.timestamp.getMonth();
-  const expDay = expData.timestamp.getDate();
-  const expHours = expData.timestamp.getHours();
-  const expMinutes = expData.timestamp.getMinutes();
+  // change date format 
+  const timestampExp = expData.timestamp.toISOString();
 
-  const date = `${expYear}_${expMonth}_${expDay}_${expHours}h${expMinutes}`;
+  const fileNameRainMap = `rainMap_${timestampExp}.png`;
+  const fileNameCostGraph = `costGraph_${timestampExp}.png`;
 
-  const fileNameRainMap = `rainMap_${date}.png`;
-  const fileNameCostGraph = `costGraph_${date}.png`;
-
-  const rainMapPath = join('storage', 'images', fileNameRainMap);
+  // create path
+  const rainMapPath = join(
+    'storage',
+    'experimentsImages',
+    'rainMap',
+    fileNameRainMap
+  );
   const costGraphPath = join(
     'storage',
-    'images',
+    'experimentsImages',
+    'costGraph',
     fileNameCostGraph
   );
+
+  console.log(rainMapPath);
+  console.log(costGraphPath);
 
   // store rain map
   await fsp.writeFile(rainMapPath, rainMapBufferData);
 
   // store cost graph
   await fsp.writeFile(costGraphPath, costGraphBufferData);
+ 
   console.log('images stored');
 
   // re-assign path to the exp object
