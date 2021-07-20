@@ -29,7 +29,7 @@ function connexion() {
         channel.consume(
           queue,
           async (msg) => {
-            const message = msg.content.toString('utf8').toLowerCase();
+            const message = msg.content.toString();
             try {
               storeData(JSON.parse(message));
             } catch (error) {

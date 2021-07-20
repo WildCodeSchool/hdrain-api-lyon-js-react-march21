@@ -1,3 +1,5 @@
+const { promises: fsp } = require('fs');
+const { join } = require('path');
 const ExperimentModel = require('./models/ExperimentModel');
 const StatusModel = require('./models/StatusModel');
 const SensorModel = require('./models/SensorModel');
@@ -8,20 +10,18 @@ const LocationModel = require('./models/LocationModel');
 // helper 1 : restructuring the data to made it suitable for the db
 const cleanData = (data) => {
   // data to send in the database
-  if (!data.config) {
+  if (!data.Config) {
     return null;
   }
 
   const experimentData = {
     timestamp: data.date.replace(/h/, '_').split('_'),
-    assimilationLog: data['log assim'],
-    neuralNetworkLog: data['log rn'],
-    parameters: data.config,
-    status: JSON.parse(data.statuts),
+    assimilationLog: data['LOG assim'],
+    neuralNetworkLog: data['LOG RN'],
+    parameters: data.Config,
+    status: JSON.parse(data.Statuts),
     sensorsPosition: JSON.parse(JSON.parse(data.geometrie)),
-    location: data.location
-      ? data.location.charAt(0).toUpperCase() + data.location.slice(1)
-      : 'Abidjan',
+    location: data.location ? data.location : 'Abidjan',
     locCoord: {
       lat: data.coordoonees ? data.coordoonees[0] : 'undefined',
       lng: data.coordoonees ? data.coordoonees[1] : 'undefined',
@@ -29,12 +29,8 @@ const cleanData = (data) => {
     sendingDate: data['date envoi']
       ? data['date envoi'].replace(/-,:/g, '_').split('_')
       : 'undefined',
-    rainGraph: data['champs assim']
-      ? data['champs assim'].toString('base64')
-      : 'undefined',
-    costGraph: data.diagnostics
-      ? data.diagnostics.toString('base64')
-      : 'undefined',
+    rainMap: data['champs assim'] ? data['champs assim'] : 'undefined',
+    costGraph: data.diagnostics ? data.diagnostics : 'undefined',
   };
 
   // change date fortmat
@@ -51,28 +47,77 @@ const cleanData = (data) => {
   return experimentData;
 };
 
-// helper 2 : check if the experiment already exist in the db
+// helper 2.1 : check if the experiment already exist in the db
 
-const checkDbForExperiment = (experimentToCheck) => {
-  ExperimentModel.getExperiment(experimentToCheck);
+// const checkDbForExperiment = async (experimentToCheck) => {
+
+// };
+
+// helper 2.2 : store image in server and get the path
+
+const storeImgInServer = async (expData) => {
+  if (expData.rainMap === 'undefined') return expData;
+
+  const rainMapbase64 = expData.rainMap;
+  const costGraphbase64 = expData.costGraph;
+
+  const rainMapBufferData = Buffer.from(rainMapbase64, 'base64');
+  const costGraphBufferData = Buffer.from(costGraphbase64, 'base64');
+
+  // change date format 
+  const timestampExp = expData.timestamp.toISOString();
+
+  const fileNameRainMap = `rainMap_${timestampExp}.png`;
+  const fileNameCostGraph = `costGraph_${timestampExp}.png`;
+
+  // create path
+  const rainMapPath = join(
+    'storage',
+    'experimentsImages',
+    'rainMap',
+    fileNameRainMap
+  );
+  const costGraphPath = join(
+    'storage',
+    'experimentsImages',
+    'costGraph',
+    fileNameCostGraph
+  );
+
+  // store rain map
+  await fsp.writeFile(rainMapPath, rainMapBufferData);
+
+  // store cost graph
+  await fsp.writeFile(costGraphPath, costGraphBufferData);
+ 
+  console.log('images stored');
+
+  // re-assign path to the exp object
+  const DataWithPath = expData;
+
+  DataWithPath.rainMap = rainMapPath;
+  DataWithPath.costGraph = costGraphPath;
+
+  return DataWithPath;
 };
 
 // helper 3 store expriment
 const saveExperiment = async (experiment) => {
   // check if the experiment already
-  const experimentExists = await checkDbForExperiment(experiment);
+  const experimentExists = await ExperimentModel.getExperiment(experiment);
 
   if (!experimentExists) {
-    const data = experiment;
+    // store rainMap and cost graph
+    const ExpWithImgPath = await storeImgInServer(experiment);
 
     // new experiment storing
-    const storedExperiment = await ExperimentModel.create(data);
+    const storedExperiment = await ExperimentModel.create(ExpWithImgPath);
 
     console.log('experiment stored in DB: ', storedExperiment.id);
 
-    data.experimentId = storedExperiment.id;
+    ExpWithImgPath.experimentId = storedExperiment.id;
 
-    return data;
+    return ExpWithImgPath;
   }
   return undefined;
 };
