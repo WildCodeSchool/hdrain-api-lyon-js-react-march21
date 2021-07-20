@@ -12,7 +12,7 @@ const glob = util.promisify(globCB);
 // Path to scan
 const mainPath = `${process.env.LOCAL_TARGET}/**/[0-9][0-9]h[0-9][0-9]`;
 
-// Function to read the files where the rain graph values are stored and returns an array
+// Function to read the files where the rain map values are stored and returns an array
 const readArrayFromFile = async (pathToFile) => {
   try {
     const buffer = await readFile(pathToFile);
@@ -58,8 +58,8 @@ const createExperiment = async (folder) => {
     assimilationLog: `${folder}/bash_assim.log`,
     costGraph: JSON.stringify({ y1, y2, x }),
 
-    // need to check for the rain graph source file
-    rainGraph: `${folder}/diagnostics.png`,
+    // need to check for the rain map source file
+    rainMap: `${folder}/champs_assim_t3.png`,
     parameters: `${folder}/config.cfg`,
     locationId: 1,
   };

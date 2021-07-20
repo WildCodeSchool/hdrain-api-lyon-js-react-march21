@@ -33,7 +33,7 @@ function connexion() {
         channel.consume(
           queue,
           async (msg) => {
-            const message = msg.content.toString('utf8').toLowerCase();
+            const message = msg.content.toString();
             try {
               const rabbitMqData = JSON.parse(message);
               storeData(rabbitMqData);
