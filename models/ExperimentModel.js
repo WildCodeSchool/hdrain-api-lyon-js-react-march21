@@ -25,16 +25,18 @@ const getExperiment = (experiment) =>
     where: { timestamp: experiment.timestamp },
   });
 
-const create = ({
-  timestamp,
-  neuralNetworkLog,
-  assimilationLog,
-  rainGraph,
-  costGraph,
-  parameters,
-  locationId,
-}) =>
-  prisma.experiment.create({
+const create = async (exp) => {
+  const {
+    timestamp,
+    neuralNetworkLog,
+    assimilationLog,
+    rainGraph,
+    costGraph,
+    parameters,
+    locationId,
+  } = exp;
+
+  const storingExp = await prisma.experiment.create({
     data: {
       timestamp,
       neuralNetworkLog,
@@ -45,6 +47,9 @@ const create = ({
       locationId,
     },
   });
+
+  return storingExp;
+};
 
 const update = (id, path) =>
   prisma.experiment.update({
