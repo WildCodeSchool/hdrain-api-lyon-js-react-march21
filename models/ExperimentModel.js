@@ -41,7 +41,7 @@ const create = async (exp) => {
       timestamp,
       neuralNetworkLog,
       assimilationLog,
-      rainGraph : rainMap,
+      rainMap,
       costGraph,
       parameters,
       locationId,
@@ -57,21 +57,21 @@ const update = (id, path) =>
       id,
     },
     data: {
-      rainGraph: `${path}`,
+      rainMap: `${path}`,
     },
   });
 
 // function to get all the info related to one experiment but also to extract the expected url
 // if an url exist, make it precede of the localhost:5000 to get absolute url
 const getImagesURL = (experiment) => {
-  let rainGraph = experiment ? experiment.rainGraph : undefined;
+  let rainMap = experiment ? experiment.rainMap : undefined;
   let costGraph = experiment ? experiment.costGraph : undefined;
   if (
-    rainGraph &&
-    !rainGraph.startsWith('http://') &&
-    !rainGraph.startsWith('https://')
+    rainMap &&
+    !rainMap.startsWith('http://') &&
+    !rainMap.startsWith('https://')
   ) {
-    rainGraph = `${API_BASE_URL}/${rainGraph}`;
+    rainMap = `${API_BASE_URL}/${rainMap}`;
   }
   if (
     costGraph &&
@@ -82,7 +82,7 @@ const getImagesURL = (experiment) => {
   }
   return {
     ...experiment,
-    rainGraph,
+    rainMap,
     costGraph,
   };
 };
@@ -93,7 +93,7 @@ const selectFile = (id) =>
       id,
     },
     select: {
-      rainGraph: true,
+      rainMap: true,
     },
   });
 

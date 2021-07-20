@@ -92,9 +92,6 @@ const storeImgInServer = async (expData) => {
     fileNameCostGraph
   );
 
-  console.log(rainMapPath);
-  console.log(costGraphPath);
-
   // store rain map
   await fsp.writeFile(rainMapPath, rainMapBufferData);
 

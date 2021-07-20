@@ -29,7 +29,7 @@ ADD
     "id" SERIAL NOT NULL,
     "timestamp" TIMESTAMP NOT NULL,
     "log" TEXT NOT NULL,
-    "rainGraph" VARCHAR(255) NOT NULL,
+    "rainMap" VARCHAR(255) NOT NULL,
     "costGraph" VARCHAR(255) NOT NULL,
     "parameter" TEXT NOT NULL,
     "locationId" INTEGER NOT NULL,
