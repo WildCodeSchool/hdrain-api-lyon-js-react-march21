@@ -33,6 +33,14 @@ const cleanData = (data) => {
     costGraph: data.diagnostics ? data.diagnostics : 'undefined',
   };
 
+  experimentData.timestamp = new Date(
+    experimentData.timestamp[0],
+    experimentData.timestamp[1] - 1,
+    experimentData.timestamp[2],
+    experimentData.timestamp[3],
+    experimentData.timestamp[4]
+  );
+
   // change date fortmat
   if (experimentData.sendingDate === 'undefined') return experimentData;
 
@@ -82,13 +90,13 @@ const storeImgInServer = async (expData) => {
   // create folders
   await fsp.mkdir(join('./', folderRainMap), { recursive: true }, (err) => {
     if (err) throw err;
-  })
+  });
   await fsp.mkdir(join('./', folderCostGraph), { recursive: true }, (err) => {
     if (err) throw err;
-  })
+  });
 
   // store images
-  await fsp.writeFile(rainMapPath, rainMapBufferData)
+  await fsp.writeFile(rainMapPath, rainMapBufferData);
 
   await fsp.writeFile(costGraphPath, costGraphBufferData);
 
@@ -192,8 +200,8 @@ const changeLocationId = async (arrayOfLocations, expSaved) => {
   const [expWithLocation] = arrayOfLocations.filter(
     (location) => location.name === expSaved.location
   );
-
-  return { ...expSaved, locationId: expWithLocation.id };
+ 
+  return {...expSaved, locationId: expWithLocation.id};
 };
 
 const checkLocation = async (hdRainData) => {
@@ -211,9 +219,9 @@ const storeData = async (rabbitData) => {
 
   if (!hdRainDataToStore) return console.log('wrong data');
 
-  const experiementWithLocId = await checkLocation(hdRainDataToStore);
+  const experimentWithLocId = await checkLocation(hdRainDataToStore);
 
-  const newExperimentInDb = await saveExperiment(experiementWithLocId);
+  const newExperimentInDb = await saveExperiment(experimentWithLocId);
 
   // no new experiment stored
   if (!newExperimentInDb) return console.log('The experiment already exists');
