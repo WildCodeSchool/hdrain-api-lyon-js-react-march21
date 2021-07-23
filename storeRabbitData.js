@@ -172,9 +172,11 @@ const sensorStoring = async (experimentAlreadyStored) => {
   if (sensorsinDbCheck.length !== 0) {
     return sensorsinDbCheck;
   }
+  const stringLocationId = expStored.locationId.toString();
+
   const storedSensors = await SensorModel.createSensors(
     expStored.sensorsPosition,
-    expStored.locationId,
+    stringLocationId,
     expStored.timestamp
   );
 

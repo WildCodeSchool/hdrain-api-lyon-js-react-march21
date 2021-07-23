@@ -27,16 +27,16 @@ const createSensors = async (sensorsPosition, locationId, timestamp) => {
   await Promise.all(
     sensorsToStore.map(async (sensor) => {
       const [key, value] = sensor;
-      const sensorKey = parseInt(key, 10);
+      const sensorNumber = parseInt(key, 10);
       const { latitude: lat, longitude: lng, lieux: spotName } = value;
       // function to store sensors in the db
       const storedInTheDb = await create({
-        sensorKey,
+        locationId,
+        sensorNumber,
         spotName,
         lat,
         lng,
         timestamp,
-        locationId 
       });
       return storedSensorsList.push(storedInTheDb);
     })
