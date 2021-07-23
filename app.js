@@ -6,7 +6,6 @@ const PgSession = require('connect-pg-simple')(session);
 const {
   PORT,
   CORS_ALLOWED_ORIGINS,
-  // DATABASE_URL,
   inTestEnv,
   inProdEnv,
   SESSION_COOKIE_SECRET,
@@ -19,7 +18,9 @@ const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
 
 require('dotenv').config();
-require('./rabbitWorker')();
+
+// TODO: uncomment the following line in production
+// require('./rabbitWorker')();
 
 const { db } = require('./db');
 

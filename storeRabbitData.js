@@ -34,14 +34,6 @@ const cleanData = (data) => {
   };
 
   // change date fortmat
-  experimentData.timestamp = new Date(
-    experimentData.timestamp[0],
-    experimentData.timestamp[1] - 1,
-    experimentData.timestamp[2],
-    experimentData.timestamp[3],
-    experimentData.timestamp[4]
-  );
-
   if (experimentData.sendingDate === 'undefined') return experimentData;
 
   experimentData.sendingDate = new Date(
