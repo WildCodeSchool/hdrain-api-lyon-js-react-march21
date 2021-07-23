@@ -19,8 +19,7 @@ const handleServerInternalError = require('./middlewares/handleServerInternalErr
 
 require('dotenv').config();
 
-// TODO: uncomment the following line in production
-// require('./rabbitWorker')();
+require('./rabbitWorker')();
 
 const { db } = require('./db');
 
