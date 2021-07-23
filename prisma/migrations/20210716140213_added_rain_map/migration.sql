@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE "experiment" ADD COLUMN     "rainMap" TEXT NOT NULL;
+ALTER TABLE "experiment" ADD COLUMN     "rainGraph" TEXT NOT NULL;
