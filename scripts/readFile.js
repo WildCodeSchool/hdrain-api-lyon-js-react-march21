@@ -11,8 +11,6 @@ const readFile = util.promisify(fs.readFile);
 const readDir = util.promisify(fs.readdir);
 const glob = util.promisify(globCB);
 
-const BASE_URL = process.env.API_BASE_URL;
-
 // Function to remove the elements of array2 from array1 and return the resulting array
 const removeFromArray = (array1, array2) =>
   array1.filter((element) => !array2.includes(element));
@@ -92,12 +90,12 @@ const saveExperimentSensorsAndStatus = async (folder) => {
   // Save the experiment in the DB
   const experiment = await ExperimentModel.create({
     timestamp: getDateFromFileDirectory(folder),
-    neuralNetworkLog: `${BASE_URL}/${folder}/diagnostics.png`,
+    neuralNetworkLog: `${folder}/diagnostics.png`,
     assimilationLog: await readDataFromFile(`${folder}/bash_assim.log`),
     // need to check for the rain graph source file
-    rainGraph: `${BASE_URL}/${folder}/fig.png`,
-    rainMap: `${BASE_URL}/${folder}/champs_assim_t3.png`,
-    costGraph: `${BASE_URL}/${folder}/diagnostics.png`,
+    rainGraph: `${folder}/fig.png`,
+    rainMap: `${folder}/champs_assim_t3.png`,
+    costGraph: `${folder}/diagnostics.png`,
     parameters: await readDataFromFile(`${folder}/config.cfg`),
     locationId: 1,
   });
