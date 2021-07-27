@@ -87,11 +87,14 @@ const parseSensorStatus = async (folder) => {
 
 // Function to save one experiment, and its sensors and their status
 const saveExperimentSensorsAndStatus = async (folder) => {
+  const timestamp = new Date(getDateFromFileDirectory(folder));
   // Save the experiment in the DB
   const experiment = await ExperimentModel.create({
-    timestamp: getDateFromFileDirectory(folder),
+    timestamp: timestamp.toISOString(),
     neuralNetworkLog: `${folder}/diagnostics.png`,
-    assimilationLog: await readDataFromFile(`${folder}/bash_assim.log`),
+    assimilationLog: await readDataFromFile(
+      `${folder}/inference_${timestamp.getFullYear()}_${timestamp.getMonth()}_${timestamp.getDay()}_${timestamp.getHours()}h${timestamp.getMinutes()}.log`
+    ),
     // need to check for the rain graph source file
     rainGraph: `${folder}/fig.png`,
     rainMap: `${folder}/champs_assim_t3.png`,
