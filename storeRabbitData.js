@@ -202,8 +202,8 @@ const changeLocationId = async (arrayOfLocations, expSaved) => {
   const [expWithLocation] = arrayOfLocations.filter(
     (location) => location.name === expSaved.location
   );
- 
-  return {...expSaved, locationId: expWithLocation.id};
+
+  return { ...expSaved, locationId: expWithLocation.id };
 };
 
 const checkLocation = async (hdRainData) => {
@@ -217,7 +217,7 @@ const checkLocation = async (hdRainData) => {
 // -------------------FUNCTION TO STORE ALL-------------------- //
 
 const storeData = async (rabbitData) => {
-  const hdRainDataToStore = await cleanData(rabbitData);
+  const hdRainDataToStore = cleanData(rabbitData);
 
   if (!hdRainDataToStore) return console.log('wrong data');
 
