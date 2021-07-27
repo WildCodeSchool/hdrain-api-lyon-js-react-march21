@@ -85,6 +85,9 @@ const parseSensorStatus = async (folder) => {
   }
 };
 
+// Function to pad a number with a zero if it's less than 10
+const padNumber = (number) => (number < 10 ? `0${number}` : number);
+
 // Function to save one experiment, and its sensors and their status
 const saveExperimentSensorsAndStatus = async (folder) => {
   const timestamp = new Date(getDateFromFileDirectory(folder));
@@ -92,9 +95,13 @@ const saveExperimentSensorsAndStatus = async (folder) => {
   const experiment = await ExperimentModel.create({
     timestamp: timestamp.toISOString(),
     neuralNetworkLog: await readDataFromFile(
-      `${folder}/inference_${timestamp.getFullYear()}_${timestamp.getMonth()}_${timestamp.getDay()}_${timestamp.getHours()}h${timestamp.getMinutes()}.log`
+      `${folder}/inference_${timestamp.getFullYear()}_${padNumber(
+        timestamp.getMonth() + 1
+      )}_${padNumber(timestamp.getDate())}_${padNumber(
+        timestamp.getHours()
+      )}h${padNumber(timestamp.getMinutes())}.log`
     ),
-    assimilationLog: `${folder}/bash_assim.log`,
+    assimilationLog: await readDataFromFile(`${folder}/bash_assim.log`),
     // need to check for the rain graph source file
     rainGraph: `${folder}/fig.png`,
     rainMap: `${folder}/champs_assim_t3.png`,
@@ -102,7 +109,7 @@ const saveExperimentSensorsAndStatus = async (folder) => {
     parameters: await readDataFromFile(`${folder}/config.cfg`),
     locationId: 1,
   });
-  // Frome the saved experiment, grab its ID (with locationId) and use them to save the list of sensors if not already present in the DB
+  // From the saved experiment, grab its ID (with locationId) and use them to save the list of sensors if not already present in the DB
   const experimentId = experiment.id;
   const sensors = await parseSensorList(folder);
   const sensorNumberList = Object.keys(sensors).map(Number);
