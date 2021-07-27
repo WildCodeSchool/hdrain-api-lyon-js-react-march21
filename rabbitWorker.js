@@ -35,6 +35,7 @@ function connexion() {
             } catch (error) {
               console.error(error);
             }
+            channel.ack(msg);
           },
           {
             // automatic acknowledgment mode,
