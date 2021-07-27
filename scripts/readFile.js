@@ -91,10 +91,10 @@ const saveExperimentSensorsAndStatus = async (folder) => {
   // Save the experiment in the DB
   const experiment = await ExperimentModel.create({
     timestamp: timestamp.toISOString(),
-    neuralNetworkLog: `${folder}/diagnostics.png`,
-    assimilationLog: await readDataFromFile(
+    neuralNetworkLog: await readDataFromFile(
       `${folder}/inference_${timestamp.getFullYear()}_${timestamp.getMonth()}_${timestamp.getDay()}_${timestamp.getHours()}h${timestamp.getMinutes()}.log`
     ),
+    assimilationLog: `${folder}/bash_assim.log`,
     // need to check for the rain graph source file
     rainGraph: `${folder}/fig.png`,
     rainMap: `${folder}/champs_assim_t3.png`,
