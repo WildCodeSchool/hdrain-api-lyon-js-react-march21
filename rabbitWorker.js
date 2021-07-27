@@ -32,10 +32,10 @@ function connexion() {
             const message = msg.content.toString();
             try {
               storeData(JSON.parse(message));
+              channel.ack(msg);
             } catch (error) {
               console.error(error);
             }
-            channel.ack(msg);
           },
           {
             // automatic acknowledgment mode,
