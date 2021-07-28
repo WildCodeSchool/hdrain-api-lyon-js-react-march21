@@ -55,13 +55,7 @@ const cleanData = (data) => {
   return experimentData;
 };
 
-// helper 2.1 : check if the experiment already exist in the db
-
-// const checkDbForExperiment = async (experimentToCheck) => {
-
-// };
-
-// helper 2.2 : store image in server and get the path
+// helper 2 : store image in server and get the path
 
 const storeImgInServer = async (expData) => {
   if (expData.rainMap === 'undefined') return expData;
@@ -133,54 +127,64 @@ const saveExperiment = async (experiment) => {
 };
 
 // helper 4 : check if sensors exist in the db
-const checkDbForSensors = async (experimentStoredData) => {
-  const sensorsList = [];
-
-  // get all the sensors from a location
-  const idLoc = experimentStoredData.locationId.toString();
-
-  const sensorsFromLocation = await SensorModel.findAllFromLocation(idLoc);
+const checkDbForSensors = async (experimentStoredData, sensorsInLocation) => {
+  const sensorsList = {};
 
   // check if the sensors already exist in the db
   // make sure the sensor list is not empty
-  if (!sensorsFromLocation.length) return sensorsList;
 
   // create an array of sensors
-  const hdRainSensorNumber = Object.keys(experimentStoredData.sensorsPosition);
+  const hdRainSensorNumber = Object.entries(
+    experimentStoredData.sensorsPosition
+  );
 
-  hdRainSensorNumber.map((key) => {
+  return hdRainSensorNumber.reduce((acc, entry) => {
+    const [key, value] = entry;
     const sensorKey = parseInt(key, 10);
 
-    const hdrSensorsInTheDb = sensorsFromLocation.find(
-      (sensor) => sensor.sensorNumber === sensorKey
-    );
-    return sensorsList.push(hdrSensorsInTheDb);
-  });
+    if (sensorsInLocation.find((sensor) => sensorKey === sensor.sensorNumber))
+      return acc;
 
-  const result = sensorsList.filter((sensor) => sensor !== undefined);
-
-  return result;
+    return { ...acc, sensorKey: value };
+  }, sensorsList);
 };
 
 // helper 5 : sensors storing
 const sensorStoring = async (experimentAlreadyStored) => {
   const expStored = experimentAlreadyStored;
 
-  const sensorsinDbCheck = await checkDbForSensors(expStored);
+  // get all the sensors from a location
+  const idLoc = expStored.locationId.toString();
 
-  // store the sensors if they are not already present
-  if (sensorsinDbCheck.length !== 0) {
-    return sensorsinDbCheck;
+  const sensorsFromLocation = await SensorModel.findAllFromLocation(idLoc);
+
+  if (sensorsFromLocation.length === 0) {
+    const storedSensors = await SensorModel.createSensors(
+      expStored.sensorsPosition,
+      idLoc,
+      expStored.timestamp
+    );
+
+    return storedSensors;
   }
-  const stringLocationId = expStored.locationId.toString();
+  // check if hd rain sensor already in the db
+  const sensorsinDbCheck = await checkDbForSensors(
+    expStored,
+    sensorsFromLocation
+  );
+
+  if (Object.keys(sensorsinDbCheck).length === 0) return sensorsFromLocation;
 
   const storedSensors = await SensorModel.createSensors(
-    expStored.sensorsPosition,
-    stringLocationId,
+    sensorsinDbCheck,
+    idLoc,
     expStored.timestamp
   );
 
-  return storedSensors;
+  sensorsFromLocation.push(storedSensors);
+
+  const newSensorsFromLocation = sensorsFromLocation.flat();
+  return newSensorsFromLocation;
 };
 
 // helper 6 : store status
